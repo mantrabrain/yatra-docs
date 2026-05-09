@@ -245,7 +245,7 @@ next:
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 0.5rem;
-  align-items: stretch;
+  align-items: start;
 }
 .yatra-hero__chip--free {
   grid-column: span 1;
@@ -323,14 +323,19 @@ next:
   border-color: var(--vp-c-brand-1);
 }
 .yatra-hero__chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.4rem;
   font-size: 0.82rem;
   font-weight: 500;
-  padding: 0.35rem 0.75rem;
+  padding: 0.4rem 0.95rem;
   border-radius: 999px;
   background: var(--vp-c-bg);
   color: var(--vp-c-text-2);
   border: 1px solid var(--vp-c-divider);
   line-height: 1.35;
+  text-align: center;
 }
 .yatra-card--flagged {
   position: relative;

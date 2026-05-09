@@ -100,7 +100,7 @@ export default defineConfig({
 
   themeConfig: {
     logo: '/logo.svg',
-    siteTitle: 'Yatra Docs',
+    siteTitle: 'Docs',
 
     nav: [
       { text: 'Home', link: '/' },
@@ -284,6 +284,11 @@ export default defineConfig({
     docFooter: {
       prev: 'Previous',
       next: 'Next'
+    },
+
+    markdownSource: {
+      pattern:
+        'https://raw.githubusercontent.com/MantraBrain/yatra-docs/main/docs/:path'
     }
   },
 
@@ -341,10 +346,14 @@ export default defineConfig({
         'link',
         {
           rel: 'canonical',
-          href: `https://docs.wpyatra.com/${pageData.relativePath.replace(
-            '.md',
-            ''
-          )}`
+          href: (() => {
+            const slug = pageData.relativePath
+              .replace(/\.md$/, '')
+              .replace(/(^|\/)index$/, '')
+            return slug
+              ? `https://docs.wpyatra.com/${slug}`
+              : 'https://docs.wpyatra.com/'
+          })()
         }
       ]
     ]

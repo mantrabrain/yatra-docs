@@ -240,3 +240,43 @@
 .doc-addon-card__cta:hover {
   text-decoration: underline !important;
 }
+
+/* Copy page / View as Markdown (doc-before toolbar) */
+.vp-markdown-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 0 0 0.75rem;
+}
+
+.vp-markdown-actions__btn,
+.vp-markdown-actions__link {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.65rem;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  border-radius: 6px;
+  border: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-1);
+  text-decoration: none !important;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.vp-markdown-actions__btn:hover,
+.vp-markdown-actions__link:hover {
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1);
+}
+
+.vp-markdown-actions__btn {
+  font-family: inherit;
+}
