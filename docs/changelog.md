@@ -45,9 +45,9 @@ The most recent free release. Significant content for both authors and operators
 
 **Enquiry emails**
 
-- `{{trip_name}}` (and other trip merge tags) now resolve correctly when an enquiry is submitted from a single-trip page. The modal posts `trip_id` / `trip_slug` reliably; backend normalizes `tripId` casing and derives `trip_id` from slug or `HTTP_REFERER` when missing.
+- <span v-pre><code>{{trip_name}}</code></span> (and other trip merge tags) now resolve correctly when an enquiry is submitted from a single-trip page. The modal posts `trip_id` / `trip_slug` reliably; backend normalizes `tripId` casing and derives `trip_id` from slug or `HTTP_REFERER` when missing.
 - `EnquiryService` now eager-loads joined trip data before firing `yatra_enquiry_created` so admin templates and Pro automation receive a complete object.
-- Merge-tag regex now tolerates surrounding whitespace (`{{ trip_name }}`).
+- Merge-tag regex now tolerates surrounding whitespace (<span v-pre><code>{{ trip_name }}</code></span>).
 
 **Payments admin**
 
@@ -175,7 +175,7 @@ The most recent Pro release. Pair with Yatra Free 3.0.3 (or current 3.0.x).
 **Email Automation (enquiry)**
 
 - Defensive fallback in `EmailAutomationService::buildEnquiryVariables()` resolves `trip_name` / `trip_url` directly from `TripRepository` when an enquiry payload arrives without joined trip data (paired with the free plugin's eager-loading fix in `EnquiryService`).
-- Prevents `{{trip_name}}` from rendering as *General Enquiry* on enquiry-created emails.
+- Prevents <span v-pre><code>{{trip_name}}</code></span> from rendering as *General Enquiry* on enquiry-created emails.
 
 **Version**
 

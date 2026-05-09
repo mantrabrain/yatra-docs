@@ -84,34 +84,98 @@ Click any template name to open the editor:
 
 ### Fields
 
-- **Subject line** — supports merge tags (e.g. "Your {{trip_name}} booking is confirmed").
+- **Subject line** — supports merge tags (e.g. <span v-pre>"Your <code>{{trip_name}}</code> booking is confirmed"</span>).
 - **Email body (HTML)** — the full message. The right rail lists every variable you can use; click one to copy.
 
 ### Available merge tags
 
-The most-used:
+<!-- Merge-tag table wrapped in v-pre so literal curly braces render (VitePress/Vue otherwise interpolates them). -->
+<div v-pre>
 
-| Tag                         | Renders                              |
-| ---                         | ---                                  |
-| `{{site_name}}`             | Your site / company name             |
-| `{{site_url}}`              | Site root URL                        |
-| `{{customer_name}}`         | Customer's full name                  |
-| `{{customer_first_name}}`   | First name (parsed)                  |
-| `{{customer_email}}`        | Customer's email                      |
-| `{{trip_name}}`             | Trip title                            |
-| `{{trip_url}}`              | Permalink to the trip                 |
-| `{{booking_number}}`        | Yatra booking number                  |
-| `{{booking_date}}`          | When the booking was placed           |
-| `{{travel_date}}`           | The departure date                    |
-| `{{travelers_count}}`       | Number of travelers                  |
-| `{{booking_total}}`         | Total in display currency             |
-| `{{amount_paid}}`           | Total paid so far                     |
-| `{{amount_due}}`            | Outstanding balance                   |
-| `{{booking_url}}`           | Booking detail URL (customer-facing)  |
-| `{{my_account_url}}`        | Customer account URL                  |
-| `{{date}}` / `{{time}}`     | Now (site timezone)                   |
+<p>The most-used:</p>
 
-Whitespace inside braces is OK — `{{ trip_name }}` works the same as `{{trip_name}}`.
+<table>
+  <thead>
+    <tr>
+      <th>Tag</th>
+      <th>Renders</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>{{site_name}}</code></td>
+      <td>Your site / company name</td>
+    </tr>
+    <tr>
+      <td><code>{{site_url}}</code></td>
+      <td>Site root URL</td>
+    </tr>
+    <tr>
+      <td><code>{{customer_name}}</code></td>
+      <td>Customer's full name</td>
+    </tr>
+    <tr>
+      <td><code>{{customer_first_name}}</code></td>
+      <td>First name (parsed)</td>
+    </tr>
+    <tr>
+      <td><code>{{customer_email}}</code></td>
+      <td>Customer's email</td>
+    </tr>
+    <tr>
+      <td><code>{{trip_name}}</code></td>
+      <td>Trip title</td>
+    </tr>
+    <tr>
+      <td><code>{{trip_url}}</code></td>
+      <td>Permalink to the trip</td>
+    </tr>
+    <tr>
+      <td><code>{{booking_number}}</code></td>
+      <td>Yatra booking number</td>
+    </tr>
+    <tr>
+      <td><code>{{booking_date}}</code></td>
+      <td>When the booking was placed</td>
+    </tr>
+    <tr>
+      <td><code>{{travel_date}}</code></td>
+      <td>The departure date</td>
+    </tr>
+    <tr>
+      <td><code>{{travelers_count}}</code></td>
+      <td>Number of travelers</td>
+    </tr>
+    <tr>
+      <td><code>{{booking_total}}</code></td>
+      <td>Total in display currency</td>
+    </tr>
+    <tr>
+      <td><code>{{amount_paid}}</code></td>
+      <td>Total paid so far</td>
+    </tr>
+    <tr>
+      <td><code>{{amount_due}}</code></td>
+      <td>Outstanding balance</td>
+    </tr>
+    <tr>
+      <td><code>{{booking_url}}</code></td>
+      <td>Booking detail URL (customer-facing)</td>
+    </tr>
+    <tr>
+      <td><code>{{my_account_url}}</code></td>
+      <td>Customer account URL</td>
+    </tr>
+    <tr>
+      <td><code>{{date}}</code> / <code>{{time}}</code></td>
+      <td>Now (site timezone)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Whitespace inside braces is OK — <code>{{ trip_name }}</code> works the same as <code>{{trip_name}}</code>.</p>
+
+</div>
 
 ## Sequences <span class="pro-pill">PRO</span>
 
