@@ -1,6 +1,8 @@
 ---
 title: Email Settings
 description: Configure email notifications and templates in Yatra
+prev: /guide/payment-settings
+next: /guide/tour-booking
 ---
 
 # Email Settings

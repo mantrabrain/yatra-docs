@@ -1,6 +1,8 @@
 ---
 title: Installation
 description: Complete installation guide for Yatra WordPress plugin
+prev: false
+next: /guide/quick-start
 ---
 
 # Installation

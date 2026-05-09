@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Simple build script that bypasses dead link check
-import { execSync } from 'child_process';
+const { execSync } = require('child_process');
 
 try {
   console.log('Building VitePress documentation...');

@@ -8,8 +8,6 @@
   publish = "docs/.vitepress/dist"
   
   # Build environment
-  environment = { NODE_VERSION = "18" }
-
 [build.environment]
   NODE_VERSION = "18"
   NPM_VERSION = "9"
