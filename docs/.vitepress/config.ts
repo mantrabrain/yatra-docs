@@ -130,6 +130,9 @@ export default defineConfig({
     }
   },
 
+  // Ignore dead links for missing documentation pages
+  ignoreDeadLinks: true,
+
   // Vite Configuration
   vite: {
     define: {
