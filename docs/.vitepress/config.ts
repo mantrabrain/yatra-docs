@@ -352,6 +352,9 @@ export default defineConfig({
   // Ignore dead links for missing documentation pages
   ignoreDeadLinks: true,
 
+  // Clean URLs to remove .html extensions
+  cleanUrls: true,
+
   // Sitemap
   sitemap: {
     hostname: 'https://docs.wpyatra.com'

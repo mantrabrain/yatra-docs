@@ -228,19 +228,19 @@ Environment:
 ### Documentation
 
 #### Getting Started
-- [Installation Guide](/guide/installation)
-- [Quick Start](/guide/quick-start)
-- [Configuration](/guide/booking-settings)
+- [Installation Guide](installation)
+- [Quick Start](quick-start)
+- [Configuration](booking-settings)
 
 #### Features
-- [Tour Booking](/guide/tour-booking)
-- [Hotel Booking](/guide/hotel-booking)
-- [Payment Settings](/guide/payment-settings)
+- [Tour Booking](tour-booking)
+- [Hotel Booking](hotel-booking)
+- [Payment Settings](payment-settings)
 
 #### Advanced
-- [API Reference](/guide/api-reference)
-- [Hooks & Filters](/guide/hooks-filters)
-- [Shortcodes](/guide/shortcodes)
+- [API Reference](api-reference)
+- [Hooks & Filters](hooks-filters)
+- [Shortcodes](shortcodes)
 
 ### Video Tutorials
 

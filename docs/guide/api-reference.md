@@ -1165,10 +1165,10 @@ add_action('yatra_api_request', 'log_yatra_api_requests');
 
 After mastering the API:
 
-1. **[FAQs](/guide/faqs)** - Find answers to common questions
-2. **[Troubleshooting](/guide/troubleshooting)** - Resolve issues
-3. **[Changelog](/guide/changelog)** - Version history and updates
-4. **[Support](/guide/support)** - Get help from the team
+1. **[FAQs](faqs)** - Find answers to common questions
+2. **[Troubleshooting](troubleshooting)** - Resolve issues
+3. **[Changelog](changelog)** - Version history and updates
+4. **[Support](support)** - Get help from the team
 
 ---
 

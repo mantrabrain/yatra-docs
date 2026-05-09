@@ -390,10 +390,10 @@ Enable integration debugging:
 
 After WooCommerce integration:
 
-1. **[Elementor Integration](/guide/elementor-integration)** - Design custom layouts
-2. **[Email Settings](/guide/email-settings)** - Configure notifications
-3. **[FAQs](/guide/faqs)** - Find answers to common questions
-4. **[Troubleshooting](/guide/troubleshooting)** - Resolve issues
+1. **[Elementor Integration](elementor-integration)** - Design custom layouts
+2. **[Email Settings](email-settings)** - Configure notifications
+3. **[FAQs](faqs)** - Find answers to common questions
+4. **[Troubleshooting](troubleshooting)** - Resolve issues
 
 ---
 

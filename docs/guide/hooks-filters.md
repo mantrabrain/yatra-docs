@@ -657,10 +657,10 @@ add_action('all', 'debug_yatra_hooks');
 
 After mastering hooks and filters:
 
-1. **[API Reference](/guide/api-reference)** - Developer API documentation
-2. **[FAQs](/guide/faqs)** - Find answers to common questions
-3. **[Troubleshooting](/guide/troubleshooting)** - Resolve issues
-4. **[Changelog](/guide/changelog)** - Version history and updates
+1. **[API Reference](api-reference)** - Developer API documentation
+2. **[FAQs](faqs)** - Find answers to common questions
+3. **[Troubleshooting](troubleshooting)** - Resolve issues
+4. **[Changelog](changelog)** - Version history and updates
 
 ---
 

@@ -314,10 +314,10 @@ Enable email debugging:
 
 After configuring email settings:
 
-1. **[Tour Booking](/guide/tour-booking)** - Create your tours
-2. **[Hotel Booking](/guide/hotel-booking)** - Set up hotel rooms
-3. **[WooCommerce Integration](/guide/woocommerce-integration)** - Connect with e-commerce
-4. **[FAQs](/guide/faqs)** - Find answers to common questions
+1. **[Tour Booking](tour-booking)** - Create your tours
+2. **[Hotel Booking](hotel-booking)** - Set up hotel rooms
+3. **[WooCommerce Integration](woocommerce-integration)** - Connect with e-commerce
+4. **[FAQs](faqs)** - Find answers to common questions
 
 ---
 

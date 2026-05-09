@@ -517,8 +517,8 @@ Yatra maintains:
 **Need More Help?**
 
 If you don't find your answer here, check our:
-- **[Troubleshooting Guide](/guide/troubleshooting)** - Common solutions
-- **[Support](/guide/support)** - Contact our support team
+- **[Troubleshooting Guide](troubleshooting)** - Common solutions
+- **[Support](support)** - Contact our support team
 - **[Documentation](/)** - Complete documentation
 - **[Community Forum](https://wpyatra.com/community)** - Community support
 

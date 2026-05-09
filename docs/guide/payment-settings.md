@@ -355,10 +355,10 @@ Enable payment debugging:
 
 After configuring payment settings:
 
-1. **[Tour Booking](/guide/tour-booking)** - Create and manage tours
-2. **[Hotel Booking](/guide/hotel-booking)** - Set up hotel rooms
-3. **[Email Settings](/guide/email-settings)** - Configure notifications
-4. **[WooCommerce Integration](/guide/woocommerce-integration)** - Connect with WooCommerce
+1. **[Tour Booking](tour-booking)** - Create and manage tours
+2. **[Hotel Booking](hotel-booking)** - Set up hotel rooms
+3. **[Email Settings](email-settings)** - Configure notifications
+4. **[WooCommerce Integration](woocommerce-integration)** - Connect with WooCommerce
 
 ---
 

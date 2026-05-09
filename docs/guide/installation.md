@@ -194,18 +194,18 @@ chmod 755 /wp-content/uploads/
 
 After successful installation:
 
-1. **[Quick Start Guide](/guide/quick-start)** - Create your first tour
-2. **[Booking Settings](/guide/booking-settings)** - Configure booking options
-3. **[Payment Settings](/guide/payment-settings)** - Set up payment gateways
-4. **[Tour Booking](/guide/tour-booking)** - Learn about tour management
+1. **[Quick Start Guide](quick-start)** - Create your first tour
+2. **[Booking Settings](booking-settings)** - Configure booking options
+3. **[Payment Settings](payment-settings)** - Set up payment gateways
+4. **[Tour Booking](tour-booking)** - Learn about tour management
 
 ## Need Help?
 
 If you encounter any issues during installation:
 
-- **[Troubleshooting Guide](/guide/troubleshooting)** - Common solutions
-- **[FAQs](/guide/faqs)** - Frequently asked questions
-- **[Support](/guide/support)** - Contact our support team
+- **[Troubleshooting Guide](troubleshooting)** - Common solutions
+- **[FAQs](faqs)** - Frequently asked questions
+- **[Support](support)** - Contact our support team
 
 ---
 

@@ -226,9 +226,9 @@ Congratulations! You now have a fully functional travel booking site. Here's wha
 
 ### Advanced Configuration
 
-1. **[Tour Booking Guide](/guide/tour-booking)** - Learn advanced tour features
-2. **[Payment Settings](/guide/payment-settings)** - Configure additional payment gateways
-3. **[Email Settings](/guide/email-settings)** - Customize email templates
+1. **[Tour Booking Guide](tour-booking)** - Learn advanced tour features
+2. **[Payment Settings](payment-settings)** - Configure additional payment gateways
+3. **[Email Settings](email-settings)** - Customize email templates
 
 ### Marketing & SEO
 
@@ -254,9 +254,9 @@ Congratulations! You now have a fully functional travel booking site. Here's wha
 
 ### Get Help
 
-- **[Troubleshooting Guide](/guide/troubleshooting)** - Detailed solutions
-- **[FAQs](/guide/faqs)** - Common questions and answers
-- **[Support](/guide/support)** - Contact our support team
+- **[Troubleshooting Guide](troubleshooting)** - Detailed solutions
+- **[FAQs](faqs)** - Common questions and answers
+- **[Support](support)** - Contact our support team
 
 ---
 

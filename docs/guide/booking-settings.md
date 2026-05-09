@@ -291,10 +291,10 @@ Reset booking settings to defaults:
 
 After configuring booking settings:
 
-1. **[Payment Settings](/guide/payment-settings)** - Configure payment gateways
-2. **[Email Settings](/guide/email-settings)** - Set up notifications
-3. **[Tour Booking](/guide/tour-booking)** - Create your tours
-4. **[Hotel Booking](/guide/hotel-booking)** - Set up hotel rooms
+1. **[Payment Settings](payment-settings)** - Configure payment gateways
+2. **[Email Settings](email-settings)** - Set up notifications
+3. **[Tour Booking](tour-booking)** - Create your tours
+4. **[Hotel Booking](hotel-booking)** - Set up hotel rooms
 
 ---
 

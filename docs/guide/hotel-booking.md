@@ -380,10 +380,10 @@ Enable hotel booking debugging:
 
 After mastering hotel booking:
 
-1. **[WooCommerce Integration](/guide/woocommerce-integration)** - Connect with e-commerce
-2. **[Elementor Integration](/guide/elementor-integration)** - Design custom layouts
-3. **[FAQs](/guide/faqs)** - Find answers to common questions
-4. **[Troubleshooting](/guide/troubleshooting)** - Resolve issues
+1. **[WooCommerce Integration](woocommerce-integration)** - Connect with e-commerce
+2. **[Elementor Integration](elementor-integration)** - Design custom layouts
+3. **[FAQs](faqs)** - Find answers to common questions
+4. **[Troubleshooting](troubleshooting)** - Resolve issues
 
 ---
 

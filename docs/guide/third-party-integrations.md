@@ -469,10 +469,10 @@ Enable integration debugging:
 
 After third-party integrations:
 
-1. **[Shortcodes](/guide/shortcodes)** - Use Yatra shortcodes
-2. **[Hooks & Filters](/guide/hooks-filters)** - Customize with hooks
-3. **[API Reference](/guide/api-reference)** - Developer documentation
-4. **[FAQs](/guide/faqs)** - Find answers to common questions
+1. **[Shortcodes](shortcodes)** - Use Yatra shortcodes
+2. **[Hooks & Filters](hooks-filters)** - Customize with hooks
+3. **[API Reference](api-reference)** - Developer documentation
+4. **[FAQs](faqs)** - Find answers to common questions
 
 ---
 

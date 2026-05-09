@@ -426,10 +426,10 @@ Enable Elementor debugging:
 
 After Elementor integration:
 
-1. **[Third-party Integrations](/guide/third-party-integrations)** - Connect with other plugins
-2. **[Shortcodes](/guide/shortcodes)** - Use Yatra shortcodes
-3. **[FAQs](/guide/faqs)** - Find answers to common questions
-4. **[Troubleshooting](/guide/troubleshooting)** - Resolve issues
+1. **[Third-party Integrations](third-party-integrations)** - Connect with other plugins
+2. **[Shortcodes](shortcodes)** - Use Yatra shortcodes
+3. **[FAQs](faqs)** - Find answers to common questions
+4. **[Troubleshooting](troubleshooting)** - Resolve issues
 
 ---
 

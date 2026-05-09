@@ -617,10 +617,10 @@ Enable tour debugging:
 
 After mastering tour booking:
 
-1. **[Hotel Booking](/guide/hotel-booking)** - Add hotel accommodations
-2. **[WooCommerce Integration](/guide/woocommerce-integration)** - Connect with e-commerce
-3. **[Email Settings](/guide/email-settings)** - Configure notifications
-4. **[Advanced Features](/guide/hooks-filters)** - Customize with hooks and filters
+1. **[Hotel Booking](hotel-booking)** - Add hotel accommodations
+2. **[WooCommerce Integration](woocommerce-integration)** - Connect with e-commerce
+3. **[Email Settings](email-settings)** - Configure notifications
+4. **[Advanced Features](hooks-filters)** - Customize with hooks and filters
 
 ---
 

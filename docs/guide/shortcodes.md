@@ -739,10 +739,10 @@ add_action('yatra_shortcode_debug', 'log_yatra_shortcodes');
 
 After mastering shortcodes:
 
-1. **[Hooks & Filters](/guide/hooks-filters)** - Customize with hooks
-2. **[API Reference](/guide/api-reference)** - Developer documentation
-3. **[FAQs](/guide/faqs)** - Find answers to common questions
-4. **[Troubleshooting](/guide/troubleshooting)** - Resolve issues
+1. **[Hooks & Filters](hooks-filters)** - Customize with hooks
+2. **[API Reference](api-reference)** - Developer documentation
+3. **[FAQs](faqs)** - Find answers to common questions
+4. **[Troubleshooting](troubleshooting)** - Resolve issues
 
 ---
 
