@@ -1,0 +1,185 @@
+/* ============================================================
+ * Yatra docs — global theme overrides
+ * ============================================================ */
+
+:root {
+  --yatra-blue: #2563eb;
+  --yatra-blue-2: #1d4ed8;
+  --yatra-cyan: #0ea5e9;
+
+  --vp-c-brand-1: #2563eb;
+  --vp-c-brand-2: #1d4ed8;
+  --vp-c-brand-3: #1e40af;
+  --vp-c-brand-soft: rgba(37, 99, 235, 0.14);
+}
+
+/* ============================================================
+ * Pro callout — wraps a Pro-only feature with badge + Buy Pro CTA
+ * ============================================================
+ *
+ * Usage:
+ *
+ * <div class="pro-callout">
+ *   <div class="pro-callout__head">
+ *     <span class="pro-callout__badge">PRO</span>
+ *     <span class="pro-callout__title">Dynamic pricing</span>
+ *   </div>
+ *   <p class="pro-callout__desc">Sell-by-date, group-size, or seasonal pricing rules.</p>
+ *   <a href="https://wpyatra.com/pricing/" class="pro-callout__cta">Upgrade to Yatra Pro →</a>
+ * </div>
+ */
+
+.pro-callout {
+  position: relative;
+  margin: 1.25rem 0;
+  padding: 1.1rem 1.25rem 1.15rem;
+  background: linear-gradient(
+    135deg,
+    rgba(37, 99, 235, 0.07),
+    rgba(14, 165, 233, 0.05)
+  );
+  border: 1px solid rgba(37, 99, 235, 0.22);
+  border-left: 4px solid var(--yatra-blue);
+  border-radius: 10px;
+}
+.dark .pro-callout {
+  background: linear-gradient(
+    135deg,
+    rgba(37, 99, 235, 0.16),
+    rgba(14, 165, 233, 0.10)
+  );
+  border-color: rgba(37, 99, 235, 0.35);
+}
+.pro-callout__head {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 0.5rem;
+  flex-wrap: wrap;
+}
+.pro-callout__badge {
+  display: inline-block;
+  padding: 0.18rem 0.55rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  background: linear-gradient(135deg, var(--yatra-blue), var(--yatra-cyan));
+  color: #fff;
+  border-radius: 999px;
+  text-transform: uppercase;
+  line-height: 1.1;
+  box-shadow: 0 1px 2px rgba(37, 99, 235, 0.25);
+}
+.pro-callout__title {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--vp-c-text-1);
+}
+.pro-callout__desc {
+  margin: 0 0 0.65rem;
+  color: var(--vp-c-text-2);
+  font-size: 0.94rem;
+  line-height: 1.6;
+}
+.pro-callout__desc:last-child {
+  margin-bottom: 0;
+}
+.pro-callout__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--yatra-blue) !important;
+  text-decoration: none !important;
+  border-bottom: 1px dashed transparent;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.pro-callout__cta:hover {
+  color: var(--yatra-blue-2) !important;
+  border-bottom-color: var(--yatra-blue-2);
+}
+
+/* ============================================================
+ * Inline Pro pill — for tables, headings, list items
+ * ============================================================ */
+
+.pro-pill {
+  display: inline-block;
+  padding: 0.08rem 0.45rem;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, var(--yatra-blue), var(--yatra-cyan));
+  color: #fff !important;
+  border-radius: 999px;
+  margin-left: 0.35rem;
+  vertical-align: middle;
+  line-height: 1.4;
+}
+
+/* ============================================================
+ * Step list — visual numbered "Do this, then this" instructions
+ * ============================================================ */
+
+.step-list {
+  list-style: none !important;
+  padding-left: 0 !important;
+  counter-reset: step;
+  margin: 1rem 0;
+}
+.step-list > li {
+  position: relative;
+  padding: 0.5rem 0 0.5rem 2.5rem;
+  margin: 0 0 0.4rem;
+  counter-increment: step;
+}
+.step-list > li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0.4rem;
+  width: 1.7rem;
+  height: 1.7rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--yatra-blue);
+  border-radius: 999px;
+  line-height: 1;
+}
+
+/* ============================================================
+ * UI tip — light note below a step or paragraph
+ * ============================================================ */
+
+.ui-tip {
+  margin: 0.65rem 0;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.9rem;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+  border-left: 3px solid var(--vp-c-divider);
+  border-radius: 4px;
+}
+.ui-tip strong {
+  color: var(--vp-c-text-1);
+}
+
+/* ============================================================
+ * Screen path — "Yatra → Settings → Payment" breadcrumb-style
+ * ============================================================ */
+
+.screen-path {
+  display: inline-block;
+  padding: 0.1rem 0.4rem;
+  font-family: var(--vp-font-family-mono, monospace);
+  font-size: 0.85em;
+  background: var(--vp-c-default-soft);
+  color: var(--vp-c-text-1);
+  border-radius: 4px;
+}

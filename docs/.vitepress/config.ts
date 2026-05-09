@@ -3,22 +3,20 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: 'Yatra Documentation',
   description:
-    'Complete documentation for Yatra WordPress travel booking plugin',
+    'Official documentation for the Yatra WordPress travel booking plugin (Free + Pro).',
   lang: 'en-US',
 
-  // SEO and Meta
+  // SEO and meta
   head: [
     [
       'meta',
       {
         name: 'keywords',
         content:
-          'Yatra, WordPress, travel booking, hotel booking, tour booking, documentation'
+          'Yatra, WordPress, travel booking, tour operator, trip booking, Yatra Pro, MantraBrain'
       }
     ],
-
     ['meta', { name: 'author', content: 'MantraBrain' }],
-
     [
       'meta',
       {
@@ -26,11 +24,8 @@ export default defineConfig({
         content: 'width=device-width, initial-scale=1.0'
       }
     ],
-
-    ['meta', { name: 'theme-color', content: '#0073aa' }],
-
+    ['meta', { name: 'theme-color', content: '#2563eb' }],
     ['link', { rel: 'icon', href: '/favicon.ico' }],
-
     [
       'link',
       {
@@ -38,37 +33,20 @@ export default defineConfig({
         href: '/apple-touch-icon.png'
       }
     ],
-
     ['link', { rel: 'manifest', href: '/site.webmanifest' }],
 
     // Open Graph
     ['meta', { property: 'og:type', content: 'website' }],
-
-    [
-      'meta',
-      {
-        property: 'og:url',
-        content: 'https://docs.wpyatra.com'
-      }
-    ],
-
-    [
-      'meta',
-      {
-        property: 'og:title',
-        content: 'Yatra Documentation'
-      }
-    ],
-
+    ['meta', { property: 'og:url', content: 'https://docs.wpyatra.com' }],
+    ['meta', { property: 'og:title', content: 'Yatra Documentation' }],
     [
       'meta',
       {
         property: 'og:description',
         content:
-          'Complete documentation for Yatra WordPress travel booking plugin'
+          'Official documentation for the Yatra WordPress travel booking plugin (Free + Pro).'
       }
     ],
-
     [
       'meta',
       {
@@ -79,24 +57,15 @@ export default defineConfig({
 
     // Twitter
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
-
-    [
-      'meta',
-      {
-        name: 'twitter:title',
-        content: 'Yatra Documentation'
-      }
-    ],
-
+    ['meta', { name: 'twitter:title', content: 'Yatra Documentation' }],
     [
       'meta',
       {
         name: 'twitter:description',
         content:
-          'Complete documentation for Yatra WordPress travel booking plugin'
+          'Official documentation for the Yatra WordPress travel booking plugin (Free + Pro).'
       }
     ],
-
     [
       'meta',
       {
@@ -114,7 +83,7 @@ export default defineConfig({
         '@type': 'WebSite',
         name: 'Yatra Documentation',
         description:
-          'Complete documentation for Yatra WordPress travel booking plugin',
+          'Official documentation for the Yatra WordPress travel booking plugin (Free + Pro).',
         url: 'https://docs.wpyatra.com',
         potentialAction: {
           '@type': 'SearchAction',
@@ -126,146 +95,152 @@ export default defineConfig({
     ]
   ],
 
-  // Theme Configuration
+  // Theme configuration
+  cleanUrls: true,
+
   themeConfig: {
-    logo: '/logo.png',
+    logo: '/logo.svg',
+    siteTitle: 'Yatra Docs',
 
     nav: [
+      { text: 'Home', link: '/' },
       {
         text: 'Guide',
-        link: '/guide/installation'
+        items: [
+          {
+            text: 'Get started',
+            items: [
+              { text: 'Installation', link: '/installation' },
+              { text: 'Quick start', link: '/quick-start' },
+              { text: 'Your WordPress admin', link: '/admin-dashboard' }
+            ]
+          },
+          {
+            text: 'Operate',
+            items: [
+              { text: 'Trips & catalog', link: '/tour-booking' },
+              {
+                text: 'Departures & availability',
+                link: '/departures'
+              },
+              {
+                text: 'Bookings & customers',
+                link: '/booking-settings'
+              },
+              { text: 'Payments', link: '/payment-settings' },
+              { text: 'Email', link: '/email-settings' }
+            ]
+          },
+          {
+            text: 'Integrate',
+            items: [
+              { text: 'Pro modules overview', link: '/third-party-integrations' },
+              { text: 'All modules', link: '/modules' },
+              {
+                text: 'Blocks & page builders',
+                link: '/elementor-integration'
+              },
+              {
+                text: 'WooCommerce co-existence',
+                link: '/woocommerce-integration'
+              }
+            ]
+          }
+        ]
       },
-
       {
-        text: 'API',
-        link: '/guide/api-reference'
+        text: 'Reference',
+        items: [
+          { text: 'Shortcodes', link: '/shortcodes' },
+          { text: 'Hooks & filters', link: '/hooks-filters' },
+          { text: 'REST API', link: '/api-reference' }
+        ]
       },
-
       {
-        text: 'Support',
-        link: '/guide/support'
+        text: 'Help',
+        items: [
+          { text: 'FAQs', link: '/faqs' },
+          { text: 'Troubleshooting', link: '/troubleshooting' },
+          { text: 'PayPal: "things don\'t appear to be working"', link: '/paypal-troubleshooting' },
+          { text: '403 Forbidden error', link: '/forbidden-error' },
+          { text: 'Changelog', link: '/changelog' },
+          { text: 'Support', link: '/support' }
+        ]
+      },
+      {
+        text: 'Yatra Pro',
+        link: 'https://wpyatra.com/pricing/',
+        target: '_blank',
+        rel: 'noopener'
+      },
+      {
+        text: 'wpyatra.com',
+        link: 'https://wpyatra.com/',
+        target: '_blank'
       }
     ],
 
+    // Single sidebar shared across the home page and every guide page
     sidebar: [
       {
-        text: 'Getting Started',
-
+        text: 'Get started',
+        collapsed: false,
         items: [
+          { text: 'Home', link: '/' },
+          { text: 'Installation', link: '/installation' },
+          { text: 'Quick start (setup wizard)', link: '/quick-start' },
+          { text: 'Your WordPress admin', link: '/admin-dashboard' }
+        ]
+      },
+      {
+        text: 'Operate',
+        collapsed: false,
+        items: [
+          { text: 'Trips & catalog', link: '/tour-booking' },
           {
-            text: 'Installation',
-            link: '/guide/installation'
+            text: 'Departures & availability',
+            link: '/departures'
           },
-
+          { text: 'Bookings & customers', link: '/booking-settings' },
+          { text: 'Payments', link: '/payment-settings' },
+          { text: 'Email & notifications', link: '/email-settings' }
+        ]
+      },
+      {
+        text: 'Integrate',
+        collapsed: false,
+        items: [
+          { text: 'Pro modules overview', link: '/third-party-integrations' },
+          { text: 'All modules', link: '/modules' },
           {
-            text: 'Quick Start',
-            link: '/guide/quick-start'
+            text: 'Blocks & page builders',
+            link: '/elementor-integration'
+          },
+          {
+            text: 'WooCommerce & co-existence',
+            link: '/woocommerce-integration'
           }
         ]
       },
-
       {
-        text: 'Configuration',
-
+        text: 'Reference',
+        collapsed: false,
         items: [
-          {
-            text: 'Booking Settings',
-            link: '/guide/booking-settings'
-          },
-
-          {
-            text: 'Payment Settings',
-            link: '/guide/payment-settings'
-          },
-
-          {
-            text: 'Email Settings',
-            link: '/guide/email-settings'
-          }
+          { text: 'Shortcodes', link: '/shortcodes' },
+          { text: 'Hooks & filters', link: '/hooks-filters' },
+          { text: 'REST API', link: '/api-reference' }
         ]
       },
-
       {
-        text: 'Tour Booking',
-
+        text: 'Help',
+        collapsed: false,
         items: [
-          {
-            text: 'Tour Booking',
-            link: '/guide/tour-booking'
-          },
-
-          {
-            text: 'Hotel Booking',
-            link: '/guide/hotel-booking'
-          }
-        ]
-      },
-
-      {
-        text: 'Integrations',
-
-        items: [
-          {
-            text: 'WooCommerce',
-            link: '/guide/woocommerce-integration'
-          },
-
-          {
-            text: 'Elementor',
-            link: '/guide/elementor-integration'
-          },
-
-          {
-            text: 'Third-party',
-            link: '/guide/third-party-integrations'
-          }
-        ]
-      },
-
-      {
-        text: 'Development',
-
-        items: [
-          {
-            text: 'Shortcodes',
-            link: '/guide/shortcodes'
-          },
-
-          {
-            text: 'Hooks & Filters',
-            link: '/guide/hooks-filters'
-          },
-
-          {
-            text: 'API Reference',
-            link: '/guide/api-reference'
-          }
-        ]
-      },
-
-      {
-        text: 'Support',
-
-        items: [
-          {
-            text: 'FAQs',
-            link: '/guide/faqs'
-          },
-
-          {
-            text: 'Troubleshooting',
-            link: '/guide/troubleshooting'
-          },
-
-          {
-            text: 'Changelog',
-            link: '/guide/changelog'
-          },
-
-          {
-            text: 'Support',
-            link: '/guide/support'
-          }
+          { text: 'FAQs', link: '/faqs' },
+          { text: 'Troubleshooting', link: '/troubleshooting' },
+          { text: 'PayPal: "things don\'t appear to be working"', link: '/paypal-troubleshooting' },
+          { text: '403 Forbidden error', link: '/forbidden-error' },
+          { text: 'Changelog', link: '/changelog' },
+          { text: 'Support', link: '/support' }
         ]
       }
     ],
@@ -273,24 +248,24 @@ export default defineConfig({
     socialLinks: [
       {
         icon: 'github',
-        link: 'https://github.com/mantrabrain'
+        link: 'https://github.com/MantraBrain/yatra'
       }
     ],
 
     footer: {
-      message: 'Built with ❤️ by MantraBrain',
-      copyright: 'Copyright © 2026 MantraBrain'
+      message:
+        '© MantraBrain · GPLv2+ · <a href="https://wpyatra.com/pricing/" target="_blank" rel="noopener"><strong>Yatra Pro</strong> — pricing</a>',
+      copyright: `Copyright © ${new Date().getFullYear()} MantraBrain`
     },
 
     editLink: {
       pattern:
-        'https://github.com/mantrabrain/yatra-docs/edit/main/docs/:path',
+        'https://github.com/MantraBrain/yatra-docs/edit/main/docs/:path',
       text: 'Edit this page on GitHub'
     },
 
     lastUpdated: {
       text: 'Last updated',
-
       formatOptions: {
         dateStyle: 'short',
         timeStyle: 'medium'
@@ -307,118 +282,61 @@ export default defineConfig({
     },
 
     docFooter: {
-      prev: 'Previous page',
-      next: 'Next page'
+      prev: 'Previous',
+      next: 'Next'
     }
   },
 
   // Markdown
   markdown: {
-    lineNumbers: true,
-
+    lineNumbers: false,
     theme: {
       light: 'github-light',
       dark: 'github-dark'
-    },
-
-    config: (md) => {
-      // Custom markdown plugins can be added here
     }
   },
 
-  // Vite Config
+  // Vite config
   vite: {
     define: {
       __VUE_OPTIONS_API__: false
     },
-
     server: {
       host: true
     },
-
     build: {
       minify: 'esbuild',
-
       chunkSizeWarningLimit: 1000
     },
-
     optimizeDeps: {
       exclude: ['vitepress']
     }
   },
 
-  
-  
-  // Ignore dead links for missing documentation pages
+  // Tolerate cross-page links to pages that may not yet exist
   ignoreDeadLinks: true,
 
-  // Clean URLs to remove .html extensions
-  cleanUrls: true,
-
-  // Sitemap
   sitemap: {
     hostname: 'https://docs.wpyatra.com'
   },
 
-  // Dynamic SEO
+  // Dynamic SEO per page
   transformHead: ({ pageData }) => {
     const description =
       pageData.frontmatter?.description ||
-      'Complete documentation for Yatra WordPress travel booking plugin'
+      'Official documentation for the Yatra WordPress travel booking plugin (Free + Pro).'
 
     const title = pageData.title
       ? `${pageData.title} | Yatra Documentation`
       : 'Yatra Documentation'
 
     return [
-      [
-        'meta',
-        {
-          name: 'description',
-          content: description
-        }
-      ],
-
-      [
-        'meta',
-        {
-          property: 'og:title',
-          content: title
-        }
-      ],
-
-      [
-        'meta',
-        {
-          property: 'og:description',
-          content: description
-        }
-      ],
-
-      [
-        'meta',
-        {
-          property: 'og:type',
-          content: 'article'
-        }
-      ],
-
-      [
-        'meta',
-        {
-          name: 'twitter:title',
-          content: title
-        }
-      ],
-
-      [
-        'meta',
-        {
-          name: 'twitter:description',
-          content: description
-        }
-      ],
-
+      ['meta', { name: 'description', content: description }],
+      ['meta', { property: 'og:title', content: title }],
+      ['meta', { property: 'og:description', content: description }],
+      ['meta', { property: 'og:type', content: 'article' }],
+      ['meta', { name: 'twitter:title', content: title }],
+      ['meta', { name: 'twitter:description', content: description }],
       [
         'link',
         {
@@ -428,43 +346,6 @@ export default defineConfig({
             ''
           )}`
         }
-      ],
-
-      [
-        'script',
-        {
-          type: 'application/ld+json'
-        },
-
-        JSON.stringify({
-          '@context': 'https://schema.org',
-          '@type': 'TechArticle',
-
-          headline: title,
-
-          description: description,
-
-          author: {
-            '@type': 'Organization',
-            name: 'MantraBrain'
-          },
-
-          publisher: {
-            '@type': 'Organization',
-            name: 'MantraBrain',
-
-            logo: {
-              '@type': 'ImageObject',
-              url: 'https://docs.wpyatra.com/logo.svg'
-            }
-          },
-
-          datePublished:
-            pageData.frontmatter?.date ||
-            new Date().toISOString(),
-
-          dateModified: new Date().toISOString()
-        })
       ]
     ]
   }

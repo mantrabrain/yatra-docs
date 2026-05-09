@@ -10,14 +10,25 @@ Disallow: /api/
 Disallow: /.vitepress/
 
 # Allow search engines to index documentation
-Allow: /guide/
-Allow: /guide/
-Allow: /guide/booking-settings
-Allow: /guide/payment-settings
-Allow: /guide/tour-booking
-Allow: /guide/hotel-booking
-Allow: /guide/woocommerce-integration
-Allow: /guide/elementor-integration
-Allow: /guide/faqs
-Allow: /guide/troubleshooting
-Allow: /guide/changelog
+Allow: /
+Allow: /installation
+Allow: /quick-start
+Allow: /admin-dashboard
+Allow: /tour-booking
+Allow: /departures
+Allow: /booking-settings
+Allow: /payment-settings
+Allow: /email-settings
+Allow: /third-party-integrations
+Allow: /modules
+Allow: /shortcodes
+Allow: /hooks-filters
+Allow: /api-reference
+Allow: /elementor-integration
+Allow: /woocommerce-integration
+Allow: /faqs
+Allow: /troubleshooting
+Allow: /paypal-troubleshooting
+Allow: /forbidden-error
+Allow: /changelog
+Allow: /support
