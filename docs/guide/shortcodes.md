@@ -1,8 +1,6 @@
 ---
 title: Shortcodes
-description: Complete guide to Yatra shortcodes for displaying tours, hotels, and booking forms
-prev: /guide/third-party-integrations
-next: /guide/hooks-filters
+description: Complete shortcode reference for Yatra
 ---
 
 # Shortcodes

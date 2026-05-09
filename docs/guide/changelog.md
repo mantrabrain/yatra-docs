@@ -1,8 +1,6 @@
 ---
 title: Changelog
 description: Version history and updates for Yatra WordPress travel booking plugin
-prev: /guide/troubleshooting
-next: /guide/support
 ---
 
 # Changelog

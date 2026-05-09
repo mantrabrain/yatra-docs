@@ -1,8 +1,6 @@
 ---
 title: Elementor Integration
-description: Complete guide to integrating Yatra with Elementor page builder
-prev: /guide/woocommerce-integration
-next: /guide/third-party-integrations
+description: Integrate Yatra with Elementor page builder
 ---
 
 # Elementor Integration

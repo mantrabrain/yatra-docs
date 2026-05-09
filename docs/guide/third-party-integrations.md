@@ -1,8 +1,6 @@
 ---
 title: Third-party Integrations
-description: Complete guide to integrating Yatra with third-party plugins and services
-prev: /guide/elementor-integration
-next: /guide/shortcodes
+description: Comprehensive guide to third-party plugin integrations
 ---
 
 # Third-party Integrations

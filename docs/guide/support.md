@@ -1,8 +1,6 @@
 ---
 title: Support
 description: Get help and support for Yatra WordPress travel booking plugin
-prev: /guide/changelog
-next: false
 ---
 
 # Support

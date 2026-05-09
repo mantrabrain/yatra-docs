@@ -1,8 +1,6 @@
 ---
 title: Troubleshooting
-description: Common issues and solutions for Yatra WordPress travel booking plugin
-prev: /guide/faqs
-next: /guide/changelog
+description: Common issues and solutions for Yatra
 ---
 
 # Troubleshooting

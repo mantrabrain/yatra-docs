@@ -1,8 +1,6 @@
 ---
 title: Quick Start
-description: Get your travel booking site up and running in minutes with Yatra
-prev: /guide/installation
-next: /guide/booking-settings
+description: Get started with Yatra quickly
 ---
 
 # Quick Start Guide

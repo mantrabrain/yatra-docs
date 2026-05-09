@@ -1,8 +1,6 @@
 ---
 title: WooCommerce Integration
-description: Complete guide to integrating Yatra with WooCommerce e-commerce platform
-prev: /guide/hotel-booking
-next: /guide/elementor-integration
+description: Integrate Yatra with WooCommerce for enhanced e-commerce
 ---
 
 # WooCommerce Integration

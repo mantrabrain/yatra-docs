@@ -1,8 +1,6 @@
 ---
 title: Tour Booking
-description: Complete guide to creating and managing tours in Yatra
-prev: /guide/payment-settings
-next: /guide/hotel-booking
+description: Complete tour booking system with advanced features
 ---
 
 # Tour Booking

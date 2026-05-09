@@ -1,8 +1,6 @@
 ---
 title: Installation
-description: Step-by-step guide to install and set up Yatra WordPress travel booking plugin
-prev: false
-next: /guide/quick-start
+description: Complete installation guide for Yatra WordPress plugin
 ---
 
 # Installation

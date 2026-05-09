@@ -1,8 +1,6 @@
 ---
 title: FAQs
 description: Frequently asked questions about Yatra WordPress travel booking plugin
-prev: /guide/api-reference
-next: /guide/troubleshooting
 ---
 
 # Frequently Asked Questions

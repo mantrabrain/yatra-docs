@@ -1,8 +1,6 @@
 ---
 title: Payment Settings
-description: Configure payment gateways, pricing, and payment processing in Yatra
-prev: /guide/booking-settings
-next: /guide/tour-booking
+description: Configure payment gateways and processing
 ---
 
 # Payment Settings

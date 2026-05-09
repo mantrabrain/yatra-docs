@@ -4,13 +4,13 @@
   "description": "Modern documentation website for Yatra WordPress travel booking plugin",
   "type": "module",
   "scripts": {
-    "dev": "vitepress dev",
-    "build": "vitepress build",
-    "preview": "vitepress preview",
-    "serve": "vitepress serve"
+    "dev": "vitepress dev docs",
+    "build": "vitepress build docs",
+    "preview": "vitepress preview docs",
+    "serve": "vitepress preview docs"
   },
   "dependencies": {
-    "vitepress": "^1.0.0-rc.31"
+    "vitepress": "^1.0.0-rc.40"
   },
   "devDependencies": {
     "@vue/theme": "^2.2.0",

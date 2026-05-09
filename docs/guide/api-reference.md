@@ -1,8 +1,6 @@
 ---
 title: API Reference
-description: Complete API reference for Yatra developers
-prev: /guide/hooks-filters
-next: /guide/faqs
+description: Complete REST API documentation for Yatra
 ---
 
 # API Reference

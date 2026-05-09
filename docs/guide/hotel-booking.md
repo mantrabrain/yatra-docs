@@ -1,8 +1,6 @@
 ---
 title: Hotel Booking
-description: Complete guide to hotel and accommodation booking in Yatra
-prev: /guide/tour-booking
-next: /guide/woocommerce-integration
+description: Complete hotel booking system with room management
 ---
 
 # Hotel Booking

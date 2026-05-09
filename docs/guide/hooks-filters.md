@@ -1,8 +1,6 @@
 ---
 title: Hooks & Filters
-description: Complete guide to Yatra hooks and filters for developers
-prev: /guide/shortcodes
-next: /guide/api-reference
+description: Complete hooks and filters reference for Yatra
 ---
 
 # Hooks & Filters

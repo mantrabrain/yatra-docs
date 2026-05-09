@@ -1,8 +1,6 @@
 ---
 title: Booking Settings
-description: Configure booking options, availability, and reservation settings in Yatra
-prev: /guide/quick-start
-next: /guide/payment-settings
+description: Configure booking settings and options
 ---
 
 # Booking Settings
