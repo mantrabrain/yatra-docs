@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://docs.wpyatra.com/sitemap.xml
+
+# Block crawlers from admin areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /.vitepress/
+
+# Allow search engines to index documentation
+Allow: /guide/
+Allow: /guide/
+Allow: /guide/booking-settings
+Allow: /guide/payment-settings
+Allow: /guide/tour-booking
+Allow: /guide/hotel-booking
+Allow: /guide/woocommerce-integration
+Allow: /guide/elementor-integration
+Allow: /guide/faqs
+Allow: /guide/troubleshooting
+Allow: /guide/changelog

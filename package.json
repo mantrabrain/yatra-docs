@@ -1,0 +1,38 @@
+{
+  "name": "yatra-docs",
+  "version": "1.0.0",
+  "description": "Modern documentation website for Yatra WordPress travel booking plugin",
+  "type": "module",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview",
+    "serve": "vitepress serve"
+  },
+  "dependencies": {
+    "vitepress": "^1.0.0-rc.31"
+  },
+  "devDependencies": {
+    "@vue/theme": "^2.2.0",
+    "flexsearch": "^0.7.43",
+    "markdown-it": "^14.0.0",
+    "vue": "^3.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "yatra",
+    "wordpress",
+    "travel",
+    "booking",
+    "documentation",
+    "vitepress"
+  ],
+  "author": "MantraBrain",
+  "license": "GPL-2.0+",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mantrabrain/yatra.git"
+  }
+}
