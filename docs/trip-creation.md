@@ -15,7 +15,7 @@ This page is the **practical walkthrough** for building a trip from scratch usin
 
 > Looking for the field-level reference instead? See [Trips & catalog](/tour-booking) for an exhaustive list of every option.
 
-## Watch it end-to-end (~50 seconds)
+## Watch it end-to-end (~56 seconds, narrated)
 
 <figure class="video-figure">
   <video
@@ -29,7 +29,7 @@ This page is the **practical walkthrough** for building a trip from scratch usin
     Sorry — your browser doesn't support embedded video. <a href="/videos/trip-creation.mp4">Download the MP4</a>.
   </video>
   <figcaption style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--vp-c-text-2); text-align: center;">
-    Recorded headlessly against a live wp-admin: open the Trip Builder, click <em>Fill Dummy Data</em>, walk through every section, and save the draft.
+    Recorded headlessly against a live wp-admin: open the Trip Builder, click <em>Fill Dummy Data</em>, walk through every section, and save the draft. <strong>English narration</strong> over a quiet ambient pad — turn your sound on. (TTS voiceover; we'll swap to a human VO when ready.)
   </figcaption>
 </figure>
 
