@@ -11,6 +11,8 @@ next:
 
 # Settings overview
 
+![Yatra Settings landing page — left tab list and General section open](/screenshots/settings/general.webp)
+
 The Settings screen at <span class="screen-path">Yatra → Settings</span> is one screen with 13 tabs. This page tells you **what each tab is for**, lists the controls inside it, and points you at the deeper docs (booking, payment, email) when there's a dedicated page.
 
 ::: tip Where Yatra stores settings
@@ -31,6 +33,8 @@ Saving settings requires the WordPress `manage_options` capability. The REST end
 
 ## 1. General
 
+![General settings tab — company information and regional formatting](/screenshots/settings/general.webp)
+
 Company identity and site-wide formatting.
 
 | Control                 | Setting key                  | Default     | Notes                                                              |
@@ -45,6 +49,8 @@ Company identity and site-wide formatting.
 
 ## 2. Design
 
+![Design settings tab — primary brand color picker and container max width](/screenshots/settings/design.webp)
+
 Front-end appearance — what your customers see on trip and booking pages.
 
 | Control                  | Setting key                       | Default     | Notes                                                       |
@@ -53,6 +59,8 @@ Front-end appearance — what your customers see on trip and booking pages.
 | Container max width      | `frontend_container_max_width`    | (empty)     | Optional CSS length (`1200px`, `72rem`, `min(100%,80rem)`). Empty = inherit your block theme `theme.json` / theme content width. |
 
 ## 3. Booking
+
+![Booking settings tab — checkout behaviour, expiry, cancellation, waitlist controls](/screenshots/settings/booking.webp)
 
 Day-to-day checkout behaviour. **For the full operator guide, see [Bookings & customers](/booking-settings).**
 
@@ -75,6 +83,8 @@ Day-to-day checkout behaviour. **For the full operator guide, see [Bookings & cu
 
 ## 4. Booking Form
 
+![Booking Form builder tab — drag-and-drop fields with type, width, and required toggles](/screenshots/settings/booking_form.webp)
+
 A drag-and-drop builder for the **Lead Traveler / Contact Information**, **Emergency Contact**, and **Per-Traveler** form sections of the checkout.
 
 - The configuration is stored as one JSON blob in `booking_form_config`.
@@ -87,6 +97,8 @@ For per-trip overrides (e.g. a "Dietary requirements" question only on Food Tour
 :::
 
 ## 5. Payment
+
+![Payment settings tab — flexible payments, scheduled balance, gateway list with test mode](/screenshots/settings/payment.webp)
 
 Currency basics, gateway selection, and deposit / partial-payment behaviour. **Full guide: [Payments](/payment-settings).**
 
@@ -109,6 +121,8 @@ The `POST /payment/create-intent` endpoint **ignores** any client-supplied `amou
 
 ## 6. Customer
 
+![Customer settings tab — registration, account page, wishlist, email verification](/screenshots/settings/customer.webp)
+
 Account behaviour on the customer-facing site.
 
 | Control                         | Setting key                          | Default       | Notes                                                       |
@@ -119,6 +133,8 @@ Account behaviour on the customer-facing site.
 | Require Email Verification      | `require_email_verification`         | `false`       | Customers must click the verification link before account activation. |
 
 ## 7. Review
+
+![Review settings tab — enable reviews, require booking, moderation, minimum rating, reminder days](/screenshots/settings/review.webp)
 
 Trip-review form behaviour.
 
@@ -133,6 +149,8 @@ Trip-review form behaviour.
 
 ## 8. Tax
 
+![Tax settings tab — multiple-taxes editor, inclusive pricing, VAT number](/screenshots/settings/tax.webp)
+
 | Control                       | Setting key                        | Default | Notes                                                                              |
 | ---                           | ---                                | ---     | ---                                                                                |
 | Enable Tax                    | `enable_tax`                       | `false` | Master toggle. The remaining controls only appear when this is on.                |
@@ -145,6 +163,8 @@ The schema supports per-country tax bands (`multiple_taxes_by_country`) for site
 :::
 
 ## 9. Currency
+
+![Currency settings tab — default currency, position, separators, decimal places, enabled currencies](/screenshots/settings/currency.webp)
 
 Display formatting for monetary values across the site.
 
@@ -159,6 +179,8 @@ Display formatting for monetary values across the site.
 
 ## 10. Integration
 
+![Integration settings tab — third-party module toggles populated by active Pro modules](/screenshots/settings/integration.webp)
+
 Toggles for built-in third-party integrations. The contents here change based on which Pro modules you have active. Common ones:
 
 - **Google Calendar** — when the Pro Google Calendar module is on, this section exposes the OAuth credentials, calendar ID, and sync direction. See [Modules → Google Calendar](/modules#google-calendar).
@@ -167,6 +189,8 @@ Toggles for built-in third-party integrations. The contents here change based on
 For a full list of integrations and their setup guides, see [Pro modules overview](/third-party-integrations).
 
 ## 11. Permalink
+
+![Permalink settings tab — URL slugs for trips, destinations, activities, categories with live preview](/screenshots/settings/permalink.webp)
 
 URL slugs for Yatra's content types. Changing any of these requires a **rewrite-rule flush** — Yatra triggers it automatically on save, but if you ever see 404s, visit <span class="screen-path">Settings → Permalinks</span> in WP-admin and click *Save* to force a flush.
 
@@ -187,6 +211,8 @@ The whole permalink set passes through the `yatra_permalink_bases` filter — us
 
 ## 12. SEO
 
+![SEO settings tab — meta title, description, keywords, and image picker for the trip archive](/screenshots/settings/seo.webp)
+
 Meta tags for the trip archive page (`/{trip_base}/`).
 
 | Control                      | Setting key                   | Notes                                                                  |
@@ -201,6 +227,8 @@ Those plugins emit their own `<title>` and meta tags for the archive page and ov
 :::
 
 ## 13. Advanced
+
+![Advanced settings tab — logging, debug mode, cache toggle, legal pages, telemetry opt-in](/screenshots/settings/advanced.webp)
 
 Diagnostics, caching, legal-page wiring, and telemetry.
 
