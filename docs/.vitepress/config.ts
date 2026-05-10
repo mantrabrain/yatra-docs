@@ -112,7 +112,8 @@ export default defineConfig({
             items: [
               { text: 'Installation', link: '/installation' },
               { text: 'Quick start', link: '/quick-start' },
-              { text: 'Your WordPress admin', link: '/admin-dashboard' }
+              { text: 'Your WordPress admin', link: '/admin-dashboard' },
+              { text: 'Settings overview', link: '/settings' }
             ]
           },
           {
@@ -189,7 +190,8 @@ export default defineConfig({
           { text: 'Home', link: '/' },
           { text: 'Installation', link: '/installation' },
           { text: 'Quick start (setup wizard)', link: '/quick-start' },
-          { text: 'Your WordPress admin', link: '/admin-dashboard' }
+          { text: 'Your WordPress admin', link: '/admin-dashboard' },
+          { text: 'Settings overview', link: '/settings' }
         ]
       },
       {
