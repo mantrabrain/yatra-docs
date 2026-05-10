@@ -5,6 +5,8 @@ description: A flat, scannable catalog of every Yatra Pro module — premium gat
 
 # All modules
 
+![Modules admin — every Pro module as a card with on/off toggle](/screenshots/dashboard/dashboard-modules.webp)
+
 This is the **flat catalog** — every Yatra Pro module + every premium gateway, on a single page. Use the [Pro modules overview](/third-party-integrations) for grouped, narrative explanations.
 
 > **About the wording:** Yatra calls these **modules** in the admin (<span class="screen-path">Yatra → Modules</span>). Sikshya calls the equivalent thing **add-ons**. They're the same idea — togglable Pro features.

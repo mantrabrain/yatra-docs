@@ -11,6 +11,8 @@ next:
 
 # Your WordPress admin (Yatra)
 
+![Yatra dashboard — left sidebar, KPI cards, bookings overview, popular destinations](/screenshots/dashboard/dashboard.webp)
+
 After you install Yatra, open **WordPress admin → Yatra**. You’ll see a modern app with a **sidebar on the left**. This page matches those labels to our guides so you never wonder “where do I click?”
 
 > **Free vs Pro:** Some sidebar items only appear when **Yatra Pro** is installed, the **license** is active, and the **module** is turned on under **Modules**. In the plugin, Pro items often show a small **Pro** badge—same idea as the gold **Pro** labels in this documentation.

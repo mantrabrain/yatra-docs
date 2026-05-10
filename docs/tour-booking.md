@@ -9,6 +9,8 @@ This page walks you through every screen and field for building a Yatra trip. If
 
 ## The Trips list
 
+![Yatra Trips list — status pills, search, sort, and bookings count column](/screenshots/trips/trips-list.webp)
+
 Open <span class="screen-path">Yatra → Trips → All Trips</span>.
 
 You'll see a table of every trip on your site with:
@@ -180,6 +182,8 @@ Saved trips honor the **status pills** in the Trips list (All, Published, Draft,
 
 ## Destinations, Activities, Categories, Difficulty, Attributes
 
+![Destinations admin — list with add/edit form pattern](/screenshots/trips/destinations.webp)
+
 Each is a list-and-form pair under <span class="screen-path">Yatra → Trips → ...</span>:
 
 - **Destinations** — places. Each has name, slug, image, description.
@@ -191,6 +195,8 @@ Each is a list-and-form pair under <span class="screen-path">Yatra → Trips →
 These all appear as filters on the public catalog and can be reused across trips.
 
 ## Traveler Categories
+
+![Traveler Categories admin — adult / child / infant / senior definitions](/screenshots/trips/traveler-categories.webp)
 
 Open <span class="screen-path">Yatra → Traveler Categories</span> for adult / child / infant / senior definitions. Each has:
 

@@ -194,6 +194,8 @@ Per-trip overrides are available in the trip's **Pricing** section.
 
 ## The Payments admin
 
+![Payments admin — full payment ledger with status / method / sort](/screenshots/payments/payments-list.webp)
+
 Open <span class="screen-path">Yatra → Payments</span>.
 
 You'll see every payment record across all bookings, with:

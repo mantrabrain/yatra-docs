@@ -9,6 +9,8 @@ This page is your operational guide — the day-to-day "where do I click to mana
 
 ## The Bookings list
 
+![Bookings list — KPI cards, filters, search, sortable columns](/screenshots/bookings/bookings-list.webp)
+
 Open <span class="screen-path">Yatra → Bookings</span>.
 
 You'll see a table of every booking with:
@@ -138,6 +140,8 @@ Click **Save** to persist. The customer doesn't get an automatic email — use t
 
 ## Customers
 
+![Customers list — booking history and lifetime spend per customer](/screenshots/bookings/customers.webp)
+
 Open <span class="screen-path">Yatra → Customers</span>.
 
 This is the list of every customer who has ever booked or registered:
@@ -168,6 +172,8 @@ If guest checkout is **off**, customers must register or log in before booking.
 
 ## Enquiries
 
+![Enquiries inbox — pipeline view, status filters, response status](/screenshots/bookings/enquiries.webp)
+
 Open <span class="screen-path">Yatra → Enquiries</span> for the enquiry pipeline.
 
 Customers submit enquiries from the **Make an Enquiry** modal on the trip page. Each enquiry has:
@@ -182,6 +188,8 @@ Click an enquiry to view, reply, or convert it to a booking. Yatra fires the `ya
 
 ## Reviews
 
+![Reviews moderation queue — pending, approved, spam](/screenshots/bookings/reviews.webp)
+
 Open <span class="screen-path">Yatra → Reviews</span>.
 
 Reviews are moderated by default. The list has:
@@ -194,6 +202,8 @@ Click any review to read the full body, reply (admin reply), or moderate.
 Per-trip review settings are in <span class="screen-path">Yatra → Settings → Review</span>: enable / disable, allow anonymous, auto-approve threshold, minimum rating to display.
 
 ## Discounts (coupons)
+
+![Discounts admin — coupon list with code, type, value, usage limits](/screenshots/bookings/discounts.webp)
 
 Open <span class="screen-path">Yatra → Discounts</span>.
 

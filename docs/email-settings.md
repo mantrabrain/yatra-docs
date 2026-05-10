@@ -15,6 +15,8 @@ Yatra sends transactional emails at every important moment — booking confirmat
 
 ## The Email hub
 
+![Email hub — Delivery / Templates / Sequences / Logs tabs](/screenshots/email/email.webp)
+
 Open <span class="screen-path">Yatra → Email</span>.
 
 The hub has tabs across the top:

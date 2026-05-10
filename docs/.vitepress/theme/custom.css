@@ -280,3 +280,24 @@
 .vp-markdown-actions__btn {
   font-family: inherit;
 }
+
+/* Lightbox affordance — every doc image is click-to-zoom via medium-zoom. */
+.vp-doc img {
+  cursor: zoom-in;
+  border-radius: 6px;
+  border: 1px solid var(--vp-c-divider);
+  transition:
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+.vp-doc img:hover {
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.12);
+}
+.medium-zoom-overlay,
+.medium-zoom-image--opened {
+  z-index: 1000;
+}
+.medium-zoom-image--opened {
+  cursor: zoom-out;
+  border-radius: 8px;
+}

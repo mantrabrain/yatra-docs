@@ -65,6 +65,8 @@ If you bought a Pro license:
   <li>Open <span class="screen-path">Yatra → Modules</span> and turn on the modules your plan includes.</li>
 </ol>
 
+![License screen — paste key and click Save & activate](/screenshots/dashboard/license.webp)
+
 <div class="ui-tip"><strong>Tip:</strong> Yatra Pro is delivered as a packaged plugin ZIP — no Composer install needed for the standard release flow. If you cloned source from Git, run <code>composer install --no-dev --optimize-autoloader</code> from the <code>yatra-pro</code> folder before activating.</div>
 
 ## Step 3 — Confirm Yatra is healthy

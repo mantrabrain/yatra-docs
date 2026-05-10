@@ -18,6 +18,8 @@ A **departure** is a specific date a trip runs. A **availability rule** is a rec
 
 ## Departures list
 
+![Departures admin — fixed-date and recurring schedules with capacity tracking](/screenshots/departures/departures-list.webp)
+
 Open <span class="screen-path">Yatra → Departures</span>.
 
 Columns: trip, departure date, capacity, booked, available, status (active / archived / cancelled).
@@ -110,6 +112,8 @@ Sometimes you have to cancel a departure (weather, low signups, instructor unava
 Departures inherit traveler-category pricing from the trip. To configure adult / child / infant / senior labels and pricing, see <span class="screen-path">Yatra → Traveler Categories</span>.
 
 ## Travelers list
+
+![Travelers list — roster view across all bookings, filterable by trip and date](/screenshots/departures/travelers.webp)
 
 Open <span class="screen-path">Yatra → Travelers</span> for a roster-style view of every traveler across all bookings. Useful for departure manifests:
 
