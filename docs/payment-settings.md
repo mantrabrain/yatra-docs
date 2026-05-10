@@ -71,7 +71,7 @@ Full webhook support, scheduled payments. Requires PayPal developer credentials.
 
 <ol class="step-list">
   <li>In your PayPal developer dashboard, create an app and copy <strong>Client ID</strong> and <strong>Secret</strong>.</li>
-  <li>Set up a webhook on the PayPal app pointing to <code>https://yoursite.com/wp-json/yatra/v1/webhooks/paypal</code>.</li>
+  <li>Set up a webhook on the PayPal app pointing to <code>https://yoursite.com/wp-json/yatra/v1/payment/webhook/paypal</code>.</li>
   <li>Copy the <strong>Webhook ID</strong>.</li>
   <li>In Yatra, set <strong>Mode</strong> to <strong>Advanced (REST)</strong>, paste the three values.</li>
   <li>Save.</li>
@@ -105,18 +105,25 @@ Setup (after activating Pro):
 <ol class="step-list">
   <li>Tick <strong>Enable Stripe</strong>.</li>
   <li>Paste <strong>Publishable key</strong> and <strong>Secret key</strong> from your Stripe dashboard.</li>
-  <li>Create a webhook in Stripe pointing to <code>https://yoursite.com/wp-json/yatra/v1/webhooks/stripe</code>.</li>
+  <li>Create a webhook in Stripe pointing to <code>https://yoursite.com/wp-json/yatra/v1/payment/webhook/stripe</code>.</li>
+  <li>Subscribe at minimum to: <code>payment_intent.succeeded</code>, <code>payment_intent.payment_failed</code>, <code>charge.refunded</code>.</li>
   <li>Copy the webhook signing secret (<code>whsec_...</code>) into <strong>Webhook secret</strong>.</li>
   <li>Tick <strong>Test mode</strong>, save, run a test booking with card <code>4242 4242 4242 4242</code>.</li>
   <li>Switch to live keys and run one tiny live transaction, then refund it via the Stripe dashboard to verify the full loop.</li>
 </ol>
+
+::: tip Webhook secret is required (3.0.4+)
+From Yatra Pro 3.0.4 the Stripe webhook handler **refuses any event that lacks a valid `Stripe-Signature` header**. If you don't set the **Webhook secret**, webhook deliveries are rejected with `success: false` and the booking is updated only via the synchronous return-to-site flow. Set the secret to enable Stripe's reliable retry-driven delivery.
+
+Signature verification is HMAC-SHA256 over `<timestamp>.<raw body>`, with a 5-minute replay window — the same scheme as Stripe's official PHP SDK.
+:::
 
 ## Razorpay <span class="pro-pill">PRO</span>
 
 Popular in India.
 
 - **Key ID** + **Key Secret** from the Razorpay dashboard.
-- Webhook URL: `https://yoursite.com/wp-json/yatra/v1/webhooks/razorpay`.
+- Webhook URL: `https://yoursite.com/wp-json/yatra/v1/payment/webhook/razorpay`.
 - Optional **Webhook secret**.
 
 ## Mollie <span class="pro-pill">PRO</span>
@@ -247,17 +254,35 @@ A safe way to test any gateway:
   <li>Switch to <strong>Live</strong> mode, paste live keys, change the webhook to live mode, and run one small live transaction with a real card. Refund it via the gateway dashboard.</li>
 </ol>
 
+## Payment-flow security model (3.0.4+)
+
+Yatra's payment endpoints enforce three guarantees out of the box. You don't need to configure anything — these run on every checkout — but it's useful to know how they affect testing.
+
+**1. Server-authoritative amounts.** When the React checkout calls `POST /yatra/v1/payment/create-intent` with a `booking_id`, Yatra ignores any `amount` / `currency` in the request body and recomputes them from the stored booking row (`amount_due`, `currency`). A tampered front-end cannot pay $1 for a $1000 trip. If the amounts disagree, Yatra forces the server value and fires the `yatra_payment_amount_mismatch` action so you can wire it to a fraud-monitoring tool.
+
+**2. Booking ownership.** `POST /yatra/v1/payment/confirm` and `GET /yatra/v1/payment/status/{id}` require either:
+
+  - the requester is the registered user who owns the booking, **or**
+  - the requester is an administrator (`manage_options`), **or**
+  - the booking is a guest booking AND the request includes a matching `booking_token` (the short-lived transient set during checkout).
+
+Anonymous reads of arbitrary booking IDs return `401`.
+
+**3. Idempotent payment recording.** Each `(booking_id, transaction_id)` pair can only ever produce one row in the booking-payments table. A duplicate Stripe webhook, a re-clicked confirm button, or a parallel return-to-site + webhook race all collapse to a single payment record and a single confirmation email. Partial / deposit payments correctly accumulate `amount_paid` instead of being force-marked fully paid.
+
+If you write a custom gateway, follow the same pattern by either calling `\Yatra\Repositories\PaymentRepository::findByTransactionId()` before inserting, or by extending `AbstractPaymentGateway::completePayment()`-style helpers that already include the guard.
+
 ## Webhook URLs (cheat sheet)
 
 ```
-https://yoursite.com/wp-json/yatra/v1/webhooks/paypal
-https://yoursite.com/wp-json/yatra/v1/webhooks/paypal-ipn
-https://yoursite.com/wp-json/yatra/v1/webhooks/stripe
-https://yoursite.com/wp-json/yatra/v1/webhooks/razorpay
-https://yoursite.com/wp-json/yatra/v1/webhooks/mollie
-https://yoursite.com/wp-json/yatra/v1/webhooks/paystack
-https://yoursite.com/wp-json/yatra/v1/webhooks/square
-https://yoursite.com/wp-json/yatra/v1/webhooks/authorize-net
+https://yoursite.com/wp-json/yatra/v1/payment/webhook/paypal
+https://yoursite.com/wp-json/yatra/v1/payment/webhook/paypal-ipn
+https://yoursite.com/wp-json/yatra/v1/payment/webhook/stripe
+https://yoursite.com/wp-json/yatra/v1/payment/webhook/razorpay
+https://yoursite.com/wp-json/yatra/v1/payment/webhook/mollie
+https://yoursite.com/wp-json/yatra/v1/payment/webhook/paystack
+https://yoursite.com/wp-json/yatra/v1/payment/webhook/square
+https://yoursite.com/wp-json/yatra/v1/payment/webhook/authorize-net
 ```
 
 ## What's next

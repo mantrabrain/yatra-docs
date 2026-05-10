@@ -85,6 +85,20 @@ The implementation lives in `app/Services/CalculationService.php`. Each filter r
 | `yatra_paypal_payment_completed`           | action  | PayPal-specific success                                  |
 | `yatra_paypal_payment_refunded`            | action  | PayPal-specific refund                                   |
 | `yatra_paypal_payment_token_saved`         | action  | PayPal Advanced vault                                    |
+| `yatra_payment_amount_mismatch`            | action  | (3.0.4+) Fires when a client-supplied amount in `POST /payment/create-intent` disagreed with the server's `booking.amount_due`. Args: `($booking_id, $client_amount, $server_amount)`. The transaction itself is forced to the server amount; this hook exists for fraud-monitoring integrations. |
+| `yatra_pdf_remote_enabled`                 | filter  | (3.0.4+) Enable / disable dompdf remote image loading. Default `true` so PDFs can render the site logo and trip images. Return `false` to lock the PDF generator down to ABSPATH only (recommended if your invoices never contain external images). |
+| `yatra_pro_writable_settings_schema`       | filter  | (3.0.4+) Pro-only. Receives `key => sanitizer-callable` map of settings keys the `POST /yatra/v1/settings` REST endpoint is allowed to write. Modules can register their own keys here; anything not in this map is silently rejected by the endpoint. |
+| `yatra_pass_gateway_ids_for_scheduled_payments` | filter | Whether to forward the gateway's customer / payment-method IDs into the scheduled-payments pipeline even when `save_card` was off. Useful for gateways that auto-vault. |
+
+### Stripe-specific actions (Pro)
+
+Fired only when the verified Stripe webhook handler dispatches a known event. Verification is HMAC-SHA256 against the configured `webhook_secret` with a 5-minute replay window — handlers attached here only ever see real, signed Stripe events.
+
+| Hook                                       | Type    | Purpose                                                  |
+| ---                                        | ---     | ---                                                      |
+| `yatra_stripe_payment_succeeded`           | action  | (3.0.4+) `payment_intent.succeeded`. Receives the full PaymentIntent object as an array. |
+| `yatra_stripe_payment_failed`              | action  | (3.0.4+) `payment_intent.payment_failed`. Args: PaymentIntent object as array. |
+| `yatra_stripe_charge_refunded`             | action  | (3.0.4+) `charge.refunded`. Args: Charge object as array. |
 
 ### Adding a custom gateway
 

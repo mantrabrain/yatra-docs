@@ -44,6 +44,19 @@ curl -u "umesh:xxxx xxxx xxxx xxxx xxxx xxxx" \
 
 If your custom integration needs a narrower permission, you can register custom capabilities and filter `yatra_module_capabilities`.
 
+### Public payment endpoints with inline authorization (3.0.4+)
+
+A handful of payment routes use `__return_true` as their permission callback so guest checkout works, **but enforce authorization inline**. They are not freely accessible:
+
+| Endpoint                          | Inline check                                                                                              |
+| ---                               | ---                                                                                                       |
+| `POST /payment/create-intent`     | If `booking_id` is supplied: must be the booking owner (or admin); guest bookings are accepted. Server recomputes amount from the booking row. |
+| `POST /payment/confirm`           | Booking owner or admin. Rejects if `transaction_id` is already attached to a different booking. Idempotent on retry. |
+| `GET /payment/status/{booking_id}` | Booking owner, admin, or guest with a matching `booking_token` transient. Anonymous → `401`. |
+| `POST /payment/webhook/{gateway}` | Per-gateway signature verification (HMAC). Stripe enforces 5-min replay tolerance. Without a configured webhook secret, all events are rejected. |
+
+When integrating from a custom front-end, send the WordPress nonce header (`X-WP-Nonce: <nonce>`) so the cookie auth path attaches a logged-in user identity to the request — that's how the "booking owner" check resolves.
+
 ## Response shape
 
 Most endpoints return JSON in this canonical shape:
@@ -162,12 +175,17 @@ These power the React booking form. Public for guests, but some operations requi
 | ---                                               | ---                                                  |
 | `/payments`, `/payments/{id}`                     | Payment-record CRUD                                  |
 | `/payment/gateways`                               | List enabled gateways with their config              |
-| `/payment/create-intent`                          | Create a payment intent (gateway-specific)           |
-| `/payment/confirm`                                | Confirm a payment intent                             |
-| `/payment/refund/{payment_id}`                    | Refund a payment                                     |
-| `/payment/remaining/{token}`                      | Hydrate a remaining-balance checkout                 |
-| `/payment/invoice/{booking_id}`                   | PDF invoice                                          |
-| `/payment/voucher/{booking_id}`                   | PDF voucher                                          |
+| `/payment/gateways/definitions`                   | Admin-only: full gateway field schema                |
+| `/payment/gateways/{id}/config`                   | Admin-only: save a gateway's configuration           |
+| `/payment/create-intent`                          | Create a payment intent (gateway-specific). The `amount` / `currency` in the request body are **ignored** when a `booking_id` is supplied — the server recomputes from the stored booking row to prevent amount tampering. |
+| `/payment/confirm`                                | Confirm a payment intent. Requires booking ownership; idempotent on `(booking_id, transaction_id)`. |
+| `/payment/webhook/{gateway}`                      | Per-gateway webhook receiver. Public route; signature verification happens inside the gateway handler. Stripe enforces `Stripe-Signature` HMAC + 5-min replay window. |
+| `/payment/callback/{gateway}`                     | Per-gateway redirect-return handler                  |
+| `/payment/status/{booking_id}`                    | Latest payment status for a booking. Requires booking owner, admin, or a guest `booking_token`. Returns `401` for anonymous callers. |
+| `/payment/remaining`                              | Logged-in user only: create a payment intent for a booking's remaining balance. Ownership is enforced server-side. |
+| `/payment/remaining/session`                      | Logged-in user only: bootstrap a session for the remaining-balance checkout |
+| `/payment/{payment_id}/invoice`                   | PDF invoice. Auth: admin, booking owner, signed `invoice_token`, or guest with active `booking_token`. |
+| `/payment/{payment_id}/voucher`                   | PDF voucher. Same auth model as invoice. |
 
 ### Customers, reviews, enquiries
 
