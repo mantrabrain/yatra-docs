@@ -120,6 +120,7 @@ export default defineConfig({
             text: 'Operate',
             items: [
               { text: 'Trips & catalog', link: '/tour-booking' },
+              { text: 'Create a trip', link: '/trip-creation' },
               {
                 text: 'Departures & availability',
                 link: '/departures'
@@ -136,7 +137,8 @@ export default defineConfig({
             text: 'Integrate',
             items: [
               { text: 'Pro modules overview', link: '/third-party-integrations' },
-              { text: 'All modules', link: '/modules' },
+              { text: 'All modules (catalog)', link: '/modules' },
+              { text: 'Per-module reference', link: '/modules/' },
               {
                 text: 'Blocks & page builders',
                 link: '/elementor-integration'
@@ -199,6 +201,7 @@ export default defineConfig({
         collapsed: false,
         items: [
           { text: 'Trips & catalog', link: '/tour-booking' },
+          { text: 'Create a trip (walkthrough)', link: '/trip-creation' },
           {
             text: 'Departures & availability',
             link: '/departures'
@@ -213,7 +216,7 @@ export default defineConfig({
         collapsed: false,
         items: [
           { text: 'Pro modules overview', link: '/third-party-integrations' },
-          { text: 'All modules', link: '/modules' },
+          { text: 'All modules (catalog)', link: '/modules' },
           {
             text: 'Blocks & page builders',
             link: '/elementor-integration'
@@ -222,6 +225,27 @@ export default defineConfig({
             text: 'WooCommerce & co-existence',
             link: '/woocommerce-integration'
           }
+        ]
+      },
+      {
+        text: 'Per-module reference',
+        collapsed: true,
+        items: [
+          { text: 'Index', link: '/modules/' },
+          { text: 'Google Calendar', link: '/modules/google-calendar' },
+          { text: 'Additional Services', link: '/modules/additional-services' },
+          { text: 'Trip Consent', link: '/modules/trip-consent' },
+          { text: 'Email Automation', link: '/modules/email-automation' },
+          { text: 'Dynamic Form Field', link: '/modules/dynamic-form-field' },
+          { text: 'Advanced Discount', link: '/modules/advanced-discount' },
+          { text: 'Mailchimp', link: '/modules/mailchimp' },
+          { text: 'Facebook Pixel', link: '/modules/facebook-pixel' },
+          { text: 'Google Analytics', link: '/modules/google-analytics' },
+          { text: 'Flexible Payments', link: '/modules/flexible-payments' },
+          { text: 'Scheduled Payments', link: '/modules/scheduled-payments' },
+          { text: 'Dynamic Pricing', link: '/modules/dynamic-pricing' },
+          { text: 'Abandoned Booking Recovery', link: '/modules/abandoned-booking-recovery' },
+          { text: 'Custom Landing Pages', link: '/modules/custom-landing-pages' }
         ]
       },
       {
