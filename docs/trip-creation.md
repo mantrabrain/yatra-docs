@@ -15,6 +15,26 @@ This page is the **practical walkthrough** for building a trip from scratch usin
 
 > Looking for the field-level reference instead? See [Trips & catalog](/tour-booking) for an exhaustive list of every option.
 
+## Watch it end-to-end (~50 seconds)
+
+<figure class="video-figure">
+  <video
+    controls
+    preload="metadata"
+    playsinline
+    poster="/videos/trip-creation-poster.webp"
+    style="width: 100%; max-width: 100%; border-radius: 8px; border: 1px solid var(--vp-c-divider); display: block;"
+  >
+    <source src="/videos/trip-creation.mp4" type="video/mp4" />
+    Sorry — your browser doesn't support embedded video. <a href="/videos/trip-creation.mp4">Download the MP4</a>.
+  </video>
+  <figcaption style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--vp-c-text-2); text-align: center;">
+    Recorded headlessly against a live wp-admin: open the Trip Builder, click <em>Fill Dummy Data</em>, walk through every section, and save the draft.
+  </figcaption>
+</figure>
+
+The video uses Yatra's built-in **Fill Dummy Data** button (top of the Trip Builder) to populate Phase 1, 2, and 3 in one click — handy when you want to see what a fully-filled trip looks like without typing it all by hand.
+
 ## Open the Trip Builder
 
 Open <span class="screen-path">Yatra → Trips → All Trips → + Add New</span>, or jump directly to:
