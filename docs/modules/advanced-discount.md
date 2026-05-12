@@ -1,47 +1,159 @@
 ---
 title: Advanced Discount
-description: Group, early-bird, last-minute, and category-based discount rules beyond simple coupon codes.
+description: Step-by-step setup for the Yatra Pro Advanced Discount module — group-size discounts that auto-apply based on traveler count, combined with promo codes, with per-category tiered ranges.
 prev:
   text: Dynamic Form Field
   link: /modules/dynamic-form-field
 next:
-  text: Mailchimp
-  link: /modules/mailchimp
+  text: Google Calendar
+  link: /modules/google-calendar
 ---
 
 # Advanced Discount <span class="pro-pill">PRO</span>
 
-Adds **rule-based discounts** that apply automatically — no coupon code required. Group discounts ("3+ travelers get 10 % off"), early-bird ("book 60 days ahead, save 15 %"), last-minute fillers, traveler-category discounts (kids 50 %), and discount stacking control.
+![Yatra → Discounts admin — promo codes + group + promo+group modes](/screenshots/discounts/discounts-list.webp)
 
-## What problem it solves
+Yatra's free plugin supports **promo codes** out of the box — customers type a code at checkout. The Advanced Discount module unlocks two extra modes:
 
-The free [Discounts](/booking-settings#discounts-coupons) feature handles coupon codes well, but applying rules across the whole catalog without a code (group / early-bird / kids' pricing) doesn't fit a coupon model. Advanced Discount adds the rule engine.
+1. **Group Only** — auto-applies when the traveler count crosses a threshold (e.g. *"6+ travelers, 10% off"*) with **no code required**.
+2. **Promo + Group** — a code that *also* layers group-size logic on top, so larger groups get bigger discounts.
 
-## Enable
+You can also configure **category-based tiered ranges** so different traveler categories get different group rates within the same discount.
 
-1. Toggle on at <span class="screen-path">Yatra → Modules → Advanced Discount</span>.
-2. The **Yatra → Discounts** screen gains a **Rules** tab alongside the existing **Coupons** tab.
+## What you'll need
 
-## Create a rule
+| Thing                            | Where to get it                                                       |
+| ---                              | ---                                                                   |
+| Yatra Pro license                | <span class="screen-path">Yatra → License</span>                     |
+| Advanced Discount module enabled | <span class="screen-path">Yatra → Modules → Advanced Discount</span> |
+| At least one trip with pricing   | The discount needs a price to discount against.                       |
 
-1. Open <span class="screen-path">Yatra → Discounts → Rules → + Add rule</span>.
-2. Configure:
-   - **Name** + internal description.
-   - **Trigger** — group size threshold, booking-window window (early-bird / last-minute), traveler-category, or "all bookings".
-   - **Adjustment** — `-12 %`, `-$50`, etc.
-   - **Applicable trips** — all / specific / by destination / by category.
-   - **Stack with other discounts** — Yes / No (when off, this rule wins or loses based on priority).
-   - **Validity window** — start / end dates.
-3. **Save & activate**.
+## Step 1 — Enable the module
 
-## How it appears at checkout
+1. Open <span class="screen-path">Yatra → Modules</span>.
+2. Find **Advanced Discount** → toggle on.
+3. The Discounts page (always at <span class="screen-path">Yatra → Discounts</span>) now shows the Group + Promo+Group modes when you click **+ Add Discount**.
 
-The booking summary itemises each rule that fired ("Group discount −10 %", "Early-bird −$25") so customers see exactly why the price dropped. This drives conversion by making savings visible.
+## Step 2 — Create a discount
 
-## Hooks
+Open <span class="screen-path">Yatra → Discounts → + Add Discount</span>.
 
-| Hook                                              | Type    | Purpose                                                  |
-| ---                                               | ---     | ---                                                      |
-| `yatra_advanced_discount_enabled`                 | filter  | Per-trip toggle.                                         |
-| `yatra_calculate_group_discount`                  | filter  | Override the group-size discount math.                   |
-| `yatra_calculate_coupon_discount`                 | filter  | Override coupon-discount math (when stacking with Advanced rules). |
+![Discount mode picker — Promo Code (free), Group Only (Pro), Promo + Group (Pro)](/screenshots/modules/advanced-discount-modes.webp)
+
+### Pick a mode
+
+| Mode              | Free / Pro                              | Auto-applies?           | Code required at checkout? |
+| ---               | ---                                     | :-:                     | :-:                        |
+| **Promo Code**    | ✅ Free                                 | No                      | ✅ Yes                     |
+| **Group Only**    | <span class="pro-pill">PRO</span>       | ✅ Yes (when threshold met) | No                      |
+| **Promo + Group** | <span class="pro-pill">PRO</span>       | After code applied      | ✅ Yes                     |
+
+Pick *Group Only* or *Promo + Group* and continue.
+
+### Common fields (every mode)
+
+| Field                            | Required | Notes                                                              |
+| ---                              | :-:      | ---                                                                |
+| **Code**                         | If Promo or Promo+Group | Monospace, unique, auto-uppercased.                       |
+| **Name**                         | ✅       | Internal label.                                                   |
+| **Description**                  | —        | Subtitle on the discount list.                                    |
+| **Type**                         | ✅       | Percentage or fixed amount.                                       |
+| **Amount**                       | ✅       | The discount value (e.g. `15` for 15% off, `25.00` for $25 off). |
+| **Max Discount Amount**          | —        | Caps a percentage discount at an absolute value.                  |
+| **Valid From / Expiry Date**     | —        | Both optional.                                                    |
+| **Usage Limit**                  | —        | Total uses across all customers. `0` = unlimited.                 |
+| **Usage Limit Per Customer**     | —        | Caps per-customer redemptions.                                    |
+| **Min Booking Total**            | —        | Discount only applies above this amount.                          |
+| **Applicable To**                | ✅       | *All trips* or *Specific trips* → pick trip IDs.                  |
+| **First Time Customer Only**     | —        | Restrict to customers with zero previous bookings.                |
+
+### Group-mode-only fields
+
+These appear when you picked *Group Only* or *Promo + Group*:
+
+| Field                            | Notes                                                                                                        |
+| ---                              | ---                                                                                                          |
+| **Group Discount Min Size**      | Smallest traveler count that triggers the group discount. E.g. `6` means "6 or more travelers".            |
+| **Group Discount Type**          | Percentage or fixed (per range).                                                                            |
+| **Group Discount Amount**        | The value when the threshold is met.                                                                        |
+| **Group Discount Mode**          | *Total* (one rate for the whole booking) or *Category-based* (different rates per traveler category).      |
+| **Category Discounts** (range)   | When *Category-based* is on, define per-category tiers — see below.                                        |
+
+### Category-based tiered example
+
+```
+Group Min Size: 6+
+
+Adult category:
+  6–10 travelers → 10% off
+  11+ travelers  → 15% off
+
+Child category:
+  6–10 travelers → 5% off
+  11+ travelers  → 8% off
+```
+
+Each tier is a row in the Category Discounts repeater with a *min travelers*, *max travelers*, and *amount*. Use this when you want bigger groups to compound their discount but want the discount to be smaller for child seats than for adult seats.
+
+## Step 3 — Verify on a test booking
+
+### Promo Code
+
+1. Open a trip in a private browser window. Reach the **Payment** step.
+2. Type the code → click **Apply**.
+3. The summary updates with the discount line. Status: `applied`.
+4. Complete checkout → booking detail shows the discount.
+
+### Group Only
+
+1. Open the trip. Reach the **Traveler counts** step.
+2. Bump the traveler count above the group threshold.
+3. The discount auto-applies — the Payment summary shows it as a line item with the *Group Discount* badge.
+4. No code field is needed.
+
+### Promo + Group
+
+1. As Promo Code above — type the code.
+2. AS Group Only — increase travelers above the threshold.
+3. Both discounts stack into a combined Group Discount line item.
+
+## How discounts stack with other features
+
+| Feature in play                                            | Behaviour                                                                      |
+| ---                                                        | ---                                                                            |
+| Multiple promo codes                                       | Only one code can be active per booking. The latest applied wins.              |
+| Promo + Group on a multi-category booking                  | Yatra applies the category-based rates internally and sums them into one line. |
+| [Dynamic Pricing](/modules/dynamic-pricing) also matching  | Dynamic Pricing runs first, then the discount is applied to the adjusted price. |
+| [Additional Services](/modules/additional-services) attached | Services are added *after* the trip-price discount — they're never discounted. |
+
+## On the booking detail page
+
+The booking's [Payment Summary](/booking-settings#_1-booking-overview) shows the discount as a **negative line** under the trip base price:
+
+```
+Trip Base Price (10 × $99) ........ $990.00
+Group Discount (10+ travelers) .... −$148.50  (15% off)
+Subtotal .......................... $841.50
+```
+
+The [Discount Applied](/booking-settings#_8-discount-applied-conditional) sidebar also shows the type (Coupon vs Group), the code (if any), and the savings amount.
+
+## Troubleshooting
+
+**Group discount doesn't auto-apply** — make sure the discount status is *Publish*. Group discounts respect *Valid From / Expiry Date* like promo codes do. Also confirm the traveler count meets the *Group Discount Min Size*.
+
+**Customer types a code but it doesn't apply** — check status (must be *Publish*, not *Draft*), expiry, usage limits, and *Applicable To* (the trip they're booking must be in the allowed list).
+
+**Discount doubled** — only one *promo code* applies per booking. If you're seeing two, one is likely a Group Discount that's stacking — that's expected.
+
+**Category-based tiers aren't kicking in** — verify each tier's *min travelers* / *max travelers* covers the actual traveler count. A booking with 8 travelers won't trigger a `6–7` tier; you need an `8–10` tier or wider range.
+
+## Useful links
+
+- [Bookings → Discounts](/booking-settings#discounts-coupons) — the discount admin reference.
+- [Bookings → Discount Applied sidebar](/booking-settings#_8-discount-applied-conditional) — booking-side view of an applied discount.
+- [Dynamic Pricing](/modules/dynamic-pricing) — for rule-based price adjustments (separate from discounts).
+
+## Where to read more
+
+- [All modules](/modules#advanced-discount) — module catalog.

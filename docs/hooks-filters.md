@@ -13,7 +13,18 @@ next:
 
 Yatra is built around a wide hook surface: every meaningful state change fires an action, and most rendered values pass through a filter so you can override them. This page lists the most useful actions and filters grouped by area, plus general guidance on using them.
 
-> Yatra ships with hundreds of hooks. The list below covers the ~80 you'll reach for most often. To find a hook for a specific feature, search the plugin source for `do_action('yatra_*'` or `apply_filters('yatra_*'` — every hook follows the `yatra_` prefix.
+> Yatra exposes hundreds of hooks. The list below covers the ~80 you'll reach for most often.
+
+::: warning Verify hook names against your version
+Hook names can be added, renamed, or retired between plugin versions. Before you build something that depends on a specific hook, **confirm it exists in your version** by searching the plugin source:
+>
+> ```bash
+> grep -rh "do_action.*yatra_booking_created" wp-content/plugins/yatra wp-content/plugins/yatra-pro
+> grep -rh "apply_filters.*yatra_trip_price" wp-content/plugins/yatra
+> ```
+>
+> Every Yatra hook follows the `yatra_*` prefix.
+:::
 
 ## Conventions
 
@@ -79,12 +90,10 @@ The implementation lives in `app/Services/CalculationService.php`. Each filter r
 | `yatra_before_payment_processing`          | action  | Before a payment intent is created                       |
 | `yatra_payment_completed`                  | action  | After successful capture                                 |
 | `yatra_payment_failed`                     | action  | After failed capture                                     |
-| `yatra_before_payment_refund`              | action  | Before refund                                            |
-| `yatra_payment_refunded`                   | action  | After refund                                             |
-| `yatra_after_payment_refund`               | action  | Final hook for refund post-processing                    |
+| `yatra_after_payment_processing`           | action  | Final hook after payment processing succeeds             |
 | `yatra_paypal_payment_completed`           | action  | PayPal-specific success                                  |
-| `yatra_paypal_payment_refunded`            | action  | PayPal-specific refund                                   |
-| `yatra_paypal_payment_token_saved`         | action  | PayPal Advanced vault                                    |
+| `yatra_paypal_payment_refunded`            | action  | PayPal-specific refund (use this instead of a generic `yatra_payment_refunded` — Yatra fires per-gateway refund actions) |
+| `yatra_razorpay_refund_created`            | action  | Razorpay-specific refund                                 |
 | `yatra_payment_amount_mismatch`            | action  | (3.0.4+) Fires when a client-supplied amount in `POST /payment/create-intent` disagreed with the server's `booking.amount_due`. Args: `($booking_id, $client_amount, $server_amount)`. The transaction itself is forced to the server amount; this hook exists for fraud-monitoring integrations. |
 | `yatra_pdf_remote_enabled`                 | filter  | (3.0.4+) Enable / disable dompdf remote image loading. Default `true` so PDFs can render the site logo and trip images. Return `false` to lock the PDF generator down to ABSPATH only (recommended if your invoices never contain external images). |
 | `yatra_pro_writable_settings_schema`       | filter  | (3.0.4+) Pro-only. Receives `key => sanitizer-callable` map of settings keys the `POST /yatra/v1/settings` REST endpoint is allowed to write. Modules can register their own keys here; anything not in this map is silently rejected by the endpoint. |
@@ -118,17 +127,22 @@ Your `MyGateway` extends `\Yatra\PaymentGateways\AbstractPaymentGateway` and imp
 | ---                                        | ---     | ---                                                      |
 | `yatra_send_transactional_email`           | filter  | Short-circuit before sending; return `false` to suppress |
 | `yatra_pro_email_automation_owns_transactional_type` | filter | Let Pro Email Automation own a specific template type |
-| `yatra_send_*_email` (e.g. `yatra_send_booking_received_email`) | action | Per-event audit hook |
-| `yatra_email_template_replacements`        | filter  | Add or rewrite merge tags                                |
+| `yatra_email_template_trip_variables`      | filter  | Add or rewrite the per-trip merge tags available to email templates |
+| `yatra_email_template_preview_variables`   | filter  | Same, for the template preview pane                      |
+| `yatra_send_booking_status_email_html`     | filter  | Rendered HTML for booking-status emails before send       |
+| `yatra_email_template_enquiry_admin` / `_received` / `_response` | filter | Override the rendered HTML per enquiry email template |
 
 ## Enquiries
 
 | Hook                                       | Type    | Purpose                                                  |
 | ---                                        | ---     | ---                                                      |
 | `yatra_enquiry_created`                    | action  | After enquiry insert (carries the joined trip object since 3.0.3) |
-| `yatra_enquiry_updated`                    | action  | After enquiry edit (e.g. staff response)                 |
-| `yatra_send_enquiry_admin_email`           | action  | Sending the admin notification                           |
-| `yatra_send_enquiry_response_email`        | action  | Sending the customer response                            |
+| `yatra_enable_enquiry`                     | filter  | Master toggle for enquiry UI on the trip page             |
+| `yatra_enquiry_button_text`                | filter  | Customise the "Make an Enquiry" CTA copy                  |
+| `yatra_enquiry_form_show`                  | filter  | Show / hide the enquiry form per trip                     |
+| `yatra_enquiry_form_title_text`            | filter  | Override the enquiry form title                           |
+| `yatra_email_template_enquiry_admin`       | filter  | Rendered HTML for the admin enquiry notification          |
+| `yatra_email_template_enquiry_response`    | filter  | Rendered HTML for the customer response email             |
 
 ## Account / customer
 
@@ -136,9 +150,9 @@ Your `MyGateway` extends `\Yatra\PaymentGateways\AbstractPaymentGateway` and imp
 | ---                                        | ---     | ---                                                      |
 | `yatra_customer_created`                   | action  | New customer record                                      |
 | `yatra_customer_updated`                   | action  | After customer edit                                      |
-| `yatra_user_registered`                    | action  | When customer registers a WP account                     |
-| `yatra_email_verified`                     | action  | Customer confirmed their email                           |
-| `yatra_password_reset_requested`           | action  | Reset requested (filter the URL via `yatra_password_reset_url`) |
+| `yatra_user_id`                            | filter  | Resolve the user ID for a customer / booking flow         |
+| `yatra_user_allowed_to_login`              | filter  | Block / allow a specific user from the front-end login flow |
+| `yatra_login_redirect_url`                 | filter  | Redirect destination after a successful login            |
 
 ## Front-end routing & templates
 
@@ -150,32 +164,59 @@ Yatra registers its own pretty URLs for the booking flow, account, email verific
 | `yatra_plain_route_match`                  | filter  | Same but for `?yatra_*` query-string URLs                |
 | `yatra_frontend_request_path`              | filter  | Normalize the request path before matching              |
 | `yatra_register_rewrite_rules`             | action  | Add additional rewrite rules                             |
-| `yatra_emit_canonical_meta`                | filter  | Disable Yatra's `<link rel=canonical>` if your SEO plugin owns it |
+| `yatra_build_archive_listing_url`          | filter  | Override how Yatra builds catalog listing URLs            |
+| `yatra_get_trip_listing_url`               | filter  | Override the URL Yatra generates for the trip archive     |
 
 ## Shortcodes and listings
 
 | Hook                                       | Type    | Purpose                                                  |
 | ---                                        | ---     | ---                                                      |
-| `yatra_trip_listing_filters`               | filter  | Modify the SQL filter array used by `[yatra_trip]` and the Trip block |
-| `yatra_destination_listing_filters`        | filter  | Same for destination listings                            |
-| `yatra_activity_listing_filters`           | filter  | Same for activity listings                               |
-| `yatra_trip_category_listing_filters`      | filter  | Same for trip-category listings                          |
-| `yatra_trip_listing_card_html`             | filter  | Replace card markup wholesale                            |
-| `yatra_trip_listing_per_page_default`      | filter  | Default per-page count                                   |
-| `yatra_search_form_html`                   | filter  | Replace search-form markup                               |
-| `yatra_classification_listing_card_html`   | filter  | Card markup for destination/activity/category cards      |
+| `yatra_trip_listing`                       | filter  | The full listing object Yatra renders into the trip catalog  |
+| `yatra_trip_listing_context`               | filter  | The context array passed to the trip card template       |
+| `yatra_trip_listing_max_per_page`          | filter  | Cap on the `per_page` shortcode attribute                |
+| `yatra_is_trip_listing`                    | filter  | Override Yatra's "are we on the trip-listing page" detection |
+| `yatra_listing_nonce`                      | filter  | Customise the nonce field used inside listing-form posts |
+
+::: tip Want to customise card markup?
+Yatra doesn't currently expose a stable `*_card_html` filter for whole-card replacement. The supported customisation paths are: (1) override the card template in your child theme — copy `templates/partials/trip-card.php` into `wp-content/themes/{your-theme}/yatra/partials/trip-card.php`; or (2) hook into the listing-context filter above to mutate the variables the card template sees.
+:::
+
+## Frontend templating & block themes (FSE)
+
+Yatra renders its own URL paths (`/trips/`, `/trip/{slug}/`, `/book/`, `/my-account/`, etc.) with a custom router rather than via real WordPress post types. The following extension points exist so themes and other plugins can integrate cleanly — particularly with Full Site Editing block themes.
+
+| Hook                                       | Type    | Purpose                                                  |
+| ---                                        | ---     | ---                                                      |
+| `pre_handle_404` *(core hook, Yatra uses)* | filter  | Yatra short-circuits this for its own URLs so `WP::handle_404()` never sets `is_404 = true` for plugin pages. Return `true` from your own callback (priority < 10) to opt a custom URL in. |
+| `body_class`                               | filter  | Yatra strips `error404` for its pages and adds `yatra-page` plus a `yatra-page-{type}` class (e.g. `yatra-page-trip`). |
+| `template_include`                         | filter  | Yatra hooks at priority **99**. If a request matched a Yatra route, the chosen PHP template is returned here. Customise via `yatra_template_path` below or with a theme override at `your-theme/yatra/{template}.php`. |
+| `yatra_template_path`                      | filter  | `($absolute_path, $template_name, $page_type)` — last chance to swap the PHP file before it's included. Useful for shipping a template variant from another plugin. |
+| `yatra_register_rewrite_rules`             | action  | Fires after Yatra registers its rewrite tags and rules. Receives the resolved permalink bases. |
+
+### FSE / Site Editor
+
+Yatra registers virtual block templates (Single Trip, Trip Listing, Destination, Activity, Booking, Booking Confirmation, My Account) so admins can find and customise Yatra layouts under <span class="screen-path">Appearance → Editor → Templates</span>.
+
+- The customisation is saved by core as a `wp_template` post. On the next request, Yatra detects it and renders that block template instead of the bundled PHP template.
+- Block templates embed a server-side block called **Yatra Page Content** (`yatra/page-content`). At render time it includes the PHP template selected by Yatra's router, so customising the *chrome* (header / sidebar / footer placement) is fully editable while the *content* stays driven by Yatra.
+- Inside that block, `yatra_get_header()` and `yatra_get_footer()` are no-ops — the canvas already emits the document and header/footer parts, so the PHP template only contributes its inner content.
+
+::: tip Theme overrides without the editor
+Drop a copy of any template at `wp-content/themes/{your-theme}/yatra/{name}.php` and `locate_template()` will pick it up first. No filter wiring needed. This works for classic and block themes alike.
+:::
 
 ## Admin / settings / modules
 
 | Hook                                       | Type    | Purpose                                                  |
 | ---                                        | ---     | ---                                                      |
-| `yatra_admin_localized_data`               | filter  | Inject extra props into `window.yatraAdmin`              |
-| `yatra_module_activated` / `_deactivated`  | action  | When a module's enabled/disabled state changes           |
+| `yatra_admin_localized_data`               | filter  | Inject extra props into `window.yatraAdmin`. Pro modules use this to expose flags like `flexiblePaymentsEnabled` so the React admin can conditionally render Pro-gated UI. |
+| `yatra_module_active`                      | action  | When a module is enabled                                 |
+| `yatra_module_deactive`                    | action  | When a module is disabled                                |
+| `yatra_module_enabled_status`              | filter  | Authoritative is-this-module-enabled check               |
 | `yatra_module_capabilities`                | filter  | Module-required capabilities                             |
-| `yatra_module_settings`                    | filter  | Module settings schema                                   |
 | `yatra_module_assets`                      | filter  | Assets enqueued for a module                             |
-| `yatra_setup_wizard_steps`                 | filter  | Add or remove wizard steps                               |
-| `yatra_setup_wizard_completed`             | action  | After the wizard is finalized                            |
+| `yatra_default_modules`                    | filter  | Add to / remove from the default module registry         |
+| `yatra_enable_setup_wizard`                | filter  | Show / hide the setup wizard                             |
 | `yatra_clear_cache`                        | action  | Invalidate Yatra's internal cache                        |
 
 ## Pro license & updater
@@ -205,19 +246,26 @@ Yatra registers its own pretty URLs for the booking flow, account, email verific
 | ---                                        | ---     | ---                                                      |
 | `yatra_flexible_payments_enabled`          | filter  | Master toggle (per-trip or globally)                     |
 | `yatra_flexible_payment_setting`           | filter  | Read individual setting values                           |
-| `yatra_deposit_percentage`                 | filter  | Override deposit %                                       |
-| `yatra_partial_payment_percentage`         | filter  | Override partial-payment %                               |
-| `yatra_calculate_amount_due`               | filter  | Final say on the payable-now amount                      |
+| `yatra_deposit_percentage`                 | filter  | `($default, $context = [])` — Override deposit %. `$context['trip_id']` lets the Pro module honour per-trip `trip.deposit_percentage` |
+| `yatra_partial_payment_percentage`         | filter  | `($default, $context = [])` — Override partial-payment % (context unused today; passed for parity) |
+| `yatra_calculate_amount_due`               | filter  | `($amount_due, $total_amount, $payment_method, $context = [])` — Final say on the payable-now amount. `$context['trip_id']` lets Pro apply per-trip `trip.deposit_amount` (absolute) or `trip.deposit_percentage` |
+| `yatra_payment_method_options`             | filter  | `($options, $booking_data)` — Adds *Pay X% Deposit* / *Pay X% Now* radios to the booking form. `$booking_data['trip_id']` lets Pro show the deposit option whenever a trip has per-trip values, even with the global flag off |
 | `yatra_scheduled_payments_module_active`   | filter  | Whether scheduled payments processing should run         |
 | `yatra_scheduled_payment_setting`          | filter  | Per-setting reads                                        |
+
+::: tip Per-trip overrides
+The `$context` argument added to `yatra_deposit_percentage`, `yatra_calculate_amount_due`, and `yatra_payment_method_options` since Yatra Free 3.0.5 / Pro 3.0.3 is what lets the Flexible Payments module read `trip.deposit_amount` / `trip.deposit_percentage` for a specific booking. If you implement your own filter callback that ignores `$context`, you'll only get site-wide behaviour — which is fine, but match the new signature if you want trip-aware behaviour.
+:::
 
 ## Pro: Email Automation
 
 | Hook                                       | Type    | Purpose                                                  |
 | ---                                        | ---     | ---                                                      |
-| `yatra_pro_email_automation_owns_transactional_type` | filter | When Pro should override a free transactional type |
-| `yatra_email_automation_event_payload`     | filter  | Mutate the variables passed to a sequence step           |
-| `yatra_email_automation_should_send`       | filter  | Suppress a step at runtime                               |
+| `yatra_pro_email_automation_owns_transactional_type` | filter | Let Pro Email Automation own a specific template type so Pro's send pipeline runs instead of the free one |
+
+::: tip Looking for sequence-step or payload filters?
+Yatra's source emits sequence events through the email-template filter chain (see the **Email** section above). If you need pre-send mutation, hook into `yatra_send_transactional_email` (returns `false` to suppress) or the per-template filters like `yatra_email_template_trip_variables`.
+:::
 
 ## Pro: Custom Landing Pages
 
@@ -232,7 +280,10 @@ Yatra registers its own pretty URLs for the booking flow, account, email verific
 | Hook                                       | Type    | Purpose                                                  |
 | ---                                        | ---     | ---                                                      |
 | `yatra_consent_signed`                     | action  | After a customer signs a consent form                    |
-| `yatra_consent_form_email_subject`         | filter  | Override the consent email subject                       |
+
+::: tip Customise consent email copy
+The consent-request email is a normal Yatra template (`trip_consent_request`). Override the body via [Settings → Email → Templates](/email-settings#account-consent), or hook into `yatra_email_template_trip_variables` to rewrite the merge-tag values it receives.
+:::
 
 ## Pro: Additional Services
 

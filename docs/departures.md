@@ -1,82 +1,192 @@
 ---
-title: Departures & availability
-description: Configure fixed departure dates, recurring availability rules, traveler categories, and capacity limits for Yatra trips.
+title: Departures
+description: Manage scheduled departures from the Yatra Departures admin — the list page, the Add Departure form, status filters, the Travelers roster, and cancel / refund flow.
+prev:
+  text: Availability — three-layer system
+  link: /availability
+next:
+  text: Bookings & customers
+  link: /booking-settings
 ---
 
-# Departures & availability
+# Departures
 
-A **departure** is a specific date a trip runs. A **availability rule** is a recurring pattern (e.g. "every Tuesday from March to October"). Together they control which dates a customer can pick at checkout.
+A **departure** is one scheduled run of a trip — a date (and optionally a time) with its own capacity and an optional price override. The Departures admin is the operator's day-to-day view: who's booked on what date, which dates are filling up, what's coming up next week.
 
-## Quick mental model
+::: tip Departures vs Availability
+Departures and the [Availability](/availability) system are connected but not the same thing:
 
-| You sell                                        | Use this                              |
-| ---                                             | ---                                   |
-| Open-date trips ("any time you like")           | Just the trip's **availability window** in the Trip Builder. |
-| Fixed dates ("Mar 5, Apr 10, May 8")            | **Departures** — one row per date.    |
-| Recurring schedules ("every Tue + Thu")         | **Availability rules** — one rule produces many dates. |
-| Capped seasonal trips ("only 60 spots in 2026") | **Departures** with capacity, plus the trip's overall capacity. |
+- **Availability** is the *rule engine* (manual dates, recurring rules, trip default) that decides which dates appear on the customer's date picker.
+- **Departures** is the *operator view* of every scheduled run — a flat list across all trips, filterable by status, with quick links to the bookings on each departure.
 
-## Departures list
+You don't have to manage both. If you're using Availability Dates / Rules per trip, the Departures page auto-shows them.
+:::
 
-![Departures admin — fixed-date and recurring schedules with capacity tracking](/screenshots/departures/departures-list.webp)
+---
+
+## The Departures list
+
+![Yatra Departures listing — status filter pills, columns, search](/screenshots/departures/departures-list.webp)
 
 Open <span class="screen-path">Yatra → Departures</span>.
 
-Columns: trip, departure date, capacity, booked, available, status (active / archived / cancelled).
+### Status filter pills
 
-Filters: by trip, by date range, by status. Search by trip title.
+Five statuses + *All*, with live counts beside each label:
 
-Click a row to open the departure detail / edit form.
+| Pill          | What's in it                                                                  |
+| ---           | ---                                                                           |
+| **All**       | Everything except trash.                                                      |
+| **Upcoming**  | Departures whose date is today or later, with at least one seat available.    |
+| **Full**      | Departures where booked count equals max capacity.                            |
+| **Past**      | Departures whose date is in the past.                                         |
+| **Cancelled** | Manually cancelled departures (kept for reporting + refund auditing).         |
+| **Trash**     | Soft-deleted rows. Restore or permanently delete from here.                   |
+
+::: warning The old "Active / Archived" wording
+Earlier doc revisions described departure statuses as *Active / Archived / Cancelled*. The current admin uses *Upcoming / Full / Past / Cancelled / Trash* — they're auto-computed from the date and the booked-count, not a manual field.
+:::
+
+### Search
+
+Search matches **trip title** and free-text in the **notes** field.
+
+### Column visibility
+
+Toggle which columns appear via the column picker; choices are saved per-browser to `localStorage` under `yatra_departures_visible_columns`. Available columns:
+
+- **Trip** — title + small chips for destination / activity / categories.
+- **Date** — formatted, with the day of week.
+- **Time** — only shown for departures that have one set.
+- **Max capacity** — total seats.
+- **Booked** — confirmed bookings on this departure.
+- **Available** — `capacity − booked` (or "—" for cancelled).
+- **Price override** — shown when set; falls back to the trip's normal price otherwise.
+- **Status** — coloured badge.
+- **Created** — when the row was added.
+
+### Bulk actions
+
+Tick rows and pick:
+
+| Status view | Available actions                                                                |
+| ---         | ---                                                                              |
+| Default     | Cancel, Move to Trash, Delete permanently                                       |
+| Trash       | Restore, Delete permanently                                                      |
+
+---
 
 ## Add a departure
 
-Click **+ Add New** at the top of the Departures list, or **+ Add Departure** from a trip's Availability section.
+Open the Departures list and click **+ Add Departure**, or jump to a specific trip → Availability tab → **+ Add Date**. Both lead to the same form, with the **Trip** field pre-filled when launched from a trip.
 
-Fields:
+![Add Departure form — date, time, capacity, price override, notes](/screenshots/departures/departure-form.webp)
 
-| Field             | What it does                                                   |
-| ---               | ---                                                            |
-| **Trip**          | The trip this departure belongs to.                            |
-| **Start date**    | The departure date.                                            |
-| **End date**      | Optional — for multi-day trips, the return.                    |
-| **Capacity**      | Max travelers across all bookings for this departure.          |
-| **Status**        | Active, Archived, Cancelled.                                   |
-| **Notes**         | Internal notes (only admin sees).                              |
+| Field                  | Required | Notes                                                                                                            |
+| ---                    | :-:      | ---                                                                                                              |
+| **Departure Date**     | ✅       | The day the trip actually runs. Date picker disallows past dates by default.                                     |
+| **Departure Time**     | —        | Time picker. Only set this when the trip has multiple departure times on the same date (e.g. a day-tour with morning + afternoon slots). |
+| **Max Capacity**       | ✅       | Total seats for this specific departure. Independent from the trip's overall *Max Travelers*.                    |
+| **Price Override**     | —        | Currency amount. When set, overrides the trip's regular price for this date only. Useful for holiday surcharges or flash sales. |
+| **Notes**              | —        | Internal-only — never shown to customers. Useful for "Lead guide: Sarah" or "Bus contracted from XYZ rentals".  |
 
-When a departure is full (booked equals capacity), the catalog hides it from the date picker automatically.
+When you save, the departure becomes part of [Availability Layer 1 (Manual Dates)](/availability#layer-1-manual-availability-dates-the-override) — it overrides any recurring rule that covers the same date.
 
-## Availability rules (recurring)
+::: tip Why no Trip dropdown?
+The Add Departure form takes the trip from the URL (`?trip_id=…`). To create a departure across multiple trips, repeat the form for each one. Or set up a [Recurring Rule](/availability#layer-2-recurring-availability-rules) per trip if the schedule is regular.
+:::
 
-For trips that run on a schedule (every Tue + Thu, 1st of every month), use rules instead of creating each date by hand.
+---
 
-Open <span class="screen-path">Yatra → Trips → Availability</span>.
+## The departure detail page
 
-A rule has:
+Click any row in the Departures list (or go to <span class="screen-path">action=view&id=…</span>).
 
-- **Trip** — the trip it applies to.
-- **Start date** — when the rule kicks in.
-- **End date** — when the rule stops.
-- **Days of week** — Mon / Tue / Wed / Thu / Fri / Sat / Sun (multi-select).
-- **Capacity** — per generated departure.
-- **Skip dates** — exclude blackout dates (holidays, off-season).
+### Top — quick stats
 
-When you save the rule, Yatra generates departures behind the scenes for each matching date in the window.
+A three-tile summary card:
 
-## Capacity rules
+- **Booked** — number of confirmed bookings.
+- **Available** — remaining seats.
+- **Capacity** — the total.
 
-Three layers of capacity:
+When booked == capacity the **Full** badge is shown next to the date.
 
-1. **Per-booking** — set as min / max travelers per booking on the trip's **Availability & Booking** section.
-2. **Per-departure** — set on the individual departure row.
-3. **Per-trip total** — optional cap across all bookings ever (for limited-edition expeditions).
+### Bookings on this departure
 
-When a customer picks a date, the booking flow checks all three. The first to be exhausted shows "Sold out" or "Date no longer available".
+Inline table of every booking that picked this departure:
 
-## Booking session
+- Booking number (links to the [booking detail page](/booking-settings#booking-detail-page)).
+- Customer name + email.
+- Travelers count.
+- Total amount.
+- Status badge.
 
-When a customer is in checkout, Yatra creates a temporary **booking session**. The session "holds" the seats for a few minutes (configurable in <span class="screen-path">Settings → Booking</span>) so two parallel bookings can't oversell the same seat.
+Use this view to see who's coming on a specific date, or to bulk-email customers from one departure.
 
-If the customer abandons checkout, the seats release after the session expires.
+### Notes & metadata
+
+- The internal notes you typed on the form.
+- Created / last-updated timestamps.
+
+### Quick actions
+
+Top-right:
+
+- **Edit** — same form as Add Departure.
+- **Duplicate** — copy date, capacity, price override into a new row (you pick a new date).
+- **Cancel** — flips status to *Cancelled*, hides from the public date picker, and prompts you to refund the affected bookings.
+- **Move to Trash** — soft delete. Restore from the Trash filter.
+
+---
+
+## Cancel a departure
+
+When a departure has to be cancelled (weather, low signup, instructor unavailable):
+
+<ol class="step-list">
+  <li>Open the departure → click <strong>Cancel</strong>.</li>
+  <li>Confirm the cancellation in the prompt.</li>
+  <li>Yatra hides the departure from the public date picker immediately and flags every booking on it as <em>affected</em>.</li>
+  <li>For each affected booking — open it, refund through the gateway dashboard, then mark <strong>Refunded</strong> in Yatra. See <a href="/payment-settings#refunds">Payments → Refunds</a>.</li>
+  <li>Email the customers — Yatra doesn't auto-send a cancellation email; write yours manually (or set up the <strong>Booking Cancelled</strong> template under <a href="/email-settings#booking-lifecycle-customer">Email → Templates</a> to fire on the status change).</li>
+</ol>
+
+::: warning Cancellation doesn't auto-refund
+Yatra never calls the gateway refund API on your behalf — refunds always start from the gateway dashboard so the operator stays in control of timing and fees. Mark refunded in Yatra only after the gateway confirms it.
+:::
+
+---
+
+## The Travelers roster
+
+![Travelers admin — every traveler across every booking, filterable](/screenshots/departures/travelers-list.webp)
+
+Open <span class="screen-path">Yatra → Travelers</span>. This is the operations / manifest view — every individual traveler across every booking, on every departure.
+
+Useful for:
+
+- **Pre-trip manifests** — filter to next Saturday's departure, export the list.
+- **Emergency contact lookups** — every traveler's emergency contact is visible inline.
+- **Diet / accessibility prep** — custom traveler fields (from the [Booking Form Builder](/settings#_4-booking-form)) are shown as columns.
+
+Filters: by trip, by departure date, by status. The export button writes a CSV with the visible columns.
+
+---
+
+## Capacity — how the three caps interact
+
+When a customer submits a booking, Yatra checks **three** capacity caps in order. The first one to be exhausted blocks the booking with a "Sold out" message:
+
+1. **Per-booking cap** — the trip's *Min / Max Travelers* fields (Trip Builder → Availability & Booking). Limits how many travelers one customer can put on one booking.
+2. **Per-departure cap** — the *Max Capacity* on the individual departure (or rule-generated equivalent).
+3. **Per-trip total cap** — optional cap across *all* bookings ever for the trip, for limited-edition expeditions. Set under Trip Builder → Availability & Booking.
+
+If the customer keeps the booking page open and somebody else fills the departure first, the create-booking API revalidates at submit time and surfaces a friendly "this date just sold out — pick another" message.
+
+### Booking session holds
+
+While a customer is in checkout, Yatra holds their seats with a temporary **booking session** (configurable: <span class="screen-path">Settings → Booking → Booking Expiry (hours)</span>, default 24h). Holds release automatically if the customer abandons checkout.
 
 <div class="pro-callout">
   <div class="pro-callout__head">
@@ -87,59 +197,21 @@ If the customer abandons checkout, the seats release after the session expires.
   <a class="pro-callout__cta" href="https://wpyatra.com/pricing/">Unlock abandoned recovery →</a>
 </div>
 
-## Departure detail page
+---
 
-Click any row in the Departures list. The detail page shows:
+## Operating tips
 
-- Capacity progress bar (booked / total).
-- Booking list — every booking that picked this departure.
-- Quick actions: **Edit**, **Archive**, **Cancel**, **Duplicate**.
+- **Use rules, not hand-rolled departures, for regular schedules.** A "Saturdays + Sundays, May–Sep" trip with manually-created Departures becomes 40 rows to maintain. One [Recurring Rule](/availability#layer-2-recurring-availability-rules) does the same thing and is easier to edit.
+- **Use individual Departures (or manual Availability Dates) for special cases.** A specific Saturday with a price surcharge, a custom guide, or a different start time — that's exactly what the per-departure form is for.
+- **Cap each departure separately, even on flexible trips.** A trip-wide cap protects against runaway bookings; per-departure caps protect against overbooking a small group.
+- **Move Past departures to Trash monthly.** A long Upcoming/Past list slows the date picker.
+- **Cancel-with-notice.** Always pair "Cancel departure" with a clear customer email and a refund. Yatra prompts you but the email content is yours to write.
 
-## Cancel a departure
-
-Sometimes you have to cancel a departure (weather, low signups, instructor unavailable):
-
-<ol class="step-list">
-  <li>Open the departure → click <strong>Cancel</strong>.</li>
-  <li>The system marks it cancelled and prompts you to email affected customers.</li>
-  <li>Refund related bookings via <span class="screen-path">Yatra → Bookings</span> → click each booking → <strong>Refund</strong>.</li>
-</ol>
-
-(Refunds go through the gateway dashboard first, then mark refunded in Yatra. See [Payments](/payment-settings#refunds) for the full refund workflow.)
-
-## Traveler categories
-
-Departures inherit traveler-category pricing from the trip. To configure adult / child / infant / senior labels and pricing, see <span class="screen-path">Yatra → Traveler Categories</span>.
-
-## Travelers list
-
-![Travelers list — roster view across all bookings, filterable by trip and date](/screenshots/departures/travelers.webp)
-
-Open <span class="screen-path">Yatra → Travelers</span> for a roster-style view of every traveler across all bookings. Useful for departure manifests:
-
-- Filter by trip and date.
-- Export the manifest (CSV).
-- Click a traveler row for their full booking + emergency contact info.
-
-## Departure status flow
-
-```
-Active → Archived  (manually, after past)
-Active → Cancelled (manually, with email + refund step)
-Archived stays archived until you delete it
-```
-
-Cancelled departures stay in the database for reporting. Archived departures keep their bookings visible but hide from the date picker.
-
-## Tips
-
-- **Archive past departures monthly.** A long active list slows down the date picker.
-- **Use availability rules for "almost every weekday"** with skip dates for holidays — much easier than 250 individual departures.
-- **Cap each departure separately.** Even if your trip has unlimited overall capacity, set per-departure caps to avoid overbooking small groups.
-- **Cancel-with-notice.** Always pair "cancel departure" with a clear customer email — Yatra prompts you, but the email content is yours to write.
+---
 
 ## Where to go next
 
-- [Bookings & customers](/booking-settings) — what happens after a customer picks a date.
-- [Payments](/payment-settings) — money flow.
-- [Pro modules](/third-party-integrations) — abandoned recovery, Google Calendar, dynamic pricing.
+- [Availability — three-layer system](/availability) — the priority order between manual dates, recurring rules, and the trip default.
+- [Bookings & customers](/booking-settings) — what happens after a customer picks a departure.
+- [Payments](/payment-settings) — gateways and the refund workflow when cancelling departures.
+- [Modules → Abandoned Booking Recovery](/modules/abandoned-booking-recovery) — auto-email customers who left checkout without paying.

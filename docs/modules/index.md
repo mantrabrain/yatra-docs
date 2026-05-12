@@ -15,7 +15,7 @@ Every module on this page requires:
 
 1. The free **Yatra** plugin installed and active.
 2. The **Yatra Pro** plugin installed and active.
-3. An **active Pro license** under [Yatra → License](/installation#install-yatra-pro).
+3. An **active Pro license** under [Yatra → License](/installation#step-2-install-yatra-pro).
 4. The module **toggled on** under [Yatra → Modules](/modules).
 
 If a module page mentions a UI surface ("open <span class="screen-path">Yatra → Dynamic Pricing</span>"), that surface only appears once the module is on.
@@ -41,6 +41,6 @@ If a module page mentions a UI surface ("open <span class="screen-path">Yatra �
 
 ## Common patterns
 
-- **Where settings live** — modules with their own admin page get an entry in the left sidebar (under <span class="screen-path">Yatra → ...</span>). Modules without a dedicated page surface as a section under [Settings → Integration](/settings#10-integration) or as enhancements to existing screens (e.g. Dynamic Form Field adds a tab to the Trip Builder).
+- **Where settings live** — modules with their own admin page get an entry in the left sidebar (under <span class="screen-path">Yatra → ...</span>). Modules without a dedicated page surface as a section under [Settings → Integration](/settings#_10-integration) or as enhancements to existing screens (e.g. Dynamic Form Field adds a tab to the Trip Builder).
 - **Hooks** — every module fires `yatra_pro_module_activated` on enable and `yatra_pro_module_settings_updated` after each save. Module-specific filters are listed on each page.
 - **Toggling off** — disabling a module hides its UI but **does not delete its data**. Re-enabling restores everything in place.

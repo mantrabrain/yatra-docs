@@ -95,3 +95,9 @@ jspm_packages/
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
+
+# Screenshot capture
+.env.screenshots
+docs/.vitepress/cache/
+docs/.vitepress/dist/
+node_modules/

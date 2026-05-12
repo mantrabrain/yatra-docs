@@ -13,17 +13,35 @@ next:
 
 ![Yatra Settings landing page — left tab list and General section open](/screenshots/settings/general.webp)
 
-The Settings screen at <span class="screen-path">Yatra → Settings</span> is one screen with 13 tabs. This page tells you **what each tab is for**, lists the controls inside it, and points you at the deeper docs (booking, payment, email) when there's a dedicated page.
+The Settings screen at <span class="screen-path">Yatra → Settings</span> is one screen with **13 tabs** in a left-hand sidebar. This page tells you what each tab is for, lists every control inside it, and points at the deeper docs ([Bookings](/booking-settings), [Payments](/payment-settings), [Email](/email-settings)) when there's a dedicated guide.
 
 ::: tip Where Yatra stores settings
-Each control writes to its own row in the WordPress `wp_options` table — for example, the **Default currency** dropdown writes to the `yatra_currency` option. You can read any value at runtime with `\Yatra\Services\SettingsService::get( 'currency' )` or `SettingsService::all()`. Defaults are defined in `app/Services/SettingsService.php` so you can grep the file to see every key the plugin knows about.
+Each control writes to its own row in the WordPress `wp_options` table — for example, the **Default currency** dropdown writes to the `yatra_currency` option. Developers can read or override these programmatically — see the [Reading settings programmatically](#reading-settings-programmatically) section at the bottom of this page.
 :::
+
+## The 13 tabs
+
+| # | Tab | What it controls | Pro-only fields? |
+| --- | --- | --- | --- |
+| 1 | [General](#_1-general) | Company identity, address, regional formatting | No |
+| 2 | [Design](#_2-design) | Front-end brand colour and container width | No |
+| 3 | [Booking](#_3-booking) | Checkout behaviour, expiry, cancellation, waitlist | No |
+| 4 | [Booking Form](#_4-booking-form) | Drag-and-drop builder for the checkout form | No (Pro extends per-trip) |
+| 5 | [Payment](#_5-payment) | Test mode, deposits, partial / scheduled payments | Some (deposit / scheduled = Pro) |
+| 6 | [Customer](#_6-customer) | Account behaviour, registration, wishlist | Wishlist = Pro |
+| 7 | [Review](#_7-review) | Review system toggles & moderation | No |
+| 8 | [Tax](#_8-tax) | Tax rates, inclusive pricing, VAT number | No |
+| 9 | [Currency](#_9-currency) | Currency code, position, separators, decimals | No |
+| 10 | [Integration](#_10-integration) | Mailchimp, Facebook Pixel, GA4, Google Calendar, reCAPTCHA | All Pro-conditional |
+| 11 | [Permalink](#_11-permalink) | URL slugs for trips, destinations, activities, categories | No |
+| 12 | [SEO](#_12-seo) | Meta tags for the trip archive | No |
+| 13 | [Advanced](#_13-advanced) | Logging, cache, legal pages, telemetry | No |
 
 ## How to use this page
 
-- Looking for **what a control does** → find the tab heading, then scan the table.
-- Looking for **a setting key in code** → the *Setting key* column maps to the `wp_options` row name (always prefixed with the plugin internally, e.g. `yatra_<key>`).
-- Looking for **deep guidance on a specific area** → the [Booking](/booking-settings), [Payment](/payment-settings), and [Email](/email-settings) tabs each have their own dedicated docs page; this page only summarises them.
+- Looking for **what a control does** → find the tab heading and scan the table.
+- Looking for **a setting key in code** → the *Setting key* column is the `wp_options` row name (always prefixed `yatra_<key>` in the database; the schema uses the unprefixed name).
+- Looking for **deep guidance on a specific area** → the [Bookings](/booking-settings), [Payments](/payment-settings), and [Email](/email-settings) pages cover the matching admin modules in full.
 
 ## Permissions
 
@@ -33,19 +51,31 @@ Saving settings requires the WordPress `manage_options` capability. The REST end
 
 ## 1. General
 
-![General settings tab — company information and regional formatting](/screenshots/settings/general.webp)
+![General settings tab — company information, regional formatting](/screenshots/settings/general.webp)
 
-Company identity and site-wide formatting.
+Company identity, full address, website, and regional formatting.
 
-| Control                 | Setting key                  | Default     | Notes                                                              |
-| ---                     | ---                          | ---         | ---                                                                |
-| Company Name            | `company_name`               | (empty)     | Used in invoices, vouchers, and email "From" name when not overridden. |
-| Company Email           | `company_email`              | (empty)     | Falls back to the WordPress admin email when blank.                |
-| Company Phone           | `company_phone`              | (empty)     | Surfaced on PDF documents.                                         |
-| Company Address         | `company_address`            | (empty)     | Multi-line; appears on invoices and vouchers.                      |
-| Timezone                | `timezone`                   | `UTC`       | Affects how booking and travel dates are stored / displayed.       |
-| Date Format             | `date_format`                | `Y-m-d`     | Standard PHP date tokens. Affects all admin and customer views.    |
-| Time Format             | `time_format`                | `H:i`       | 12-hour (`h:i A`) or 24-hour (`H:i`).                              |
+### Company Information
+
+| Control            | Setting key       | Default | Notes                                                                            |
+| ---                | ---               | ---     | ---                                                                              |
+| Company Name       | `company_name`    | (empty) | Required-flagged in UI. Used in invoices, vouchers, and email "From" name.       |
+| Company Email      | `company_email`   | (empty) | Required-flagged in UI. Falls back to the WordPress admin email when blank.     |
+| Company Phone      | `company_phone`   | (empty) | Surfaced on PDFs.                                                                |
+| Company Address    | `company_address` | (empty) | Street address line.                                                             |
+| City               | `company_city`    | (empty) | Shown on invoices below the street.                                              |
+| State / Province   | `company_state`   | (empty) | Shown on invoices.                                                               |
+| Country            | `company_country` | (empty) | Free-text country name.                                                          |
+| ZIP / Postal Code  | `company_zip`     | (empty) | Shown on invoices.                                                               |
+| Website            | `company_website` | (empty) | URL. Linked from the company name on receipts.                                   |
+
+### Regional Formatting
+
+| Control      | Setting key   | Default | Notes                                                                  |
+| ---          | ---           | ---     | ---                                                                    |
+| Timezone     | `timezone`    | `UTC`   | Searchable dropdown of all WP-supported time zones. Affects how booking and travel dates are stored / displayed. |
+| Date Format  | `date_format` | `Y-m-d` | Dropdown with many PHP date-format presets. Affects all admin and customer views. |
+| Time Format  | `time_format` | `H:i`   | Two options: `H:i` (24-hour) or `h:i A` (12-hour).                    |
 
 ## 2. Design
 
@@ -53,10 +83,10 @@ Company identity and site-wide formatting.
 
 Front-end appearance — what your customers see on trip and booking pages.
 
-| Control                  | Setting key                       | Default     | Notes                                                       |
-| ---                      | ---                               | ---         | ---                                                         |
-| Primary brand color      | `frontend_primary_color`          | `#3b82f6`   | Hex value. Drives buttons, links, and highlights via CSS variables. The colour picker and a **Reset to default** button are provided. |
-| Container max width      | `frontend_container_max_width`    | (empty)     | Optional CSS length (`1200px`, `72rem`, `min(100%,80rem)`). Empty = inherit your block theme `theme.json` / theme content width. |
+| Control               | Setting key                    | Default     | Notes                                                       |
+| ---                   | ---                            | ---         | ---                                                         |
+| Primary brand color   | `frontend_primary_color`       | `#3b82f6`   | Hex value with a color-picker and a paired text input. **Reset to default** button restores `#3b82f6`. Drives buttons, links, and highlights via CSS variables. |
+| Container max width   | `frontend_container_max_width` | (empty)     | Optional CSS length (`1200px`, `72rem`, `min(100%,80rem)`). Empty = inherit your block theme `theme.json` / theme content width. |
 
 ## 3. Booking
 
@@ -64,56 +94,81 @@ Front-end appearance — what your customers see on trip and booking pages.
 
 Day-to-day checkout behaviour. **For the full operator guide, see [Bookings & customers](/booking-settings).**
 
-| Control                          | Setting key                  | Default          | Notes                                                                            |
-| ---                              | ---                          | ---              | ---                                                                              |
-| Use a custom booking page        | `use_booking_page`           | `false`          | When on, the React booking app is embedded inside the WP page chosen below; otherwise it lives at `/{booking_base}/{trip-slug}/`. |
-| Booking page                     | `booking_page_id`            | `0`              | The WP page where the booking flow is embedded.                                  |
-| Allow guest booking              | `enable_guest_booking`       | `true`           | If off, customers must log in before they can checkout.                          |
-| Allow guest checkout             | `allow_guest_checkout`       | `true`           | Separate from above — controls whether unauthenticated users can complete payment without creating an account. |
-| Require login                    | `require_login`              | `false`          | Forces login at the start of checkout.                                           |
-| Booking confirmation             | `booking_confirmation`       | `true`           | Whether to send the confirmation email after status change to *Confirmed*.       |
-| Auto-confirm bookings            | `auto_confirm_bookings`      | `false`          | Skip the *Pending* state — useful for instant-confirmation activities.           |
-| Booking expiry (hours)           | `booking_expiry_hours`       | `24`             | A booking left in *Pending* longer than this is auto-cancelled by the cron.      |
-| Booking reminder (days)          | `booking_reminder_days`      | `3`              | How many days before travel to send the reminder email.                          |
-| Cancellation policy              | `cancellation_policy`        | `full_refund`    | One of `no_refund`, `partial_refund`, `full_refund`. Surfaces on confirmation.   |
-| Cancellation window (days)       | `cancellation_days`          | `7`              | Days before travel after which a customer cannot self-cancel.                    |
-| Refund policy                    | `refund_policy`              | (empty)          | Free-text shown on the booking summary page.                                     |
-| Allow waitlist                   | `allow_waitlist`             | `true`           | Show the *Join waitlist* CTA when a departure is sold out.                       |
-| Waitlist auto-confirm            | `waitlist_auto_confirm`      | `false`          | Auto-promote waitlisted bookings when capacity opens up.                         |
+| Control                       | Setting key                  | Default          | Notes                                                                            |
+| ---                           | ---                          | ---              | ---                                                                              |
+| Enable Booking Confirmation   | `booking_confirmation`       | `true`           | Whether to send the confirmation email after status change to *Confirmed*.       |
+| Auto-Confirm Bookings         | `auto_confirm_bookings`      | `false`          | Skip the *Pending* state — useful for instant-confirmation activities.           |
+| Require Login for Booking     | `require_login`              | `false`          | Forces login at the start of checkout.                                           |
+| Allow Guest Checkout          | `allow_guest_checkout`       | `true`           | If off, customers must log in before they can complete checkout.                 |
+| Allow Waitlist                | `allow_waitlist`             | `true`           | Show the *Join waitlist* CTA when a departure is sold out.                       |
+| Waitlist Auto-Confirm         | `waitlist_auto_confirm`      | `false`          | Auto-promote waitlisted bookings when capacity opens up.                         |
+| Cancellation Policy           | `cancellation_policy`        | `full_refund`    | One of `no_refund`, `partial_refund`, `full_refund`. Surfaces on confirmation.   |
+| Cancellation Days Before Departure | `cancellation_days`     | `7`              | Days before travel after which a customer cannot self-cancel.                    |
+| Refund Policy                 | `refund_policy`              | (empty)          | Free-text shown on the booking summary page.                                     |
+| Booking Expiry (hours)        | `booking_expiry_hours`       | `24`             | A booking left in *Pending* longer than this is auto-cancelled by the cron.      |
+| Booking Reminder (days)       | `booking_reminder_days`      | `3`              | How many days before travel to send the reminder email.                          |
+
+::: tip Where's the booking page picker?
+The booking flow lives at `/{booking_base}/{trip-slug}/` by default (configured on the [Permalink](#_11-permalink) tab). There's no "embed the booking app inside a WordPress page" toggle in this build — earlier versions of the doc mentioned `use_booking_page` and `booking_page_id`, but the source no longer exposes that setting.
+:::
 
 ## 4. Booking Form
 
 ![Booking Form builder tab — drag-and-drop fields with type, width, and required toggles](/screenshots/settings/booking_form.webp)
 
-A drag-and-drop builder for the **Lead Traveler / Contact Information**, **Emergency Contact**, and **Per-Traveler** form sections of the checkout.
+This tab renders the **Booking Form Builder** component — a drag-and-drop builder for the three sections of the public checkout: **Lead Traveler / Contact Information**, **Emergency Contact**, and **Per-Traveler**.
 
-- The configuration is stored as one JSON blob in `booking_form_config`.
-- Defaults live in `SettingsService::getDefaultBookingFormConfig()` — the lead-traveler `first_name` / `last_name` / `email` / `phone` / `country` are **locked**: you can hide them but cannot remove them.
-- Field types supported: `text`, `email`, `tel`, `date`, `select` (with options), `country`, `textarea`, `number`, `checkbox`.
-- Per-field width: `full`, `half`, `third`.
+- The entire configuration is stored as one JSON blob under the `booking_form_config` option.
+- Defaults live in `SettingsService::getDefaultBookingFormConfig()` — the lead-traveler `first_name`, `last_name`, `email`, `phone`, and `country` fields are **locked**: you can hide them but cannot remove them.
+- **Field types supported:** `text`, `email`, `tel`, `date`, `select` (with options), `country`, `textarea`, `number`, `checkbox`.
+- **Per-field width:** `full`, `half`, `third` — controls how many fields sit on a row.
+- Each field has a **Required** toggle, **Label** text, **Placeholder**, and (for `select`) an **Options** repeater.
 
 ::: tip Custom fields per trip
-For per-trip overrides (e.g. a "Dietary requirements" question only on Food Tours), enable the Pro **Dynamic Form Field** module — it adds a **Custom fields** tab on each trip's edit screen.
+For per-trip overrides (e.g. a "Dietary requirements" question only on Food Tours), enable the Pro **Dynamic Form Field** module — it adds a **Custom fields** tab on each trip's edit screen. See [Modules](/modules#dynamic-form-field).
 :::
 
 ## 5. Payment
 
-![Payment settings tab — flexible payments, scheduled balance, gateway list with test mode](/screenshots/settings/payment.webp)
+![Payment settings tab — test mode, partial payments, deposits, scheduled balance, gateway list](/screenshots/settings/payment.webp)
 
-Currency basics, gateway selection, and deposit / partial-payment behaviour. **Full guide: [Payments](/payment-settings).**
+Test-mode, payment-flow toggles, and deposit / scheduled-payment behaviour. **For per-gateway setup and the Payments admin page, see [Payments](/payment-settings).**
 
-A non-exhaustive snapshot of what lives here:
+### Global
 
-| Area                          | Setting keys                                                              |
-| ---                           | ---                                                                       |
-| Currency basics               | `currency`, `currency_position`, `thousand_separator`, `decimal_separator`, `decimal_places` |
-| Test mode (all gateways)      | `payment_test_mode` (default `true` until you go live)                    |
-| Enabled gateways              | `payment_gateways` (array of slugs); per-gateway config in `gateway_configs` |
-| Gateway display order         | `gateway_order`                                                           |
-| Save customer payment methods | `allow_save_payment_methods`                                              |
-| Deposits (Pro)                | `enable_deposit`, `deposit_type` (`percentage` / `fixed`), `deposit_amount`, `deposit_required`, `deposit_percentage` |
-| Partial payments (Pro)        | `partial_payment`, `partial_payment_percentage`                           |
-| Pay Later auto-confirm        | `auto_confirm_pay_later`                                                  |
+| Control              | Setting key            | Default | Notes                                                                  |
+| ---                  | ---                    | ---     | ---                                                                    |
+| Test Mode            | `payment_test_mode`    | `true`  | Master test-mode switch — applied to every gateway. Turn off when you go live. |
+| Auto-Confirm Pay Later Bookings | `auto_confirm_pay_later` | `false` | Confirm "Pay Later" bookings immediately instead of leaving them in *Pending*. |
+
+### Partial Payments <span class="pro-pill">PRO</span>
+
+| Control                       | Setting key                    | Default | Notes                                                       |
+| ---                           | ---                            | ---     | ---                                                         |
+| Enable Partial Payment        | `partial_payment`              | `false` | Customer pays a percentage at booking; rest collected later. |
+| Partial Payment Percentage    | `partial_payment_percentage`   | `50`    | Shown only when *Enable Partial Payment* is on.            |
+
+### Deposit <span class="pro-pill">PRO</span>
+
+| Control               | Setting key            | Default | Notes                                                       |
+| ---                   | ---                    | ---     | ---                                                         |
+| Require Deposit       | `deposit_required`     | `false` | Force a deposit at booking time.                            |
+| Deposit Percentage    | `deposit_percentage`   | `25`    | Shown only when *Require Deposit* is on. Percentage of the trip price taken upfront. |
+
+### Scheduled Payments <span class="pro-pill">PRO</span>
+
+| Control                            | Setting key                          | Default       | Notes                                                       |
+| ---                                | ---                                  | ---           | ---                                                         |
+| Enable scheduled balance payments  | `enable_scheduled_payments`          | `false`       | Master toggle for auto-charging the remaining balance on a future date. |
+| Schedule type                      | `scheduled_payment_type`             | `single`      | `single` (one balance charge) or `installments`.            |
+| Days until first charge            | `scheduled_payment_days`             | `7`           | How many days after booking to attempt the first charge.   |
+| Number of installments             | `scheduled_payment_installments`     | `3`           | Shown only when *type = installments*.                     |
+| Days between installments          | `scheduled_payment_interval`         | `30`          | Shown only when *type = installments*.                     |
+| Payment reminder (days before)     | `scheduled_payment_reminder_days`    | `3`           | Reminder email this many days before the charge attempt.    |
+
+### Gateways
+
+The list of available gateways (PayPal, Pay Later — free; Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net, Bank Transfer — Pro) is rendered as a row of cards lower on the tab. Each card has an **Enable** toggle and a **Settings** button that expands the gateway's credentials form. Full per-gateway details: [Payments](/payment-settings).
 
 ::: warning Server-authoritative amounts (3.0.4+)
 The `POST /payment/create-intent` endpoint **ignores** any client-supplied `amount` and recomputes from the booking row when a `booking_id` is provided. See [Payments → security model](/payment-settings#payment-flow-security-model-3-0-4).
@@ -125,12 +180,12 @@ The `POST /payment/create-intent` endpoint **ignores** any client-supplied `amou
 
 Account behaviour on the customer-facing site.
 
-| Control                         | Setting key                          | Default       | Notes                                                       |
-| ---                             | ---                                  | ---           | ---                                                         |
-| Enable Customer Registration    | `customer_registration`              | `true`        | If off, only WP-admin-created accounts can log in.          |
-| Customer Account Page           | `customer_account_page`              | (empty)       | URL path segment for the account area (e.g. `my-account`). Visit on the front-end with the **View Page** button. |
-| Enable wishlist (saved trips)   | `enable_wishlist`                    | `false`       | **Pro feature.** Adds the heart control on trip cards and a *Saved Trips* section in the customer account. |
-| Require Email Verification      | `require_email_verification`         | `false`       | Customers must click the verification link before account activation. |
+| Control                         | Setting key                  | Default | Notes                                                                  |
+| ---                             | ---                          | ---     | ---                                                                    |
+| Enable Customer Registration    | `customer_registration`      | `true`  | If off, only WP-admin-created accounts can log in.                     |
+| Customer Account Page           | `customer_account_page`      | (empty) | URL path segment for the account area (e.g. `my-account`). A **View Page** button next to the field opens the page on the front-end. |
+| Enable wishlist (saved trips)   | `enable_wishlist`            | `false` | **Pro-only field.** The control is **only rendered when Pro is active** (`window.yatraAdmin.isPro === true`). Without Pro, a "Saved Trips — Pro feature" call-out appears in its place. |
+| Require Email Verification      | `require_email_verification` | `false` | Customers must click the verification link before account activation.  |
 
 ## 7. Review
 
@@ -151,12 +206,12 @@ Trip-review form behaviour.
 
 ![Tax settings tab — multiple-taxes editor, inclusive pricing, VAT number](/screenshots/settings/tax.webp)
 
-| Control                       | Setting key                        | Default | Notes                                                                              |
-| ---                           | ---                                | ---     | ---                                                                                |
-| Enable Tax                    | `enable_tax`                       | `false` | Master toggle. The remaining controls only appear when this is on.                |
-| Taxes                         | `multiple_taxes`                   | `[]`    | Repeater of `{ name, rate }` (e.g. `{ name: "VAT", rate: 20 }`). Live total displayed below the editor. |
-| Tax Inclusive Pricing         | `tax_inclusive`                    | `false` | When on, prices are displayed *with* tax already included.                         |
-| VAT Number                    | `vat_number`                       | (empty) | Your tax-ID; appears on invoices.                                                  |
+| Control                       | Setting key      | Default | Notes                                                                              |
+| ---                           | ---              | ---     | ---                                                                                |
+| Enable Tax                    | `enable_tax`     | `false` | Master toggle. The remaining controls only appear when this is on.                |
+| Taxes                         | `multiple_taxes` | `[]`    | Custom repeater (the **Multiple Taxes Editor** component) of `{ name, rate }` rows — e.g. `{ name: "VAT", rate: 20 }`. Live total shown below the editor. |
+| Tax Inclusive Pricing         | `tax_inclusive`  | `false` | When on, prices are displayed **with** tax already included.                        |
+| VAT Number                    | `vat_number`     | (empty) | Your tax ID; appears on invoices.                                                  |
 
 ::: tip Per-country tax (advanced)
 The schema supports per-country tax bands (`multiple_taxes_by_country`) for site owners that need it. There's no UI yet — set the value via the REST API or a custom plugin if you need it today.
@@ -164,27 +219,75 @@ The schema supports per-country tax bands (`multiple_taxes_by_country`) for site
 
 ## 9. Currency
 
-![Currency settings tab — default currency, position, separators, decimal places, enabled currencies](/screenshots/settings/currency.webp)
+![Currency settings tab — default currency, position, separators, decimal places](/screenshots/settings/currency.webp)
 
 Display formatting for monetary values across the site.
 
 | Control               | Setting key            | Default | Notes                                                                |
 | ---                   | ---                    | ---     | ---                                                                  |
-| Default Currency      | `currency`             | `USD`   | The base currency for all transactions. Searchable dropdown of all ISO codes. |
-| Currency Position     | `currency_position`    | `left`  | `left`, `right`, `left_space`, `right_space`. Live preview in the dropdown. |
+| Default Currency      | `currency`             | `USD`   | Searchable dropdown of all ISO currency codes. Base for all transactions. |
+| Currency Position     | `currency_position`    | `left`  | `left`, `right`, `left_space`, `right_space`. Each option shows a live preview in the dropdown. |
 | Thousand Separator    | `thousand_separator`   | `,`     | Single character.                                                    |
 | Decimal Separator     | `decimal_separator`    | `.`     | Single character.                                                    |
 | Decimal Places        | `currency_decimals`    | `2`     | 0–4. Most fiat = 2; 0 for JPY / KRW.                                 |
-| Enabled Currencies    | `enabled_currencies`   | `["USD"]` | Array of ISO codes. Used by the multi-currency switcher (Pro modules can extend). |
+
+::: tip Multi-currency switching
+Per-trip currency overrides and a customer-facing currency switcher are provided by Pro modules. The free schema stores only a single base currency.
+:::
 
 ## 10. Integration
 
-![Integration settings tab — third-party module toggles populated by active Pro modules](/screenshots/settings/integration.webp)
+![Integration settings tab — third-party module config populated by active Pro modules](/screenshots/settings/integration.webp)
 
-Toggles for built-in third-party integrations. The contents here change based on which Pro modules you have active. Common ones:
+Configuration for built-in third-party integrations. Most blocks **only appear when the matching Pro module is active** (see [Modules](/modules) for the toggles).
 
-- **Google Calendar** — when the Pro Google Calendar module is on, this section exposes the OAuth credentials, calendar ID, and sync direction. See [Modules → Google Calendar](/modules#google-calendar).
-- **Google Analytics** / **Facebook Pixel** / **Mailchimp** — likewise surface their config when the corresponding Pro module is active.
+### Google Calendar <span class="pro-pill">PRO</span>
+
+Renders conditionally when the Google Calendar module is enabled. Exposes OAuth credentials, target calendar ID, and sync direction. See [Modules → Google Calendar](/modules#google-calendar-integration).
+
+### Mailchimp <span class="pro-pill">PRO</span>
+
+| Control                  | Setting key                  | Notes                                                                  |
+| ---                      | ---                          | ---                                                                    |
+| Mailchimp API Key        | `mailchimp_api_key`          | Password-style input. Tested with a **Verify** button.                |
+| Audience / List          | `mailchimp_list_id`          | Dropdown populated after a successful API-key verification.            |
+| Sync customers on booking | `mailchimp_sync_on_booking` | Push booking customers as Mailchimp contacts.                          |
+| Double opt-in            | `mailchimp_double_optin`     | Send a confirmation email before adding to the list.                  |
+| Field mapping            | `mailchimp_field_mapping`    | Dynamic key/value mapping of Yatra fields → Mailchimp merge tags.     |
+| Add tags                 | `mailchimp_add_tags`         | Tag synced contacts.                                                  |
+| Default tags             | `mailchimp_default_tags`     | Comma-separated tag list applied to every synced contact.             |
+
+### Facebook Pixel <span class="pro-pill">PRO</span>
+
+| Control                       | Setting key                       | Notes                                                       |
+| ---                           | ---                               | ---                                                         |
+| Pixel ID                      | `facebook_pixel_id`               | Your Meta Pixel ID.                                         |
+| Track ViewContent             | `fb_track_view_content`           | Per-event toggle.                                           |
+| Track InitiateCheckout        | `fb_track_initiate_checkout`      | Per-event toggle.                                           |
+| Track Purchase                | `fb_track_purchase`               | Per-event toggle.                                           |
+| Use Conversions API           | `fb_use_conversions_api`          | Server-side event posting in addition to the browser pixel. |
+| Conversions API access token  | `facebook_access_token`           | Password-style input. Shown only when *Use Conversions API* is on. |
+
+### Google Analytics 4 Enhanced <span class="pro-pill">PRO</span>
+
+| Control                       | Setting key                          | Notes                                                       |
+| ---                           | ---                                  | ---                                                         |
+| Measurement ID                | `ga4_measurement_id`                 | e.g. `G-XXXXXXXX`.                                          |
+| Track view_item               | `ga4_track_view_item`                | Per-event toggle.                                           |
+| Track add_to_cart             | `ga4_track_add_to_cart`              | Per-event toggle.                                           |
+| Track begin_checkout          | `ga4_track_begin_checkout`           | Per-event toggle.                                           |
+| Track purchase                | `ga4_track_purchase`                 | Per-event toggle.                                           |
+| Use Measurement Protocol      | `ga4_use_measurement_protocol`       | Server-side event posting in addition to the browser tag.   |
+| Debug mode                    | `ga4_debug_mode`                     | Enables GA4 DebugView.                                       |
+| API secret                    | `ga4_api_secret`                     | Password-style input. Shown only when *Measurement Protocol* is on. |
+
+### reCAPTCHA
+
+| Control            | Setting key            | Notes                                                       |
+| ---                | ---                    | ---                                                         |
+| Enable reCAPTCHA   | `recaptcha_enabled`    | Adds Google reCAPTCHA v3 to the public checkout / enquiry forms. |
+| Site Key           | `recaptcha_site_key`   | From Google reCAPTCHA admin.                                |
+| Secret Key         | `recaptcha_secret_key` | Password-style input.                                       |
 
 For a full list of integrations and their setup guides, see [Pro modules overview](/third-party-integrations).
 
@@ -198,7 +301,6 @@ URL slugs for Yatra's content types. Changing any of these requires a **rewrite-
 | ---                   | ---                    | ---            | ---                                                  |
 | Trip Base             | `trip_base`            | `trip`         | `/trip/everest-base-camp`                            |
 | Booking Base          | `booking_base`         | `book`         | `/book/everest-base-camp`, `/book/confirmation/`     |
-| Account Base          | `account_base`         | `my-account`   | `/my-account/dashboard`                              |
 | Destination Base      | `destination_base`     | `destination`  | `/destination/nepal`                                 |
 | Activity Base         | `activity_base`        | `activity`     | `/activity/trekking`                                 |
 | Trip Category Base    | `trip_category_base`   | `trip-category`| `/trip-category/adventure`                           |
@@ -208,6 +310,10 @@ Each input shows the resulting public URL beneath it, with a **View** link so yo
 :::
 
 The whole permalink set passes through the `yatra_permalink_bases` filter — useful if you're enforcing localised slugs from a custom plugin. See [Hooks & filters → Front-end routing](/hooks-filters#front-end-routing-templates).
+
+::: warning Customer account URL lives elsewhere
+The slug for the customer-account area is configured under [Customer → Customer Account Page](#_6-customer) as `customer_account_page` — **not** on this tab. Older revisions of this page listed an `account_base` here; the source doesn't expose that field.
+:::
 
 ## 12. SEO
 
@@ -237,19 +343,19 @@ Diagnostics, caching, legal-page wiring, and telemetry.
 | Control                  | Setting key       | Default | Notes                                                                                            |
 | ---                      | ---               | ---     | ---                                                                                              |
 | Enable Logging           | `enable_logging`  | `false` | Writes Yatra-specific events to the system logs (visible in <span class="screen-path">Yatra → Tools → Logs</span>). |
-| Debug mode               | `debug_mode`      | `false` | Plugin-side diagnostics. **Bypasses the Yatra object cache** while on (same as `WP_DEBUG=true`). |
+| Debug Mode               | `debug_mode`      | `false` | Plugin-side diagnostics. **Bypasses the Yatra object cache** while on (same effect as `WP_DEBUG=true`). |
 | Enable Cache             | `cache_enabled`   | `true`  | Yatra's internal cache layer. Auto-disabled while *Debug mode* or `WP_DEBUG` is on.              |
 
 ### Legal pages (Booking UI)
 
 | Control                  | Setting key                | Notes                                                              |
 | ---                      | ---                        | ---                                                                |
-| Terms & Conditions page  | `terms_page_id`            | WP page linked from the *I agree to terms* checkbox in checkout.   |
+| Terms & Conditions page  | `terms_page_id`            | Dropdown of published WP pages. Linked from the *I agree to terms* checkbox in checkout. |
 | Privacy Policy page      | `privacy_policy_page_id`   | Linked from the privacy-consent checkbox. Falls back to the WP **Settings → Privacy** page when blank. |
 
 ### Telemetry (opt-in)
 
-The **Help us improve Yatra** section enables anonymous usage tracking. What gets collected is documented at [wpyatra.com/what-we-collect/](https://wpyatra.com/what-we-collect/). It is **off by default** — switch it on to help the team prioritise features.
+The **Help us improve Yatra** section enables anonymous usage tracking via the `yatra_usage_tracking_enabled` option. What gets collected is documented at [wpyatra.com/what-we-collect/](https://wpyatra.com/what-we-collect/). It is **off by default** — switch it on to help the team prioritise features.
 
 The endpoint behind it is `POST /yatra/v1/usage-tracking`.
 
@@ -315,9 +421,9 @@ The map is `key => sanitiser-callable`; the sanitiser must return the value to p
 
 ## Where to go next
 
-- [Bookings & customers](/booking-settings) — the operator guide for the **Booking** tab.
-- [Payments](/payment-settings) — gateway setup, deposits, refunds, the **Payment** tab in depth.
-- [Email & notifications](/email-settings) — transactional email templates and the **Email** tab.
-- [Pro modules overview](/third-party-integrations) — what populates the **Integration** tab.
+- [Bookings & customers](/booking-settings) — the operator guide for the Bookings module.
+- [Payments](/payment-settings) — gateway setup, deposits, refunds.
+- [Email & notifications](/email-settings) — transactional email templates and Pro automation.
+- [Modules](/modules) — the catalog of Pro modules that surface controls on the Integration tab.
 - [REST API](/api-reference) — full settings endpoint surface.
 - [Hooks & filters](/hooks-filters) — every hook the settings system fires.

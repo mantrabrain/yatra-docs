@@ -51,7 +51,7 @@ When you activate, Yatra does a one-time setup behind the scenes:
     <span class="pro-callout__badge">PRO</span>
     <span class="pro-callout__title">Yatra Pro is the upgrade plugin</span>
   </div>
-  <p class="pro-callout__desc">Yatra Pro is a separate plugin that unlocks licensed modules — Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net, and Bank Transfer gateways; Dynamic Pricing; Flexible / Scheduled Payments; Email Automation sequences; Google Calendar sync; Additional Services upsells; Trip Consent waivers; Mailchimp / GA4 / Facebook Pixel; Abandoned Booking Recovery; Custom Landing Pages; Wishlist; and more. The free plugin must be installed and active first.</p>
+  <p class="pro-callout__desc">Yatra Pro is a separate plugin that unlocks licensed modules — Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net, and Bank Transfer gateways; Dynamic Pricing; Flexible / Scheduled Payments; Email Automation sequences; Google Calendar sync; Additional Services upsells; Trip Consent waivers; Mailchimp / GA4 / Facebook Pixel; Abandoned Booking Recovery; Custom Landing Pages; Advanced Discount; Dynamic Form Field; and more. The free plugin must be installed and active first.</p>
   <a class="pro-callout__cta" href="https://wpyatra.com/pricing/">View Yatra Pro plans →</a>
 </div>
 
@@ -78,7 +78,7 @@ Run this quick checklist before adding real content.
 | The **Yatra** item appears in the admin sidebar                                    | Admin sidebar                                      |
 | Permalinks are not set to **Plain**                                                | <span class="screen-path">Settings → Permalinks</span> |
 | Visiting `/wp-json/yatra/v1/` returns JSON (not a 404)                             | Browser address bar                                |
-| Visiting `/booking/` shows a page (even if empty)                                  | Front of your site                                 |
+| Visiting `/book/` shows the booking landing page (even if empty)                   | Front of your site (the slug matches *Permalink → Booking Base*) |
 | **License** says **Active** <span class="pro-pill">PRO</span>                      | <span class="screen-path">Yatra → License</span>   |
 
 If any of these are red, head over to [Troubleshooting](/troubleshooting).

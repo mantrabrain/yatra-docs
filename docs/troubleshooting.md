@@ -23,7 +23,7 @@ This page lists the issues we see most often and the fastest way through them.
 
 ## "Permalinks 404 on the front of the site"
 
-**Symptom:** `/trips/`, `/booking/`, `/my-account/` all return 404.
+**Symptom:** `/trip/`, `/book/`, `/my-account/` all return 404.
 
 **Fix:** Open <span class="screen-path">Settings → Permalinks</span> and click **Save Changes** (no need to change anything; saving flushes rewrite rules). Or run `wp rewrite flush` via WP-CLI.
 
@@ -47,13 +47,14 @@ This page lists the issues we see most often and the fastest way through them.
 
 **Symptom:** PayPal logs show 200 from your site, but the booking stays **pending**.
 
-**Cause:** Webhook ID mismatch (sandbox vs live), missing client id / secret, or REST routes blocked by security.
+**Cause:** Mode mismatch (sandbox vs live), wrong Client ID / Secret, or REST routes blocked by security.
 
 **Fix:**
 
 <ol class="step-list">
-  <li>Open <span class="screen-path">Yatra → Settings → Payment → PayPal</span>. Confirm <strong>Mode</strong> matches the webhook (sandbox vs live), and <strong>Webhook ID</strong> matches the PayPal dashboard.</li>
-  <li>Confirm REST is reachable — visit <code>/wp-json/yatra/v1/webhooks/paypal</code> (you should get a 405 method-not-allowed for GET, not 403).</li>
+  <li>Open <span class="screen-path">Yatra → Settings → Payment → PayPal</span>. Confirm <strong>Mode</strong> matches the credentials you pasted (Sandbox keys won't work in Live mode and vice versa).</li>
+  <li>Confirm the global <em>Test Mode</em> switch (under Settings → Payment → Global) matches the credentials too.</li>
+  <li>Confirm REST is reachable — visit <code>/wp-json/yatra/v1/payment/webhook/paypal</code> (you should get a 405 method-not-allowed for GET, not 403).</li>
   <li>Check <span class="screen-path">Yatra → Tools → Logs → Payment</span> for webhook errors.</li>
 </ol>
 
@@ -98,13 +99,14 @@ This page lists the issues we see most often and the fastest way through them.
 
 **Symptom:** `[yatra_trip featured_priority="featured"]` returns nothing.
 
-**Cause:** Trips don't have Featured Priority set. The legacy `featured` toggle was migrated to `featured_priority`, but if the trip has neither, no rows match.
+**Cause:** Trips don't have Featured Priority set, or the value you're filtering on doesn't match the actual enum.
 
 **Fix:**
 
 <ol class="step-list">
-  <li>Open the trip → <strong>Categories &amp; Attributes</strong> → set <strong>Featured Priority</strong> to <em>featured</em>, <em>sticky</em>, or <em>high-priority</em>.</li>
+  <li>Open the trip → <strong>Categories &amp; Attributes</strong> → set <strong>Featured Priority</strong> to one of the four valid values: <em>None</em>, <em>Featured</em>, <em>New</em>, or <em>Limited</em>.</li>
   <li>Save.</li>
+  <li>Pass the lower-case value in the shortcode: <code>featured_priority="featured"</code>, <code>"new"</code>, or <code>"limited"</code>.</li>
 </ol>
 
 The legacy `featured="1"` attribute is also accepted as an alias for `featured_priority="featured"`.
@@ -198,11 +200,15 @@ The legacy `featured="1"` attribute is also accepted as an alias for `featured_p
 **Fix:**
 
 <ol class="step-list">
-  <li>Open <span class="screen-path">Yatra → Dynamic Pricing → Settings</span>. Confirm <strong>Enable Dynamic Pricing</strong> is on.</li>
-  <li>Open the rule. Confirm <strong>Status</strong> is <em>active</em> (not <em>trash</em> or <em>draft</em>).</li>
-  <li>Confirm the rule's conditions match the trip / departure / dates being booked. Use the <strong>Analytics</strong> tab to see if rules fired.</li>
-  <li>Clear any object cache (Redis, Memcached) — pricing math is cached briefly.</li>
+  <li>Confirm the <strong>Dynamic Pricing</strong> module is enabled under <span class="screen-path">Yatra → Modules</span>.</li>
+  <li>Open the rule. Confirm <strong>Status</strong> is <em>Active</em>.</li>
+  <li>Confirm the rule's conditions match the trip / dates being booked. Check the <strong>Scope</strong> field: <em>All trips</em>, <em>Specific trips</em>, <em>By category</em>, or <em>By destination</em>. If you're scoped to specific trips, make sure the booking's trip is in the list.</li>
+  <li>For Early Bird / Last Minute rules, double-check the <em>days before departure</em> number against your test booking's travel date.</li>
+  <li>If two rules both match, check the <em>Priority</em> field and the <em>Stack with other rules</em> toggle — a higher-priority rule with Stack = off shortcircuits everything below it.</li>
+  <li>Clear any object cache (Redis, Memcached) — pricing is cached briefly.</li>
 </ol>
+
+See [Dynamic Pricing](/modules/dynamic-pricing) for the full module reference.
 
 ## "Bulk delete dynamic pricing rules fails"
 

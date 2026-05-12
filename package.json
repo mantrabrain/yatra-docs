@@ -7,7 +7,10 @@
     "dev": "vitepress dev docs --port 5174",
     "build": "vitepress build docs",
     "preview": "vitepress preview docs --port 5174",
-    "serve": "vitepress preview docs --port 5174"
+    "serve": "vitepress preview docs --port 5174",
+    "screenshots": "node scripts/capture-screenshots.mjs",
+    "screenshots:setup": "npm install && npx playwright install chromium",
+    "screenshots:seed": "node scripts/seed-screenshot-placeholders.mjs"
   },
   "dependencies": {
     "medium-zoom": "^1.1.0",
@@ -15,8 +18,10 @@
   },
   "devDependencies": {
     "@vue/theme": "^2.2.0",
+    "dotenv": "^16.4.5",
     "flexsearch": "^0.7.43",
     "markdown-it": "^14.0.0",
+    "playwright": "^1.47.0",
     "vue": "^3.4.0"
   },
   "engines": {

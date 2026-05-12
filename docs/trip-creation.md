@@ -1,6 +1,6 @@
 ---
-title: Create a trip
-description: A section-by-section walkthrough of the Yatra Trip Builder — Essentials, Details, Optimization, and Advanced — every field, every choice, every screenshot.
+title: Create a trip — step by step
+description: Walkthrough for creating a trip in Yatra, from the Trips listing page through the Create New Trip modal, all four phases of the Trip Builder, and publishing. Every section, every field, every button.
 prev:
   text: Trips & catalog
   link: /tour-booking
@@ -9,251 +9,379 @@ next:
   link: /departures
 ---
 
-# Create a trip
+# Create a trip — step by step
 
-This page is the **practical walkthrough** for building a trip from scratch using the Yatra Trip Builder. The builder organises 10 sections into 4 colour-coded phases — fill in **Phase 1 (Essentials)** to publish a draft, then come back later for the rest.
+This is the practical walkthrough for building a trip from scratch. The Yatra Trip Builder is a four-phase wizard with ten sections in total. Only **Trip Basics** and **Pricing** are required to publish — everything else is optional polish you can come back to.
 
-> Looking for the field-level reference instead? See [Trips & catalog](/tour-booking) for an exhaustive list of every option.
+> Looking for the field-level reference instead? See [Trips & catalog](/tour-booking) for the exhaustive table of every option.
 
-## Watch it end-to-end (~56 seconds, narrated)
-
-<figure class="video-figure">
-  <video
-    controls
-    preload="metadata"
-    playsinline
-    poster="/videos/trip-creation-poster.webp"
-    style="width: 100%; max-width: 100%; border-radius: 8px; border: 1px solid var(--vp-c-divider); display: block;"
-  >
-    <source src="/videos/trip-creation.mp4" type="video/mp4" />
-    Sorry — your browser doesn't support embedded video. <a href="/videos/trip-creation.mp4">Download the MP4</a>.
-  </video>
-  <figcaption style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--vp-c-text-2); text-align: center;">
-    Recorded headlessly against a live wp-admin: open the Trip Builder, click <em>Fill Dummy Data</em>, walk through every section, and save the draft. <strong>English narration</strong> over a quiet ambient pad — turn your sound on. (TTS voiceover; we'll swap to a human VO when ready.)
-  </figcaption>
-</figure>
-
-The video uses Yatra's built-in **Fill Dummy Data** button (top of the Trip Builder) to populate Phase 1, 2, and 3 in one click — handy when you want to see what a fully-filled trip looks like without typing it all by hand.
-
-## Open the Trip Builder
-
-Open <span class="screen-path">Yatra → Trips → All Trips → + Add New</span>, or jump directly to:
-
-```
-/wp-admin/admin.php?page=yatra&subpage=trips&action=create
-```
-
-You'll land on **Phase 1 → Trip Basics**. The left sidebar shows the full phase / section map, the right panel is the active section, and the top right has the **Save Draft** and **Publish Trip** buttons.
-
-::: tip Take a Tour, Fill Dummy Data
-The header has two helpers worth knowing about:
-- **Take a Tour** walks you through the builder UI inline.
-- **Fill Dummy Data (1/3)** populates the current section with realistic sample content so you can see how the public trip page will look without typing everything by hand.
+::: tip Running an older plugin version?
+If a field or section name looks different in your wp-admin, update to the latest Yatra release — the screenshots and field names on this page reflect the current build.
 :::
 
 ---
 
-## Phase 1 — Essentials (must complete to publish)
+## Step 1 — Open the Trips listing
+
+Open <span class="screen-path">Yatra → Trips</span> (the top-level "Trips" item in the Yatra menu).
+
+![Yatra Trips listing — search, status filter pills, column visibility picker, and the + Add New Trip button at top right](/screenshots/trips/list-page.webp)
+
+What you see:
+
+- **Search box** — searches by title and slug.
+- **Status filter** — All / Published / Draft / Review / Approved / Archived / Trash. Selecting a pill filters the list to that status.
+- **Column visibility picker** — toggle which columns appear (Trip, Price, Status, Trip Type, Availability, Capacity, Countries, Difficulty, Attributes, Destinations, Activities, Categories, Bookings, Created, Modified). Your choice is saved per-browser to `localStorage`.
+- **Bulk actions** — once you tick one or more rows, the action dropdown unlocks: Mark as Published / Draft / Review / Approved / Archived, plus Move to Trash. From the Trash status filter you also get Restore and Delete Permanently.
+- **+ Add New Trip** (top right) — opens the Create New Trip modal.
+
+::: tip Reset filters
+The reset button (next to the filters) clears search + status + sort in one click.
+:::
+
+---
+
+## Step 2 — Click "+ Add New Trip" → modal popup
+
+Clicking **+ Add New Trip** opens a small modal — **not** a full-page form. The modal asks for the two fields needed to create a draft trip and redirect you into the builder.
+
+![Create New Trip modal — Trip Title, Trip URL slug, and live URL preview](/screenshots/trips/add-new-modal.webp)
+
+Fields:
+
+| Field         | Type   | Required | Notes                                                                                                                            |
+| ---           | ---    | ---      | ---                                                                                                                              |
+| **Trip Title** | text   | ✅ Yes   | What appears on the public trip page and in the catalogue.                                                                       |
+| **Trip URL**   | text   | ✅ Yes   | Auto-generated from the title (lowercase, hyphens). Click **Customize URL** to override. Validated: lowercase letters, digits, hyphens only. |
+
+Below the fields you'll see a **live preview** of the full public URL (e.g. `https://yoursite.com/trip/bali-beach-retreat`).
+
+Buttons:
+
+- **Cancel** — closes the modal, nothing saved.
+- **Create & Continue** — validates the slug, creates a draft trip, and redirects you to the Trip Builder at Phase 1 → Trip Basics. You'll see a brief loading spinner on the button.
+
+::: warning Slug rules
+Slugs may only contain lowercase letters, digits, and hyphens. The modal blocks creation otherwise.
+:::
+
+---
+
+## Step 3 — Land on the Trip Builder
+
+You arrive on the Trip Builder at:
+
+```
+/wp-admin/admin.php?page=yatra&subpage=trips&action=create   (new)
+/wp-admin/admin.php?page=yatra&subpage=trips&action=edit&id=N (existing)
+```
+
+The Trip Builder has three parts:
+
+- **Left sidebar** — the four phases, each containing one or more sections. Sections that are required show a badge. Sections you've visited are marked complete; sections with validation errors show a warning dot.
+- **Center panel** — the currently active section's fields.
+- **Top action bar** — Preview, Save Draft / Update Draft, and Publish Trip / Update Trip (the publish button has a dropdown for status variants).
+- **Bottom nav bar** — Previous / Next, for stepping through sections in order.
+
+The four phases are:
+
+| Phase                | Badge              | Sections                                                                                       |
+| ---                  | ---                | ---                                                                                            |
+| **1 — Essentials**   | Start Here / Required | Trip Basics ✱, Location & Route, Pricing ✱, Availability & Booking                            |
+| **2 — Details**      | Recommended        | Trip Details (Itinerary + Included/Excluded sub-tabs)                                          |
+| **3 — Optimization** | Recommended        | Media & Gallery, Downloads (free), Categories & Attributes, SEO & Marketing                    |
+| **4 — Advanced**     | Power Users        | Advanced Settings                                                                              |
+
+✱ = required to publish.
+
+::: tip Take a Tour, Fill Dummy Data
+The header includes two helpers:
+- **Take a Tour** — inline onboarding tour of the builder UI.
+- **Fill Dummy Data (1/3)** — populates the current section with realistic sample content. There are three dummy datasets you can cycle through to see how a fully-filled trip looks without typing it all by hand.
+:::
+
+---
+
+## Phase 1 — Essentials
 
 You only need this phase to publish a working trip. Everything later is optional polish.
 
-### 1.1 Trip Basics
+### 1.1 Trip Basics ✱
 
-![Trip Basics — title, slug, short and long description, with built-in WYSIWYG](/screenshots/trip-builder/basic.webp)
+![Trip Basics — title, slug with live preview, short description, long description (WYSIWYG), featured image, highlights repeater](/screenshots/trip-builder/phase-1-basic.webp)
 
-| Field                  | Required | Notes                                                                                              |
-| ---                    | ---      | ---                                                                                                |
-| **Trip Title**         | ✅ Yes   | Show in catalogues + as the `<h1>`. Include destination + duration ("Bali Beach Retreat — 7 Days"). Counter shows characters; aim for ≤ 60. |
-| **Trip URL** (slug)    | ✅ Yes   | Auto-generated from the title; you can override. Becomes `/trip/<slug>/`.                          |
-| **Short Description**  | Recommended | 2–3 sentences shown in trip listings and cards. ≤ 200 chars.                                  |
-| **Long Description**   | Recommended | The main body shown on the trip's public page. WYSIWYG with bold / italic / lists / link / heading levels. |
+| Field                | Type                  | Required     | Notes                                                                                              |
+| ---                  | ---                   | ---          | ---                                                                                                |
+| **Trip Title**       | text                  | ✅ Yes       | Char counter shows 0–60 recommended (max 100). Auto-feeds slug while not manually edited.          |
+| **Trip URL**         | text (monospace)      | ✅ Yes       | Auto-generated. Click **Edit** to override. Includes a Copy button and live URL preview.           |
+| **Short Description** | WYSIWYG               | Recommended  | 100–150-char range works best. Shown in catalogues and trip cards.                                |
+| **Trip Description** | WYSIWYG (min 260 px)  | Recommended  | The main body shown on the public trip page. Supports bold / italic / lists / link / headings.    |
+| **Featured Image**   | WordPress media picker | Recommended | 1200 × 800 px recommended. Preview + Remove button below the picker.                              |
+| **Trip Highlights**  | repeater (text rows)  | Optional     | Add bullet-point highlights ("Sunrise over Mt. Batur", "Private boat to Nusa Lembongan", etc.).   |
 
 **Save Draft** any time — the trip becomes browsable in the admin even with only the title + slug filled in.
 
 ### 1.2 Location & Route
 
-![Location & Route — interactive map, country / region inputs, route plotting](/screenshots/trip-builder/location.webp)
+![Location & Route — destinations multi-select, interactive starting point map, ending point map, seasonal notes](/screenshots/trip-builder/phase-1-location.webp)
 
-For trips that ship anywhere physical:
+| Field                       | Type                                | Required | Notes                                                                                                                                                  |
+| ---                         | ---                                 | ---      | ---                                                                                                                                                    |
+| **Destinations**            | multi-select                        | Optional | Attaches the trip to one or more Destination taxonomy terms (powers the destination archive pages). If empty, you'll see a link to create destinations first. |
+| **Starting Point**          | location picker (search + map + lat/lng) | Optional | Name field auto-fills from map search; 300 px embedded OpenStreetMap; "Use Current Location" button (geolocation); manual lat / lng inputs underneath. |
+| **Ending Point**            | location picker                     | Optional | Same structure as Starting Point. Use for routes that don't end where they began.                                                                       |
+| **Seasonal Availability Notes** | text                            | Optional | Short freeform note ("Available year-round except monsoon season"). Shown on the public page.                                                          |
 
-- **Country** — primary country. Powers the country filter on the front-end and defaults the map.
-- **Region / state**, **city** — drill down to the actual base.
-- **Coordinates** — clickable map (OpenStreetMap via Nominatim) sets latitude / longitude automatically. You can also type lat / lng directly.
-- **Route stops** — a multi-step trip can list each waypoint; the front-end renders these as a small itinerary preview.
+### 1.3 Pricing ✱
 
-::: tip Multiple destinations
-The single-trip Location section is for the *primary* base. Use the **Categorization** section (Phase 3) to attach the trip to one or more **Destination** taxonomies — that's what powers the destination archive pages.
-:::
+![Pricing — Regular vs Traveler-Based toggle, original/discounted price fields, per-category matrix](/screenshots/trip-builder/phase-1-pricing.webp)
 
-### 1.3 Pricing
+The pricing section starts with a **Pricing Type** toggle — pick one of two modes:
 
-![Pricing — base price + per-traveler-category pricing matrix](/screenshots/trip-builder/pricing.webp)
+| Mode                     | When to use                                                                                          |
+| ---                      | ---                                                                                                  |
+| **Regular Pricing**      | One price; everyone pays the same. Best for short experiences with no age tiers.                     |
+| **Traveler-Based Pricing** | Different price per traveler category (Adult / Child / Infant / Senior, configurable under [Yatra → Traveler Categories](/tour-booking#traveler-categories)). |
 
-Yatra supports two pricing modes:
+**Regular Pricing fields:**
 
-| Mode                          | When to use                                                                  |
-| ---                           | ---                                                                          |
-| **Single price**              | One number; everyone pays the same. Best for short experiences with no age tiers. |
-| **Per-traveler-category**     | Different prices for adult / child / infant / senior. Add categories under [Settings → Traveler Categories](/settings#traveler-categories). |
+| Field                | Type                   | Required | Notes                                                            |
+| ---                  | ---                    | ---      | ---                                                              |
+| **Original Price**   | currency (number, 0.01 step) | ✅ Yes | The undiscounted public price.                                  |
+| **Discounted Price** | currency               | Optional | If set, the public price shows a strike-through over the original. |
 
-Other fields:
+**Traveler-Based Pricing fields:**
 
-- **Sale price** — if set, the regular price is shown struck-through and the public page shows the discount.
-- **Pricing notes** — free-text shown beneath the price (e.g. "Group discount available — see below").
+- A repeater of **active traveler categories**. Click **Add Pricing** → pick a category from the dropdown → fill in Original Price and Discounted Price (optional). Repeat for each category.
+- If no categories exist yet, you'll see "No active traveler categories found" with a link to create them first.
 
-::: tip Deposits, partial payments, dynamic pricing
-The deposit / partial-payment toggle lives in [Settings → Payment](/payment-settings#deposits-flexible-payments) (it's site-wide, with a per-trip override on this section).
-
-For percentage / fixed-amount adjustments by season, group size, or last-minute window, enable **Dynamic Pricing** under [Yatra → Modules](/modules#dynamic-pricing) — Pro.
+::: warning Pricing is required to publish
+At least one valid price (Regular Original, or at least one row in the Traveler-Based matrix) must be set before **Publish Trip** will succeed.
 :::
 
 ### 1.4 Availability & Booking
 
-![Availability & Booking — capacity, schedule mode, min/max travelers, sold-out behaviour](/screenshots/trip-builder/duration.webp)
+![Availability & Booking — availability period dates, capacity, departure times, booking policies](/screenshots/trip-builder/phase-1-duration.webp)
 
-This section combines two related concepts:
+This section merges what the source code calls `duration` and `booking`. Field groups:
 
-**Schedule mode** — how the trip is sold:
+**Availability Period**
 
-- **Open-date** — customer picks any date inside an availability window. Best for activity providers (a 90-min walking tour every day).
-- **Fixed departures** — only specific dates are bookable. Manage them under <span class="screen-path">Yatra → Departures</span>. See [Departures & availability](/departures).
-- **Recurring rule** — generate departures from a weekly / monthly pattern.
+| Field                            | Type   | Notes                                                                  |
+| ---                              | ---    | ---                                                                    |
+| **Available From** / **Available To** | date   | The window during which travelers can book this trip.                  |
+| **Booking Window (days in advance)** | number | How far in advance bookings are accepted (e.g. 30 = up to 30 days out). |
+| **Seasonal Availability Notes**  | text   | Short customer-facing note about seasonality.                          |
 
-**Booking constraints** — capacity and traveler limits:
+**Capacity & Travelers**
 
-| Field                          | What it does                                                          |
-| ---                            | ---                                                                   |
-| **Trip duration**              | Days / hours / nights. Powers the duration filter on listings.        |
-| **Total capacity**             | Optional cap across all bookings ever (limited-edition expeditions).  |
-| **Min travelers per booking**  | Reject bookings under this number.                                    |
-| **Max travelers per booking**  | Reject bookings over this number.                                     |
-| **Cut-off**                    | Stop new bookings X hours/days before departure.                      |
-| **Sold-out behaviour**         | "Hide", "Show with badge", "Allow waitlist".                          |
+| Field                | Type   | Notes                                                       |
+| ---                  | ---    | ---                                                         |
+| **Minimum Travelers** | number | Smallest party size accepted.                              |
+| **Maximum Travelers** | number | Hard cap. Used to compute remaining seats per departure.   |
 
-![Booking requirements panel — cut-off, waitlist, group-booking limits](/screenshots/trip-builder/booking.webp)
+**Departure Time (varies by trip type)**
 
-::: tip Three layers of capacity
-Yatra checks min / max **per booking**, capacity **per departure**, and capacity **per trip total** — first one to be exhausted wins. Read the full model in [Departures & availability → Capacity rules](/departures#capacity-rules).
-:::
+- Day-tour trips: **Enable Multiple Time Slots** checkbox.
+  - If on: a repeater of `{ time, label }` rows — e.g., `09:00 Morning Tour`, `14:00 Afternoon Tour`.
+  - If off: a single **Default Departure Time**.
+- Multi-day trips: a single **Default Departure Time**.
+
+**Booking Policies**
+
+| Field           | Type   | Notes                                                       |
+| ---             | ---    | ---                                                         |
+| **Minimum Age** | number | Hard floor for booking. 0 = no restriction.                |
+
+**Accommodation**
+
+A sub-block (Home icon) inside *Availability & Booking* — describes what travelers sleep in.
+
+| Field                       | Type     | Notes                                                                                                                |
+| ---                         | ---      | ---                                                                                                                  |
+| **Accommodation Type**      | text     | Placeholder: *Hotel, Resort, Teahouse, Camping*. Free text — appears on the public trip page.                       |
+| **Meal Plan**               | select   | One of: *Breakfast Only*, *Half Board (Breakfast + Dinner)*, *Full Board (All Meals)*, *All Inclusive*, *No Meals Included*. |
+| **Accommodation Details**   | textarea | Free text — describe the lodging in more depth.                                                                     |
+
+**Transportation**
+
+A sub-block (Car icon) inside *Availability & Booking* — describes pickup/dropoff and what's included.
+
+| Field                       | Type     | Notes                                                                                                                |
+| ---                         | ---      | ---                                                                                                                  |
+| **Transportation Included** | checkbox | Toggle. The three fields below are hidden until this is on.                                                          |
+| **Pickup Location**         | text     | Conditional. Placeholder: *Airport, Hotel, City Center*.                                                             |
+| **Dropoff Location**        | text     | Conditional.                                                                                                         |
+| **Transportation Details**  | textarea | Conditional. Free text — describe vehicles, route, schedule.                                                         |
 
 ---
 
 ## Phase 2 — Details
 
-This is your trip's *story*. The Trip Details section bundles itinerary, what's included / excluded, accommodation, transport, and FAQs into one place.
+### 2.1 Trip Details
 
-### 2.1 Itinerary
+![Trip Details — Itinerary and Included/Excluded sub-tabs](/screenshots/trip-builder/phase-2-trip-details.webp)
 
-![Itinerary builder — day-by-day with included items, drag-to-reorder](/screenshots/trip-builder/itinerary.webp)
+A merged section with two sub-tabs you switch between using a tab bar inside the section:
 
-The itinerary is the day-by-day breakdown that shows on the public trip page.
+#### Sub-tab A: Itinerary
 
-- **Add Day** — append a new day; drag the handle to reorder.
-- Each day has: **Day title**, **Description** (rich text), **Items** (multi-select from your **Itinerary → Items** library).
-- **What's Included** and **What's Excluded** lists live here too — bullet-style, multi-language friendly.
+A day-by-day repeater. Each day has:
 
-::: tip Itinerary items library
-Define reusable items (meals, transfers, gear) once under <span class="screen-path">Yatra → Itinerary → Items</span>, then attach them to as many trips as you like. Editing the item updates every trip that uses it.
+- **Day number** + **Day title** ("Day 1 — Arrival in Bali")
+- **Entries** — items that happen on this day. Each entry can have a title, description, location, start / end time, duration, cost, notes, included / excluded items, and images. Items can also reference a global Itinerary Item by ID (managed under [Yatra → Items / Item Types](/tour-booking)).
+- Add / remove days, reorder by entry.
+
+::: tip
+You can skip the itinerary and still publish — useful for short single-day experiences.
 :::
 
-### 2.2 Trip Attributes
+#### Sub-tab B: Included / Excluded
 
-![Attributes — assign custom attributes (gear, fitness, style) to this trip](/screenshots/trip-builder/attributes.webp)
+Two simple repeaters side-by-side:
 
-Attributes are custom taxonomies you defined under <span class="screen-path">Yatra → Trips → Attributes</span> (e.g. *Style: Lodge / Camping / Hotel*; *Group size: Solo / Small / Large*). Pick the values that apply to this trip.
+- **What's Included** — list of `{ title, description }` rows ("Airport transfers", "All meals", "English-speaking guide").
+- **What's Excluded** — same structure ("Travel insurance", "Personal expenses", "Tips").
 
-Attributes appear as filters on the catalog and as pills on the public trip page.
+![Included / Excluded sub-tab — two repeaters listing what's covered and what isn't](/screenshots/trip-builder/phase-2-included.webp)
 
 ---
 
 ## Phase 3 — Optimization
 
-Optional, but worth doing before going live.
-
 ### 3.1 Media & Gallery
 
-![Media — featured image, gallery, video URL, story / testimonials block](/screenshots/trip-builder/media.webp)
+![Media & Gallery — photo gallery grid with drag reorder, video URL, virtual tour URL, what makes special, trip story, testimonials](/screenshots/trip-builder/phase-3-media.webp)
 
-| Field                   | Notes                                                                          |
-| ---                     | ---                                                                            |
-| **Featured image**      | Main hero on the trip page and the card image on listings. Use a 16:9 photo, ideally ≥ 1600 px wide. |
-| **Gallery**             | Multi-select from the WordPress media library. Shows as a grid below the hero. |
-| **Trip video URL**      | YouTube / Vimeo URL. Embeds inside the trip page. Optional.                    |
-| **Story**               | Long-form rich text — for "Why this trip" / about-the-experience sections.    |
-| **Testimonials**        | Pull from your [Reviews](/booking-settings#reviews) collection or add free-form testimonials specific to this trip. |
+| Field                        | Type                        | Notes                                                                                                      |
+| ---                          | ---                         | ---                                                                                                        |
+| **Photo Gallery**            | grid repeater (drag to reorder) | Multi-image picker via WordPress media library. Order badges, reorder buttons on hover, remove (X) per image. |
+| **Video URL**                | text (URL)                  | YouTube or Vimeo link. Renders embedded on the public page.                                                |
+| **360° Virtual Tour URL**    | text (URL)                  | Any embeddable virtual-tour URL (Matterport, kuula.co, etc.).                                              |
+| **What Makes This Trip Special** | textarea                | Freeform paragraph highlighting unique selling points. Shown as its own block on the public page.          |
+| **Trip Story / Narrative**   | textarea                    | Longer-form story / context.                                                                               |
+| **Testimonials**             | selector                    | Pick from existing reviews tied to bookings. Renders a testimonial card row on the trip page.              |
 
-### 3.2 Categorization
+### 3.2 Downloads
 
-![Categorization — destinations, activities, categories, difficulty, tags](/screenshots/trip-builder/categorization.webp)
+![Downloads — repeater of downloadable items with attachment, description, visibility](/screenshots/trip-builder/phase-3-downloads.webp)
 
-This is where you wire the trip into your catalog taxonomies:
+::: tip Downloads is now free
+This section was previously Pro-only. It's enabled for everyone now — the Trip Builder shows it unconditionally.
+:::
 
-- **Destinations** — multi-select. Powers the destination archive pages.
-- **Activities** — multi-select (Hiking, Sightseeing, Cultural, etc.).
-- **Trip Categories** — top-level grouping (Adventure, Culture, Wildlife).
-- **Difficulty Level** — Easy / Moderate / Challenging / Strenuous.
-- **Tags** — free-form keywords.
-- **Featured Priority** — Featured / New / Limited (drives the *featured_priority* filter on `[yatra_trip]` and the Trip block).
+A repeater of downloadable items. Each item has:
 
-### 3.3 FAQs
+| Field            | Type                          | Notes                                                                              |
+| ---              | ---                           | ---                                                                                |
+| **Title**        | text                          | E.g. "Packing list", "Itinerary PDF", "Waiver form".                              |
+| **Description**  | textarea                      | Short description shown to the customer.                                          |
+| **Visibility**   | dropdown                      | `Public` (anyone can download) / `Logged in users only` / `Booked customers only`. |
+| **File**         | WordPress media picker        | The actual file (PDF, doc, image, zip…) with thumbnail + Select File button.       |
 
-![FAQs — repeater of question / answer pairs shown on the trip page](/screenshots/trip-builder/faqs.webp)
+Rows are reorderable via move-up / move-down buttons.
 
-A repeater of question / answer pairs. Renders as an accordion on the public trip page. Good FAQs reduce enquiry inbox load:
+### 3.3 Categories & Attributes
 
-- "What's the cancellation policy?"
-- "Do I need travel insurance?"
-- "Is this suitable for kids?"
+![Categories & Attributes — trip categories, difficulty, activity types, featured priority, custom attributes](/screenshots/trip-builder/phase-3-categorization.webp)
+
+**Categorization fields:**
+
+| Field                | Type                                      | Notes                                                                                       |
+| ---                  | ---                                       | ---                                                                                         |
+| **Trip Categories**  | multi-select (hierarchical, `-- ` prefix) | Tags the trip with one or more Trip Category terms (powers category archive pages).         |
+| **Difficulty Level** | dropdown                                  | One of the difficulty levels you've configured (e.g. Easy / Moderate / Hard / Expert).      |
+| **Activity Types**   | multi-select                              | Hiking, Wildlife, Cultural, etc. — drives the activities archive.                          |
+| **Featured Priority** | dropdown                                  | `None` (default) / `Featured` / `New` / `Limited` — shows a badge on the public trip card. |
+
+**Custom Attributes** — a delegated component for the attributes you've defined under <span class="screen-path">Yatra → Attributes</span>. Each defined attribute shows as its own input below this section.
 
 ### 3.4 SEO & Marketing
 
-![SEO & Marketing — meta title, description, social share image, schema fields](/screenshots/trip-builder/seo.webp)
+![SEO & Marketing — meta title, description, keywords, Google preview card, FAQ repeater](/screenshots/trip-builder/phase-3-seo.webp)
 
-| Field                       | Notes                                                                 |
-| ---                         | ---                                                                   |
-| **Meta title**              | Browser tab + search-result title. Defaults to the trip title.        |
-| **Meta description**        | 150–160 characters; appears under the title in search results.        |
-| **Social share image**      | Open Graph / Twitter card. 1200×630 recommended.                      |
-| **Canonical URL**           | Override only if this trip is also published elsewhere.               |
-| **Schema fields**           | Auto-populated from the trip data; you can override (currency, valid-from, valid-through). |
+**Search-engine optimization:**
 
-::: tip If you use Yoast / RankMath / SEOPress
-Those plugins emit their own meta tags and override this section. Use Yatra's SEO fields only if no SEO plugin is active.
-:::
+| Field                 | Type    | Notes                                                                                     |
+| ---                   | ---     | ---                                                                                       |
+| **Meta Title**        | text    | Max 60 chars. Falls back to the trip title when empty.                                    |
+| **Meta Description**  | textarea (max 160 chars) | Shown in search results below the title.                                  |
+| **Meta Keywords**     | text    | Comma-separated. Mostly ignored by Google but other engines / plugins may use them.       |
+| **Google Preview**    | read-only | Live preview card showing how the trip will appear in a Google search result.            |
+
+**Frequently Asked Questions:** a repeater with `{ Question, Answer }` rows. Click **Add FAQ** to append; **Remove (×)** per row to delete. Renders as an accordion on the public trip page (and as `FAQPage` JSON-LD for SEO).
 
 ---
 
 ## Phase 4 — Advanced
 
-Power-user options. Skip on first creation; revisit when you have a pattern.
+### 4.1 Advanced Settings
 
-![Advanced — visibility, scheduling, frontend tab order, custom CSS / JS hooks](/screenshots/trip-builder/advanced.webp)
+![Advanced Settings — version, scheduled publish/unpublish, seasonal auto-enable, frontend tabs drag-reorder](/screenshots/trip-builder/phase-4-advanced.webp)
 
-| Field                       | Notes                                                                 |
-| ---                         | ---                                                                   |
-| **Status**                  | Draft / Pending Review / Published / Approved / Archived.             |
-| **Publish date**            | Schedule the trip to go live in the future.                           |
-| **Frontend tabs order**     | Reorder the tabs on the public trip page (Overview, Itinerary, Reviews, FAQs, etc.). Hide a tab by removing it. |
-| **Visibility**              | Public / private / password-protected (uses WP's standard visibility model). |
-| **Custom CSS / JS hooks**   | Per-trip `<head>` injection — useful for affiliate pixels.            |
+**Version control:**
+
+- **Version** — readonly number that auto-increments on every save.
+
+**Scheduled publishing:**
+
+| Field                       | Type | Notes                                                                  |
+| ---                         | ---  | ---                                                                    |
+| **Schedule Publish Date**   | date | When set, the trip is auto-published on this date.                     |
+| **Schedule Unpublish Date** | date | When set, the trip auto-moves to draft / archived on this date.        |
+
+**Seasonal auto-management:**
+
+- **Enable seasonal auto-management** checkbox. When on:
+  - **Auto-Enable Date** — date the trip becomes bookable each year.
+  - **Auto-Disable Date** — date it stops being bookable.
+
+**Frontend Tabs Management** — drag-to-reorder repeater for the tabs shown on the public trip page (Overview, Itinerary, Included, Location, Important Info, Downloads, FAQ, Story, Special, Testimonials). Each row has:
+
+| Control     | Notes                                                                                          |
+| ---         | ---                                                                                            |
+| Grip handle | Drag the row up or down to change tab order on the public page.                               |
+| **Label**   | The visible tab title. Disabled until the tab is enabled.                                     |
+| Content type | Read-only badge (`overview`, `itinerary`, `custom`, etc.).                                   |
+| Enable toggle | Per-tab on/off — disabled tabs are hidden on the public trip page.                          |
+| Icon picker | Pick a Lucide icon or upload an image for the tab.                                             |
+| Custom content | textarea (only for `content_type=custom` tabs) — your own HTML/markdown block.             |
+| Delete (×)  | Only available on custom tabs you've added.                                                   |
 
 ---
 
-## Saving and publishing
+## Step 4 — Save Draft, Preview, or Publish
 
-The Trip Builder is **autosave-friendly**: every section change is saved to a draft on navigation. The header buttons:
+The top-right action bar gives you three controls:
 
-| Button         | What it does                                                                          |
-| ---            | ---                                                                                   |
-| **Save Draft** | Saves the current state, stays on the same section.                                   |
-| **Preview**    | Opens the trip page in a new tab using a draft-preview cookie (no public URL exposed). |
-| **Publish Trip** | Validates Phase 1 fields are complete, sets status to *Published*, makes it bookable. |
+![Top action bar with Preview, Save Draft, and Publish Trip dropdown](/screenshots/trip-builder/publish-dropdown.webp)
 
-If publish fails, the offending section gets a red dot in the sidebar and the validation message shows at the top of the form.
+- **Preview** — opens the public trip page in a new tab with current unsaved state.
+- **Save Draft** / **Update Draft** — saves without changing status. Always-on safety net.
+- **Publish Trip** / **Update Trip** — the primary blue button with a chevron-down dropdown for status variants:
 
-## What's next
+| Action            | Resulting status |
+| ---               | ---              |
+| Save as Draft     | `draft`          |
+| Save for Review   | `review`         |
+| Mark as Approved  | `approved`       |
+| Publish           | `publish`        |
+| Suspend           | `suspended`      |
+| Archive           | `archived`       |
 
-- [Departures & availability](/departures) — once the trip is published, set its dates / capacities.
-- [Settings → Booking](/settings#3-booking) — global booking-flow toggles (guest checkout, expiry, waitlist).
-- [Pricing → Dynamic Pricing](/modules#dynamic-pricing) — Pro: per-season, per-group-size, last-minute pricing rules.
-- [Bookings & customers](/booking-settings) — once orders start coming in.
+::: warning Phase 1 validation
+Hitting **Publish** with missing required fields (Title, Slug, Pricing) shows inline errors and jumps the form to the first failing section. The save itself is blocked until the errors are fixed.
+:::
+
+At the bottom of the section, **Previous** and **Next** buttons let you step through sections without using the sidebar.
+
+---
+
+## What happens after publish
+
+- The trip appears in <span class="screen-path">Yatra → Trips</span> with status **Published**.
+- Its public URL (`/trip/<slug>/`) is live.
+- The trip becomes selectable when creating **Departures**, **Bookings**, and **Discounts**.
+- Reports start counting views, add-to-bookings and conversions for this trip.
+
+Next up: configure **[Departures & availability](/departures)** to schedule actual dates travelers can book — or jump straight to **[Bookings](/booking-settings)** if you want to take a test reservation.

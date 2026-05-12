@@ -19,35 +19,37 @@ After you install Yatra, open **WordPress admin → Yatra**. You’ll see a mode
 
 ## Left sidebar (top to bottom)
 
-| What you see in Yatra | What it’s for | Learn more |
+| What you see in Yatra | What it's for | Learn more |
 | --- | --- | --- |
-| **Dashboard** | Overview, shortcuts, getting started | [Quick start](/quick-start) |
-| **Trips → All Trips** | Create and edit trips | [Trips & catalog](/tour-booking) |
-| **Trips → Activities** | Activity types for filtering and trip data | [Trips & catalog](/tour-booking) |
-| **Trips → Destinations** | Destinations for your catalog | [Trips & catalog](/tour-booking) |
-| **Trips → Categories** | Trip categories | [Trips & catalog](/tour-booking) |
-| **Trips → Difficulty Levels** | Difficulty taxonomy | [Trips & catalog](/tour-booking) |
-| **Trips → Availability** | How trips can be booked (rules) | [Trips & catalog](/tour-booking) |
-| **Trips → Attributes** | Trip attributes (gear, fitness, etc.) | [Trips & catalog](/tour-booking) |
-| **Trips → Additional Services** | Upsells (baggage, transfers, etc.) **Pro** | [Pro modules](/third-party-integrations) |
-| **Trips → Trip Consent** | Waivers & consent **Pro** | [Pro modules](/third-party-integrations) |
-| **Traveler Categories** | Adults, children, pricing groups | [Bookings & customers](/booking-settings) |
-| **Itinerary → Item Types / Items / Itinerary** | Day-by-day trip content | [Trips & catalog](/tour-booking) |
-| **Departures** | Dates, capacity, recurring departures | [Departures & availability](/departures) |
-| **Discounts** | Coupons and discounts | [Bookings & customers](/booking-settings) |
-| **Payments** | Payments list and gateway activity | [Payments](/payment-settings) |
-| **Bookings** | All bookings | [Bookings & customers](/booking-settings) |
-| **Customers** | Customer records | [Bookings & customers](/booking-settings) |
-| **Travelers** | Traveler profiles | [Bookings & customers](/booking-settings) |
-| **Enquiries** | Trip enquiry inbox | [Bookings & customers](/booking-settings) |
-| **Reviews** | Trip reviews | [Bookings & customers](/booking-settings) |
-| **Reports** | Reports and summaries | [Bookings & customers](/booking-settings) |
-| **Email** | SMTP, templates, and automation **Pro** tabs | [Email & notifications](/email-settings) |
-| **Abandoned Recovery** | Abandoned checkout recovery **Pro** | [Pro modules](/third-party-integrations) |
-| **Dynamic Pricing** | Rule-based pricing **Pro** | [Pro modules](/third-party-integrations) |
-| **Modules** | Turn Pro features on or off | [Pro modules](/third-party-integrations) |
-| **License** | Activate Yatra Pro | [Installation](/installation) |
-| **Settings** | Currency, pages, general options | [Installation](/installation), [Payments](/payment-settings) |
+| **Dashboard** | Landing page — quick stats, recent bookings, shortcuts | [Quick start](/quick-start) |
+| **Trips → All Trips** | The Trips list. Click + Add New Trip to open the create modal | [Trips & catalog](/tour-booking) |
+| **Trips → Activities** | Activity taxonomy (Hiking, Cultural, Wildlife…) used for filtering | [Trips & catalog](/tour-booking) |
+| **Trips → Destinations** | Destinations taxonomy — powers destination archive pages | [Trips & catalog](/tour-booking) |
+| **Trips → Categories** | Top-level trip categories | [Trips & catalog](/tour-booking) |
+| **Trips → Difficulty Levels** | Difficulty taxonomy (Easy / Moderate / Challenging…) | [Trips & catalog](/tour-booking) |
+| **Trips → Availability** | Manual availability dates + recurring rules, per trip | [Availability — 3-layer system](/availability) |
+| **Trips → Attributes** | Custom attributes (Style, Group size…) used as filters | [Trips & catalog](/tour-booking) |
+| **Trips → Additional Services** **Pro** | Sell add-ons like transfers or insurance | [Additional Services module](/modules/additional-services) |
+| **Trips → Trip Consent** **Pro** | Digital waivers and consent forms | [Trip Consent module](/modules/trip-consent) |
+| **Traveler Categories** | Adult / Child / Infant / Senior — pricing tiers | [Trips & catalog → Traveler Categories](/tour-booking#traveler-categories) |
+| **Itinerary → Item Types** | Reusable item-type taxonomy (Meal, Activity, Transfer…) | [Trips & catalog](/tour-booking) |
+| **Itinerary → Items** | Reusable itinerary items you can drop into trip days | [Trips & catalog](/tour-booking) |
+| **Itinerary → Itinerary** | The global itinerary library | [Trips & catalog](/tour-booking) |
+| **Departures** | Operator view of every scheduled run | [Departures](/departures) |
+| **Discounts** | Promo codes and group discounts | [Bookings & customers → Discounts](/booking-settings#discounts-coupons) |
+| **Payments** | Payment ledger, manual payment entry, refund flagging | [Payments](/payment-settings) |
+| **Bookings** | The bookings list and detail page | [Bookings & customers](/booking-settings) |
+| **Customers** | Customer profiles, loyalty tiers, total spend | [Bookings & customers → Customers](/booking-settings#customers) |
+| **Travelers** | Manifest-style roster of every traveler across all bookings | [Departures → Travelers roster](/departures#the-travelers-roster) |
+| **Enquiries** | Pre-sale enquiry inbox with respond modal | [Bookings & customers → Enquiries](/booking-settings#enquiries) |
+| **Reviews** | Review moderation queue | [Bookings & customers → Reviews](/booking-settings#reviews) |
+| **Reports** | Sales / bookings reports | [Bookings & customers](/booking-settings) |
+| **Email** | Delivery settings + transactional templates (+ sequences / logs with Pro) | [Email & notifications](/email-settings) |
+| **Abandoned Recovery** **Pro** | Auto-email cart-abandoners with recovery links | [Abandoned Booking Recovery module](/modules/abandoned-booking-recovery) |
+| **Dynamic Pricing** **Pro** | Rule engine for season / demand / last-minute pricing | [Dynamic Pricing module](/modules/dynamic-pricing) |
+| **Modules** | Turn Pro features on or off | [All modules](/modules) |
+| **License** | Activate Yatra Pro license | [Installation → Step 2](/installation#step-2-install-yatra-pro) |
+| **Settings** | The 13-tab settings hub | [Settings overview](/settings) |
 
 WordPress may also show **Upgrade to Pro** under the Yatra menu when you’re on the free plugin—it opens [wpyatra.com pricing](https://wpyatra.com/pricing/) in a new tab.
 

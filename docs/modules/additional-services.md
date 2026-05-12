@@ -1,6 +1,6 @@
 ---
 title: Additional Services
-description: Sell per-trip add-ons (transfers, gear hire, meal plans, photo packages) at checkout.
+description: Step-by-step setup for the Yatra Pro Additional Services module — create global or per-trip upsells (airport transfer, insurance, gear rental) with quantity controls and per-person, per-booking, or per-day pricing.
 prev:
   text: Google Calendar
   link: /modules/google-calendar
@@ -11,43 +11,138 @@ next:
 
 # Additional Services <span class="pro-pill">PRO</span>
 
-![Additional Services admin — list of services with type, price, attached trips](/screenshots/modules/additional-services.webp)
+![Yatra → Additional Services admin — list of upsell items, status, price](/screenshots/modules/additional-services-list.webp)
 
-Sell **add-ons** at the booking step — airport transfers, gear hire, meal plans, photo packages, day-of upgrades. Each service can be attached to specific trips, all trips, or only certain destinations.
+Sell **optional add-ons** alongside your trips — airport transfers, travel insurance, gear rental, photography packages, single-supplement upgrades. Each service appears as a tick-box on the booking flow with the customer's currency and total updating live. Services can be attached to specific trips or offered globally.
 
-## What problem it solves
+## What you'll need
 
-Travel businesses make material margin on extras (a $25 transfer or $40 photo package on top of every booking). Without a structured add-on system you either bury them in the trip price (losing transparency) or sell them off-platform (losing the data).
+| Thing                             | Where to get it                                                                |
+| ---                               | ---                                                                            |
+| Yatra Pro license                 | <span class="screen-path">Yatra → License</span>                              |
+| Additional Services module enabled | <span class="screen-path">Yatra → Modules → Additional Services</span>        |
+| At least one published trip       | Services attach to existing trips (or all of them).                            |
 
-## Enable
+## Step 1 — Enable the module
 
-1. Toggle on at <span class="screen-path">Yatra → Modules → Additional Services</span>.
-2. New menu item: <span class="screen-path">Yatra → Trips → Additional Services</span>.
+1. Open <span class="screen-path">Yatra → Modules</span>.
+2. Find **Additional Services** → toggle on.
+3. A new menu item appears: <span class="screen-path">Yatra → Additional Services</span> (under the Trips group in the sidebar).
 
-## Create a service
+## Step 2 — Create a service
 
-1. Open <span class="screen-path">Yatra → Trips → Additional Services → + Add New</span>.
-2. Fill in:
-   - **Title** (e.g. "Airport pickup — DPS to Ubud").
-   - **Description** — shown in the checkout add-on selector.
-   - **Price**, **price type** (per booking / per traveler / per night).
-   - **Image** (optional).
-   - **Availability** — fixed dates, recurring, or "any time the trip is bookable".
-3. **Attach to trips** — pick all trips, specific trips, or all trips in selected destinations.
-4. **Save**.
+Open <span class="screen-path">Yatra → Additional Services → + Add Service</span>.
 
-## How it appears at checkout
+![Additional Services form — name, description, price type/per, image, attach-to-trips](/screenshots/modules/additional-service-form.webp)
 
-Yatra inserts an **Add-ons** step in the booking flow whenever the chosen trip + date has eligible services. Customers tick the services they want; price updates live; the chosen services are stored with the booking and shown on the invoice / voucher.
+### Basics
 
-## Reporting
+| Field           | Notes                                                                      |
+| ---             | ---                                                                        |
+| **Name**        | Customer-facing label (e.g. *"Airport Transfer"*, *"Travel Insurance"*).   |
+| **Description** | Shown under the name in the booking flow. Plain text, ~1–2 sentences.      |
+| **Image**       | Optional. WordPress media picker. Appears as a thumbnail next to the service. |
+| **Sort order**  | Lower numbers appear first. Default `0`.                                   |
+| **Status**      | `Published` / `Draft` / `Trash`.                                           |
 
-Per-service revenue and uptake rate live under <span class="screen-path">Yatra → Reports → Additional Services</span>.
+### Pricing
 
-## Hooks
+Two enums combine to define how the service is charged:
 
-| Hook                                              | Type    | Purpose                                                  |
-| ---                                               | ---     | ---                                                      |
-| `yatra_booking_additional_services`               | filter  | Adjust the services subtotal.                            |
-| `yatra_booking_get_services`                      | filter  | Override which services are eligible for a given trip / date. |
-| `yatra_booking_services_total`                    | filter  | Final services-subtotal hook before inclusion in booking total. |
+**Price Type:**
+
+| Value         | What it does                                                              |
+| ---           | ---                                                                       |
+| `fixed`       | Flat amount in your site currency. *"$30 for the transfer"*.             |
+| `percentage`  | Percentage of the trip base price. *"+5% for insurance"*.                |
+
+**Price Per:**
+
+| Value      | What it does                                                                  |
+| ---        | ---                                                                           |
+| `person`   | Multiplied by the number of travelers. *"$15 per traveler for the lunch"*.   |
+| `booking`  | Charged once per booking, regardless of group size. *"$50 booking fee"*.    |
+| `day`      | Multiplied by the trip duration in days. *"$10 per day for the bike rental"*. |
+
+Combine them: a `fixed` × `person` service multiplies the fixed amount by travelers; a `percentage` × `booking` charges the percentage once.
+
+### Quantity controls
+
+| Field                 | Notes                                                                  |
+| ---                   | ---                                                                    |
+| **Allow quantity**    | When on, the customer can pick a quantity (e.g. *2 airport transfers*). |
+| **Min quantity**      | Default 1. Useful when the service has a minimum order.                 |
+| **Max quantity**      | Per-booking cap.                                                       |
+
+### Attach to trips
+
+Two options:
+
+1. **Specific trips** — searchable multi-select picker. The service only appears on these trips.
+2. **All trips** — global toggle. Service appears on every trip's checkout.
+
+## Step 3 — Verify the service appears at checkout
+
+1. Open a trip you attached the service to in a private browser window.
+2. Click **Book Now** → reach the *Add-ons* / *Extras* step.
+3. The service appears as a tick-box (or stepper, when *Allow quantity* is on) with the calculated price.
+4. Tick / pick a quantity → the price summary updates with the line item.
+5. Complete checkout → the booking detail page (admin side) shows the service in the **Payment Summary** breakdown under *Additional Services*.
+
+![Customer checkout — additional services with live total](/screenshots/modules/additional-services-checkout.webp)
+
+## The admin list
+
+Default columns:
+
+- **Service** (image + name).
+- **Price** (formatted with type/per indicator, e.g. *"$30 per booking"* or *"+5% per person"*).
+- **Used by** — number of trips this service is attached to.
+- **Status** badge.
+- **Sort order**.
+
+Status filter pills: All / Published / Draft / Trash.
+
+Bulk actions: Mark as Published / Draft / Trash / Delete permanently.
+
+## Worked examples
+
+| You want…                                                       | Price type     | Price per     | Allow quantity |
+| ---                                                             | ---            | ---           | :-:            |
+| Flat $50 booking fee                                            | `fixed`        | `booking`     | off            |
+| $30 airport transfer per person                                 | `fixed`        | `person`      | off            |
+| Travel insurance @ 5% of trip price                             | `percentage`   | `booking`     | off            |
+| $10/day camera rental, customer picks how many days             | `fixed`        | `day`         | on (max 14)    |
+| Multiple airport transfers (one each way, customer picks 1 / 2) | `fixed`        | `booking`     | on (max 2)     |
+
+## On the booking detail page
+
+The booking's **Payment Summary** sidebar lists every added service as its own line:
+
+```
+Trip Base Price ............... $499.00
+Airport Transfer × 2 .......... $60.00
+Insurance (5%) ................ $24.95
+Subtotal ...................... $583.95
+```
+
+Cancelling a booking restores the seats; refunding an additional service line happens via the gateway (Yatra doesn't selectively refund a single line item — it refunds the whole booking).
+
+## Troubleshooting
+
+**Service doesn't appear at checkout** — confirm the service status is *Published*, and that it's either attached to this specific trip OR set to *All trips*. *Draft* services are hidden from the public flow.
+
+**Wrong line-item total** — re-check the *Price type* + *Price per* combo. A `percentage` × `person` service multiplies the percentage by traveler count, not by the trip price alone.
+
+**Customer sees a quantity stepper they shouldn't** — toggle *Allow quantity* off and re-save.
+
+**Service appears on wrong trips** — clear *Specific trips* and add only the trips you want, OR toggle *All trips* off.
+
+## Useful links
+
+- [Bookings → Payment Summary](/booking-settings#_1-booking-overview) — where service line items appear on the booking detail.
+- [Hooks & filters](/hooks-filters) — `yatra_additional_services_calculate_price`, `yatra_additional_services_render_label`.
+
+## Where to read more
+
+- [All modules](/modules#additional-services) — module catalog.

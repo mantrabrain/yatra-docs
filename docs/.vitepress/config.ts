@@ -202,8 +202,9 @@ export default defineConfig({
         items: [
           { text: 'Trips & catalog', link: '/tour-booking' },
           { text: 'Create a trip (walkthrough)', link: '/trip-creation' },
+          { text: 'Availability (3-layer system)', link: '/availability' },
           {
-            text: 'Departures & availability',
+            text: 'Departures',
             link: '/departures'
           },
           { text: 'Bookings & customers', link: '/booking-settings' },

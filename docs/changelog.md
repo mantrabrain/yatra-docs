@@ -21,6 +21,48 @@ This is the operator-facing release log for Yatra Free and Yatra Pro. The canoni
 
 ## Yatra Free
 
+### 3.0.5
+
+Routing, FSE compatibility, and bug-fix release. **Strongly recommended** for any site running a block theme. Backward compatible with 3.0.4.
+
+**Full Site Editing (FSE) compatibility**
+
+- **No more 404 chrome on plugin pages.** Block themes were resolving Yatra URLs to `404.html` (with its 404 header template part) because `WP::handle_404()` saw no matching post. Yatra now hooks `pre_handle_404` to opt its routes out of WordPress's 404 logic, so the resolved template is `index.html` / the singular / archive variant — not 404. The visible symptom (404-flavoured header bar on trip / listing / booking / account pages) is gone.
+- **Proper template-include flow.** Page handlers no longer `include + exit` inside `template_redirect`. They configure `$wp_query` (virtual `WP_Post`, correct conditional tags) and stash the chosen PHP template in a per-request `PageContext`; a `template_include` filter at priority 99 swaps it in. WordPress's full template-loader pipeline runs, so SEO plugins, caching layers, `wp_head` / `wp_footer` extensions, and theme overrides all work.
+- **Site Editor visibility.** Yatra registers virtual block templates (*Yatra: Single Trip*, *Yatra: Trip Listing*, *Destination*, *Activity*, *Booking*, *Booking Confirmation*, *My Account*). Admins can find and edit them under <span class="screen-path">Appearance → Editor → Templates</span>. Saved customisations override the bundled PHP template. The embedded `yatra/page-content` server block renders Yatra's content inside whatever chrome the admin designs.
+- **Theme overrides without the editor.** Drop a copy of any Yatra template at `wp-content/themes/{your-theme}/yatra/{template}.php` and `locate_template()` picks it up first — works for classic themes and block themes.
+
+**Per-trip Deposit fields now actually save**
+
+- `TripValidator::sanitize()` previously had an explicit allowlist that included `payment_terms` but **silently dropped** `deposit_amount` and `deposit_percentage`. The fields appeared to save (no error), the DB columns just never received the values. Validator now sanitises all three plus does range validation (amount ≥ 0, percentage 0–100).
+- Empty values clear the column (NULL) rather than coercing to 0, so the Pro Flexible Payments filter can correctly distinguish *no per-trip override* from *intentional $0 deposit*.
+
+**Deposit option now appears for per-trip values**
+
+- `templates/partials/booking-form-fields.php` now passes `trip_id` to the `yatra_payment_method_options` filter context. Pro's Flexible Payments module can read it and show the *Pay X% Deposit* radio whenever a trip has per-trip deposit values, even when the site-wide deposit flag is off. Previously the radio only appeared if you globally enabled deposits.
+
+**Filter signatures (additive, backward compatible)**
+
+`$context` is now passed to:
+- `yatra_deposit_percentage(int $default, array $context = [])`
+- `yatra_partial_payment_percentage(int $default, array $context = [])`
+- `yatra_calculate_amount_due(float $amount_due, float $total_amount, string $method, array $context = [])`
+- `yatra_payment_method_options(array $options, array $booking_data)` — `$booking_data` gains `trip_id`.
+
+Old callbacks that ignore the new arg continue to work; they just won't see per-trip overrides. See [Hooks & filters → Flexible / Scheduled Payments](/hooks-filters#pro-flexible-scheduled-payments).
+
+**UI polish**
+
+- Booking-page tax line item now uses a proper Feather *percent* icon (the previous SVG had two overlapping paths that rendered as a broken wallet shape).
+- The **Deposit & Payment Terms** section on the Trip Edit form is now visible in the free plugin — fields are disabled with a **PRO** badge and an *Upgrade to Pro* / *Activate module* CTA. Operators on the free plugin can now discover the feature instead of finding nothing.
+
+**Internal cleanup**
+
+- Removed unused `app/Core/Template/TemplateRenderer.php` (zero external consumers in Free or Pro).
+- Replaced two hardcoded table names in Pro (`{$wpdb->prefix}yatra_trips`, `{$wpdb->prefix}yatra_departures`) with `TripsTable::getTableName()` / `DeparturesTable::getTableName()` — the hardcoded names referenced tables that no longer exist after the `_new_` rename and would surface as *Table doesn't exist* warnings.
+
+**Upgrade safety:** safe to update from 3.0.4.
+
 ### 3.0.4
 
 Security and correctness release. **Strongly recommended** if you accept payments. No UI changes — all fixes are server-side and backward compatible.

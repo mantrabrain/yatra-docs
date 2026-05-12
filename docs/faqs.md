@@ -27,15 +27,16 @@ Yatra is the free plugin. Yatra Pro is a separate plugin that requires Yatra to 
 
 ### What URLs does Yatra create?
 
-| URL                | What it shows                              |
-| ---                | ---                                        |
-| `/trips/`          | Public trip catalog                        |
-| `/{trip-slug}/`    | Single trip page                           |
-| `/destination/`    | Destinations archive                       |
-| `/activity/`       | Activities archive                         |
-| `/trip-category/`  | Trip categories archive                    |
-| `/booking/`        | Booking flow / cart                        |
-| `/my-account/`     | Customer account                           |
+| URL                       | What it shows                              |
+| ---                       | ---                                        |
+| `/trip/`                  | Public trip catalog                        |
+| `/trip/{trip-slug}/`      | Single trip page                           |
+| `/destination/`           | Destinations archive                       |
+| `/activity/`              | Activities archive                         |
+| `/trip-category/`         | Trip categories archive                    |
+| `/book/`                  | Booking flow / cart                        |
+| `/book/{trip-slug}/`      | Booking flow for a specific trip           |
+| `/my-account/`            | Customer account                           |
 
 You can rename any slug under <span class="screen-path">Yatra → Settings → Permalink</span>.
 
@@ -103,7 +104,7 @@ Yes. The <span class="screen-path">Yatra → Payments</span> page lets you mark 
 
 ### How do discounts / coupons work?
 
-The free plugin supports percentage or fixed discounts, redemption limits, optional date windows, "first-time customer only" flags, and per-trip applicability. The Pro **Advanced Discount** module adds group-size auto-discounts and stacking rules. See [Bookings & customers](/booking-settings#discounts-coupons).
+The free plugin supports percentage or fixed discounts, redemption limits, optional date windows, "first-time customer only" flags, and per-trip applicability — via codes the customer types at checkout. The Pro **Advanced Discount** module adds *Group Only* (auto-applies when traveler count crosses a threshold) and *Promo + Group* (a code that also stacks group-size logic on top). See [Discounts](/booking-settings#discounts-coupons) and [Advanced Discount module](/modules/advanced-discount).
 
 ### How do I handle different currencies for different markets?
 
@@ -148,19 +149,25 @@ Yes — the booking form includes optional emergency contact fields. For passpor
   <a class="pro-callout__cta" href="https://wpyatra.com/pricing/">Unlock trip consent →</a>
 </div>
 
-## Departures & availability
+## Availability & departures
 
-### What's the difference between a departure and an availability rule?
+### What's the priority between manual dates, recurring rules, and the trip default?
 
-A **departure** is a specific date (e.g. March 5). An **availability rule** is a recurring pattern (e.g. every Tuesday) that generates departures automatically. See [Departures & availability](/departures).
+Yatra uses a **three-layer system**, highest priority first:
+
+1. **Manual Availability Dates** — specific rows (per-date capacity, sold-out flag, price override). These always win.
+2. **Recurring Availability Rules** — pattern-based dates (every Tuesday, daily July–August, etc.).
+3. **Trip Builder default** — the trip's *Availability & Booking* window, used as a fallback for any date neither of the above touches.
+
+See [Availability — three-layer system](/availability) for the worked-example breakdown.
 
 ### Can I cap each departure separately?
 
-Yes — set per-departure capacity in the Departure detail page. The trip's overall capacity caps total bookings across all departures.
+Yes — set per-departure capacity on the individual departure (or per-rule capacity on a recurring rule). The trip's *Max Travelers* under Availability & Booking acts as the default and as an absolute cap.
 
 ### How do I cancel a departure with notice?
 
-Open the departure → click **Cancel** → email affected customers → refund related bookings via the Bookings page.
+Open the departure → click **Cancel** → email affected customers → refund related bookings via the Bookings page. See [Departures](/departures#cancel-a-departure) for the full flow.
 
 ## Pricing
 

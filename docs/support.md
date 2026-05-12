@@ -41,12 +41,12 @@ A good bug report saves a round-trip and gets your issue fixed faster. Include:
 A numbered list a stranger could follow:
 
 ```
-1. Go to /trips/.
+1. Go to /trip/.
 2. Click "Everest Base Camp Trek".
 3. Click "Book now".
 4. Pick March 5 departure, 1 adult.
 5. Pay with Stripe sandbox card 4242 4242 4242 4242.
-6. Land back on /booking/?confirmed=1.
+6. Land back on /book/?confirmed=1.
    Expected: booking shows "confirmed".
    Actual: booking shows "pending" and the customer is not auto-confirmed.
 ```

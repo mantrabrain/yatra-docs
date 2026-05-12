@@ -31,7 +31,7 @@ When you select the **Yatra Trip** block, the right sidebar shows:
 - **Columns** — for the grid layout (1–4).
 - **Order by** — Date, Title, Price, Featured Priority.
 - **Order** — Ascending / Descending.
-- **Featured Priority** — None / Featured / Sticky / High-priority. Filters or sorts by the trip's Featured Priority value.
+- **Featured Priority** — None / Featured / New / Limited. Filters or sorts by the trip's Featured Priority value.
 - **Difficulty Level** — filter by chosen levels.
 - **Destinations / Activities / Categories** — multi-select filters.
 - **Pagination** — show / hide.
@@ -85,7 +85,7 @@ Then edit the copy in your theme. Plugin updates won't overwrite it.
 | Path (under `templates/`)                         | What it renders                              |
 | ---                                               | ---                                          |
 | `single-trip.php`                                 | Single trip page                             |
-| `archive-trip.php`                                | Main `/trips/` archive                       |
+| `archive-trip.php`                                | Main `/trip/` archive                        |
 | `partials/trip-card.php`                          | Trip card                                    |
 | `partials/booking-content.php`                    | The booking / cart content shell             |
 | `partials/single-trip/enquiry-modal.php`          | The "Make an Enquiry" modal                  |
@@ -94,8 +94,8 @@ Then edit the copy in your theme. Plugin updates won't overwrite it.
 
 ## Caching, CDN, image plugins
 
-- Exclude `/booking/`, `/my-account/`, `/wp-json/yatra/v1/*` from full-page caching.
-- Bypass cache for logged-in users on trip pages (so Wishlist heart state is accurate).
+- Exclude `/book/`, `/my-account/`, `/wp-json/yatra/v1/*` from full-page caching.
+- Bypass cache for logged-in users on trip pages (so wishlist heart state, if enabled, is accurate).
 - Lazy-loading images is fine — cards include explicit width/height for CLS.
 - WebP via image plugins (ShortPixel, EWWW) works without changes.
 

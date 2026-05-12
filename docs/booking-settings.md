@@ -1,248 +1,529 @@
 ---
 title: Bookings & customers
-description: The Yatra booking lifecycle — admin workflow, traveler details, customer accounts, guest checkout, enquiries, and reviews moderation.
+description: Operator guide for the Yatra Bookings module — the Bookings list, every section of the Booking detail page, manual booking creation, Customers, Enquiries, Reviews, and Discounts (free and Pro). Verified against the source.
 ---
 
 # Bookings & customers
 
-This page is your operational guide — the day-to-day "where do I click to manage these bookings" reference.
+This page covers everything under the **bookings family** of admin menus:
+
+| Menu                           | What it manages                                                                  |
+| ---                            | ---                                                                              |
+| <span class="screen-path">Yatra → Bookings</span>   | Every booking — list, detail page, manual create / edit, statuses               |
+| <span class="screen-path">Yatra → Customers</span>  | Customer profiles, loyalty tier, status, total spend (Pro)                     |
+| <span class="screen-path">Yatra → Enquiries</span>  | Pre-sale enquiries from the trip page / contact form, with a respond-in-admin flow |
+| <span class="screen-path">Yatra → Reviews</span>    | Trip reviews and their moderation queue                                         |
+| <span class="screen-path">Yatra → Discounts</span>  | Promo codes (free) and group-size discounts (Pro)                              |
+
+For the *configuration* side (cancellation policy, expiry, waitlist toggles), see [Settings → Booking](/settings#_3-booking). For the form builder that shapes the public checkout, see [Settings → Booking Form](/settings#_4-booking-form).
+
+---
 
 ## The Bookings list
 
-![Bookings list — KPI cards, filters, search, sortable columns](/screenshots/bookings/bookings-list.webp)
+![Yatra Bookings listing — stats cards, status pills, default columns](/screenshots/bookings/bookings-list.webp)
 
 Open <span class="screen-path">Yatra → Bookings</span>.
 
-You'll see a table of every booking with:
+The page has three blocks:
 
-- **Search** by booking number, customer, or trip.
-- **Booking status filter** — Pending, Confirmed, Cancelled, Completed.
-- **Payment status filter** — Pending, Partial, Paid, Refunded, Failed.
-- **Sort** by Booking Date, Travel Date, Booking Number, Customer, Trip, Amount, Status.
+1. **Stats cards** (top) — four cards showing **Total Bookings**, **Confirmed**, **Pending**, **Cancelled** counts.
+2. **Filter bar** — search + status pills + sort + column visibility + reset.
+3. **Bookings table**.
 
-Default columns (toggleable): booking number, customer, trip, travelers count, dates, amount, payment status, booking status.
+### Default columns
+
+| Column            | Notes                                                              |
+| ---               | ---                                                                |
+| **Booking #**     | Monospace booking number, links to the detail page.                |
+| **Customer**      | Customer name; email shown as a subtitle.                          |
+| **Trip**          | Trip title (with trip ID), links to the Trip Builder.              |
+| **Travelers**     | Number of travelers.                                               |
+| **Booking Date**  | When the booking was placed.                                       |
+| **Travel Date**   | When the trip starts.                                              |
+| **Amount**        | Total, with "Paid: $X" subtitle when partially paid.               |
+| **Payment Status** | Badge (Paid / Pending / Partial / Refunded).                       |
+| **Booking Status** | Badge (Confirmed / Pending / Cancelled / Completed).               |
+
+Column visibility is per-browser; choices are saved to `localStorage` under `yatra-bookings-visible-columns`.
+
+### Status filter pills
+
+- **All Status**
+- **Confirmed**
+- **Pending**
+- **Cancelled**
+- **Completed**
+
+Counts beside each pill come from `getBookingStats()`.
+
+### Search
+
+The search box matches **booking number**, **customer name**, and **trip title**.
+
+### Sort
+
+Sort by **Booking Date** (default), **Travel Date**, **Booking Number**, **Customer**, **Trip**, **Amount**, or **Status** — toggle ascending / descending.
 
 ### Bulk actions
 
-Tick rows, then choose:
+Tick rows, then pick from the dropdown:
 
-- **Mark as Confirmed** / **Mark as Pending** / **Mark as Cancelled** / **Mark as Completed** / **Delete permanently**.
+- Mark as Confirmed
+- Mark as Pending
+- Mark as Cancelled
+- Mark as Completed
+- Delete permanently
 
-(The bulk options shown depend on which status tab you're viewing.)
+The available actions adapt to the current status filter — e.g. when you're already viewing "Confirmed" bookings, "Mark as Confirmed" is hidden.
+
+### + Add New Booking
+
+Unlike Trips (which use a modal), the **Add New Booking** button navigates to a **full-page form** at:
+
+```
+/wp-admin/admin.php?page=yatra&subpage=bookings&action=create
+```
+
+That form is documented under [Edit a booking](#edit-a-booking) below.
+
+---
 
 ## Booking detail page
 
-Click any booking row to open the detail page.
+![Booking detail page — full overview, payment breakdown, customer, travelers, sidebar](/screenshots/bookings/booking-detail.webp)
 
-### Header
+Clicking a booking row opens its detail page at:
 
-The header shows the booking number and a **+ Edit Booking** button (visible if you have the `yatra_edit_bookings` capability).
+```
+/wp-admin/admin.php?page=yatra&subpage=bookings&action=view&id=<N>
+```
 
-### Sections (top to bottom)
+Sections from top to bottom:
 
-#### Booking Overview
+### 1. Booking Overview
 
-- Booking number, trip title, travel dates.
-- Traveler count badges (e.g. "2 Adults · 1 Child").
+The hero header with booking number, trip, booking date, travel date, and number of travelers. Immediately below: the **Payment Summary** breakdown.
 
 #### Payment Summary
 
-A breakdown of the financials:
+Line-by-line itemisation:
 
-- Subtotal.
-- Discounts applied (per-coupon line).
-- Taxes (per-tax line).
-- Itinerary costs / extras.
-- Grand Total.
-- **Due Now** — the unpaid balance (if any).
+- Trip Base Price (per-traveler × travelers)
+- Additional Services (Pro module line items, if any)
+- Discount (negative number, emerald-coloured)
+- Itinerary Costs (sum of per-day costs, if non-zero)
+- Taxable Amount
+- Tax (with tax-inclusive badge when applicable)
+- **Net Amount**
+- **Amount Paid**
+- **Due Now**
 
-#### Customer Information
+### 2. Customer Information
 
-Name, email, phone — pulled from the customer record.
+Name, email, phone, country.
 
-#### Travelers Information
+### 3. Travelers Information
 
-For each traveler on the booking:
+Renders **per-traveler** with the fields you've configured in [Settings → Booking Form](/settings#_4-booking-form) → *Per-traveler form*. The first traveler gets a **Lead** badge. Common fields:
 
-- Name and category badge (Adult / Child / Infant / Senior).
-- Document number (if collected).
-- "Lead Traveler" / "Primary Contact" badges.
+- First / Last name
+- Passport number
+- Date of birth
+- Nationality
+- Any custom fields from your Booking Form Builder
 
-#### Emergency Contact
+### 4. Emergency Contact
 
-Shown only if the customer filled it in at checkout.
+Renders the fields you've configured in *Settings → Booking Form → Emergency Contact form*. Hidden when no data was collected.
 
-#### Special Requests
+### 5. Special Requests
 
-Internal notes from the customer (dietary, accessibility, etc.).
+The free-text *notes* field the customer filled in at checkout (`booking.notes`, exposed as `special_requests` in the API).
 
-#### Sidebar — Google Calendar Sync <span class="pro-pill">PRO</span>
+### 6. Google Calendar Sync <span class="pro-pill">PRO</span>
 
-<div class="pro-callout">
-  <div class="pro-callout__head">
-    <span class="pro-callout__badge">PRO</span>
-    <span class="pro-callout__title">Google Calendar two-way sync</span>
-  </div>
-  <p class="pro-callout__desc">Push every booking to your operations Google Calendar. Per-trip calendar selection, color coding, and automatic date updates if the customer reschedules.</p>
-  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/">Unlock calendar sync →</a>
-</div>
+![Google Calendar Sync sidebar — Pro module status, last sync, event ID](/screenshots/bookings/booking-google-calendar.webp)
 
-When the **Google Calendar Integration** module is on and the booking has been synced, the sidebar shows the calendar status, link to the calendar event, and a **Re-sync** action.
+Shown only when **all three** are true:
+- Yatra Pro is active.
+- The Google Calendar module is enabled.
+- This booking has a `google_calendar` payload.
 
-#### Payment Information
+Fields displayed:
 
-- Status pill (Paid / Pending / Partial / Refunded / Failed).
-- Method (PayPal / Stripe / etc.).
-- Trip Price per Person.
-- Total Amount.
-- Tax Incl. badge if your settings say prices include tax.
-- Discount card if a coupon or group discount was applied.
+- **Status badge** — Synced / Failed / Not synced
+- **Last synced** timestamp
+- **Calendar ID**
+- **Event ID**
+- **Error message** (only when status = Failed)
 
-#### Consent Status <span class="pro-pill">PRO</span>
+### 7. Payment Information (sidebar)
 
-<div class="pro-callout">
-  <div class="pro-callout__head">
-    <span class="pro-callout__badge">PRO</span>
-    <span class="pro-callout__title">Trip Consent &amp; digital waivers</span>
-  </div>
-  <p class="pro-callout__desc">Collect liability waivers, COVID forms, or release-of-image consents at checkout. Each traveler signs digitally; you see a "signed N of M travelers" status here, with a link to <strong>Manage Consents</strong>.</p>
-  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/">Unlock trip consent →</a>
-</div>
+- Payment Status badge
+- Payment Method (gateway icon + name)
+- Trip Price per Person (with "Tax Incl." badge if your tax setting is inclusive)
+- Total Amount (with same tax-inclusive badge when applicable)
 
-#### Timeline
+### 8. Discount Applied (conditional)
 
-Created at + Last updated at + a brief history of status changes.
+Visible only when `discount_amount > 0`. Shows:
+
+- **Discount type** — *Group* or *Coupon* (auto-detected from the code string).
+- **Code** — monospace, on an emerald-coloured chip.
+- **Savings** — the discount value in big emerald text.
+
+### 9. Consent Status <span class="pro-pill">PRO</span>
+
+Shown only when **all three** are true:
+- Yatra Pro is active.
+- The Trip Consent module is enabled.
+- At least one consent form is required for this booking.
+
+Fields:
+
+- Headline — **All Consents Signed** or **Pending Signatures**.
+- Signed count / Total required.
+- Progress bar.
+- Pending requests list (first 3, with a *+N more* link to the consent tab).
+- **Manage Consents** button.
+
+### 10. Timeline
+
+A simple two-row block:
+
+| Row                 | Value                                                        |
+| ---                 | ---                                                          |
+| **Created**         | Booking creation timestamp.                                  |
+| **Last Updated**    | Most recent change. Hidden when identical to *Created*.      |
+
+(There's no full activity feed in this build — just the two timestamps.)
+
+---
 
 ## Booking statuses
 
-| Status        | Meaning                                                          |
-| ---           | ---                                                              |
-| **Pending**   | Customer started but hasn't paid (or paid partial).             |
-| **Confirmed** | Paid in full. Trip is locked in.                                 |
-| **Cancelled** | Customer or admin cancelled. Refund handled separately.          |
-| **Completed** | The trip has run. Useful for after-trip review requests.         |
+| Status      | Badge colour | When it's used                                                   |
+| ---         | ---          | ---                                                              |
+| **Pending** | Yellow       | Customer completed checkout but payment hasn't cleared yet.      |
+| **Confirmed** | Green      | Payment succeeded **or** an admin manually confirmed the booking. |
+| **Completed** | Blue       | Travel date has passed and the trip is delivered.                |
+| **Cancelled** | Red        | Cancelled by customer (self-cancel within policy) or admin.      |
 
-Bookings auto-transition Pending → Confirmed when the gateway webhook lands (PayPal IPN, Stripe charge.succeeded, etc.).
+The booking-edit form (`BookingForm.tsx`) also exposes two extra statuses that the listing doesn't filter by — **Refunded** and **Failed**.
 
-You can manually transition with the bulk action menu or by editing the booking.
+### Payment statuses
+
+| Status       | Badge colour | When it's used                                                  |
+| ---          | ---          | ---                                                             |
+| **Paid**     | Green        | Full balance settled.                                           |
+| **Partial**  | Orange       | Some money received (deposit or first installment).             |
+| **Pending**  | Yellow       | Awaiting payment.                                               |
+| **Refunded** | Gray         | Refund processed via gateway dashboard + marked in Yatra.       |
+
+---
 
 ## Edit a booking
 
-Click **+ Edit Booking** in the header to load the booking edit form. You can:
+The **+ Add New Booking** button (and the per-row **Edit** action) take you to a full-page form with these sections.
 
-- Add or remove travelers.
-- Change traveler categories.
-- Change the trip / departure / dates (recalculates totals).
-- Add internal notes.
-- Override the price (for special quotes).
+### Customer Information
 
-Click **Save** to persist. The customer doesn't get an automatic email — use the **Send email** action if you want them notified.
+| Field           | Required | Notes                                                                  |
+| ---             | :-:      | ---                                                                    |
+| Customer Name   | ✅       | Used as the lead-traveler name when no separate lead is filled in.     |
+| Customer Email  | ✅       | Validated against an email regex.                                      |
+| Customer Phone  | —        | Optional.                                                              |
+| Country         | —        | 20+ countries in the dropdown. Drives tax computation if your tax setup is country-based. |
+
+### Booking Details
+
+| Field                  | Required | Notes                                                              |
+| ---                    | :-:      | ---                                                                |
+| Trip                   | ✅       | Searchable dropdown of every published trip.                       |
+| Booking Date           | ✅       | Defaults to today.                                                 |
+| Travel Date            | ✅       | Cannot be in the past.                                             |
+| Number of Travelers    | ✅       | Drives the price recalculation; default 1.                         |
+| **Total Amount**       | ✅       | Auto-calculated from `trip.price × travelers` + tax. Editable.     |
+| Notes                  | —        | Free-text; becomes *Special Requests* on the detail page.          |
+
+The form shows a **live Pricing Breakdown** (Subtotal, Itinerary Costs, Tax, Total) above the Total Amount field.
+
+### Emergency Contact (conditional)
+
+Rendered only if your **Booking Form Builder** has the *Emergency Contact* form enabled with at least one field. Fields are dynamic.
+
+### Travelers Information (conditional)
+
+Per-traveler block — **Add Traveler** / **Remove Traveler** controls. Fields are pulled from your *Per-traveler form* configuration.
+
+### Sidebar — Status & Payment
+
+| Control            | Options                                                                  |
+| ---                | ---                                                                      |
+| Booking Status     | pending / confirmed / cancelled / completed / refunded / failed         |
+| Payment Status     | pending / partial / paid / refunded                                     |
+| Payment Method     | Loaded from your **enabled gateways**.                                  |
+
+---
 
 ## Customers
 
-![Customers list — booking history and lifetime spend per customer](/screenshots/bookings/customers.webp)
+![Customers listing — loyalty tier, location, status](/screenshots/customers/customers-list.webp)
 
 Open <span class="screen-path">Yatra → Customers</span>.
 
-This is the list of every customer who has ever booked or registered:
+### Default columns
 
-- Status filters: All / Active / Inactive / Blocked.
-- Sort by Registration Date, Name, Email, Country, Bookings, Total Spent.
+| Column              | Notes                                                              |
+| ---                 | ---                                                                |
+| **Customer**        | Name as link, email and phone shown as subtitle.                   |
+| **Location**        | Country + city with a small map-pin icon.                          |
+| **Bookings**        | <span class="pro-pill">PRO</span> Booking count per customer.      |
+| **Total Spent**     | <span class="pro-pill">PRO</span> Currency total.                  |
+| **Loyalty**         | Tier badge — Bronze / Silver / Gold / Platinum with emoji.         |
+| **Status**          | Active / Inactive / Blocked badge.                                 |
+| **Registered**      | Account-creation date.                                             |
 
-Click a customer row to see:
+### Status filter pills
 
-- Profile (name, email, phone, address).
-- All bookings.
-- All payments.
-- All enquiries.
-- Internal notes (admin-only).
+- **All Status**
+- **Active** (green)
+- **Inactive** (gray)
+- **Blocked** (red)
 
-### Bulk actions on customers
+### Bulk actions
 
-- Mark as **Active**, **Inactive**, or **Blocked**.
-- Delete permanently (warns before deleting).
+- Mark as Active
+- Mark as Inactive
+- Mark as Blocked
+- Delete permanently
 
-Blocking a customer prevents new bookings from their account but doesn't touch existing data.
+Actions adapt to the current status filter (e.g. "Mark as Active" is hidden when viewing Active customers).
+
+### Add New Customer
+
+Full-page form at `&action=create` — name, email, phone, country, address, status. Useful for back-filling pre-Yatra customers.
+
+### Loyalty tiers
+
+Yatra computes a loyalty tier per customer based on lifetime spend / bookings. Tiers and their default thresholds are exposed via the filter `yatra_loyalty_tiers` — see [Hooks & filters](/hooks-filters).
+
+| Tier      | Badge        |
+| ---       | ---          |
+| Bronze    | 🥉 Bronze    |
+| Silver    | 🥈 Silver    |
+| Gold      | 🥇 Gold      |
+| Platinum  | 💎 Platinum  |
+
+---
 
 ## Guest checkout
 
-If your <span class="screen-path">Settings → Customer</span> has **Allow guest checkout** on, customers don't need an account before booking. Yatra creates a customer record on first booking. They can later set a password and claim the account by visiting the password-reset link in their booking confirmation email.
+Customers don't need a WP account to book. With *Settings → Booking → Allow Guest Checkout* on, the customer record is created with `status = active` and no password — they receive a magic-link login email if they later want to log in. With *Allow Guest Checkout* off, the checkout asks the user to log in / sign up before completing payment.
 
-If guest checkout is **off**, customers must register or log in before booking.
+---
 
 ## Enquiries
 
-![Enquiries inbox — pipeline view, status filters, response status](/screenshots/bookings/enquiries.webp)
+![Enquiries listing — pre-sale enquiry pipeline](/screenshots/enquiries/enquiries-list.webp)
 
-Open <span class="screen-path">Yatra → Enquiries</span> for the enquiry pipeline.
+Open <span class="screen-path">Yatra → Enquiries</span>. These are pre-sale leads from the public *Enquire about this trip* form (or the general contact form) — not bookings.
 
-Customers submit enquiries from the **Make an Enquiry** modal on the trip page. Each enquiry has:
+### Default columns
 
-- Customer name, email, phone.
-- Trip (linked).
-- Preferred travel date and traveler count.
-- Message body.
-- Status (New / In Progress / Quoted / Won / Lost).
+| Column           | Notes                                                              |
+| ---              | ---                                                                |
+| **Customer**     | Name + email/phone subtitles.                                      |
+| **Trip**         | Trip title — or *General enquiry* (italic) when not trip-specific. |
+| **Message**      | Two-line clamped preview.                                          |
+| **Travelers**    | Count or dash.                                                     |
+| **Preferred Date** | The customer-supplied travel date, if any.                       |
+| **Status**       | Badge — see below.                                                 |
+| **Date**         | When the enquiry was received.                                     |
 
-Click an enquiry to view, reply, or convert it to a booking. Yatra fires the `yatra_enquiry_created` action so you can route to a CRM via Zapier or a custom integration.
+### Status filter pills
+
+- **All Status**
+- **New** (blue)
+- **Pending** (orange)
+- **Responded** (yellow)
+- **Converted** (green) — the enquiry led to a booking.
+- **Closed** (gray)
+- **Spam** (red)
+- **Trash** (gray, strikethrough)
+
+### Bulk actions
+
+Vary by current status filter:
+
+| Current view | Available actions                                          |
+| ---          | ---                                                        |
+| Default      | Mark as Spam, Move to Trash, Delete permanently            |
+| Spam         | Move to Trash, Delete permanently                          |
+| Trash        | Delete permanently                                         |
+
+### Respond to an enquiry
+
+Per-row action **Respond** opens a modal containing:
+
+- The original enquiry message
+- Customer name, email, trip
+- A **textarea** for your response
+- **Send Response** button (sends an email via `respondToEnquiry` API)
+
+::: tip No "Convert to Booking" button
+Yatra doesn't currently expose a one-click *Convert to Booking* action from an Enquiry. To convert manually: open <span class="screen-path">Yatra → Bookings → + Add New Booking</span> and recreate the booking with the enquiry's details, then mark the enquiry **Converted**.
+:::
+
+---
 
 ## Reviews
 
-![Reviews moderation queue — pending, approved, spam](/screenshots/bookings/reviews.webp)
+![Reviews listing — moderation queue with star rating](/screenshots/reviews/reviews-list.webp)
 
 Open <span class="screen-path">Yatra → Reviews</span>.
 
-Reviews are moderated by default. The list has:
+### Default columns
 
-- Status filters: All / Pending / Approved / Rejected.
-- Columns: rating, customer, trip, body excerpt, submitted at.
+| Column           | Notes                                                              |
+| ---              | ---                                                                |
+| **Trip**         | Trip title — links to the Trip Builder when `trip_id` exists.      |
+| **Customer**     | Name, email, *Verified* badge when the review comes from a confirmed booking. |
+| **Rating**       | 5 yellow / gray stars + numeric rating.                            |
+| **Review**       | Title + 2-line clamped content preview.                            |
+| **Status**       | Badge.                                                             |
+| **Date**         | Review submission date.                                            |
 
-Click any review to read the full body, reply (admin reply), or moderate.
+### Status filter pills
 
-Per-trip review settings are in <span class="screen-path">Yatra → Settings → Review</span>: enable / disable, allow anonymous, auto-approve threshold, minimum rating to display.
+- **All Status**
+- **Approved** (green)
+- **Pending** (yellow)
+- **Spam** (red)
+- **Trash** (gray)
+
+### Rating filter
+
+A second dropdown filter: **All Ratings**, **5 Stars**, **4 Stars**, **3 Stars**, **2 Stars**, **1 Star**.
+
+### Bulk actions
+
+| Current view | Available actions                                                                            |
+| ---          | ---                                                                                          |
+| Default      | Mark as Approved, Mark as Pending, Mark as Spam, Move to Trash, Delete permanently           |
+| Spam         | Move to Trash, Delete permanently                                                            |
+| Trash        | Delete permanently                                                                           |
+
+### Per-review moderation
+
+Each row exposes: **Approve**, **Mark as Pending**, **Edit**, **Mark as Spam**, **Move to Trash**, **Delete permanently**.
+
+Configuration for the entire review system (auto-approve, require-booking-to-review, minimum rating, review-reminder days) lives under [Settings → Review](/settings#_7-review).
+
+---
 
 ## Discounts (coupons)
 
-![Discounts admin — coupon list with code, type, value, usage limits](/screenshots/bookings/discounts.webp)
+![Discounts listing — promo codes plus group discounts](/screenshots/discounts/discounts-list.webp)
 
 Open <span class="screen-path">Yatra → Discounts</span>.
 
-Each coupon has:
+### Discount modes
 
-- **Code**, **Description**, **Type** (percentage / fixed), **Amount**.
-- **Maximum discount** (cap for percentage coupons).
-- **Usage limit** (total) and **per customer** limits.
-- **Valid from** and **expiry date** (DatePicker).
-- **Status** — draft / publish / trash.
-- **Applicable to** — all trips or specific trips.
-- **Minimum booking amount**.
-- **First-time customer only** flag.
+| Mode                | Free / Pro                | What it does                                                                 |
+| ---                 | ---                       | ---                                                                          |
+| **Promo Code**      | ✅ Free                   | Customer types a code at checkout to get a discount.                         |
+| **Group Only**      | <span class="pro-pill">PRO</span> | Auto-applies when traveler count ≥ a threshold.                              |
+| **Promo + Group**   | <span class="pro-pill">PRO</span> | A code that also stacks group-size logic on top of the base discount.        |
 
-<div class="pro-callout">
-  <div class="pro-callout__head">
-    <span class="pro-callout__badge">PRO</span>
-    <span class="pro-callout__title">Advanced &amp; group discounts</span>
-  </div>
-  <p class="pro-callout__desc">Auto-apply group-size discounts (e.g. 5% off for 4+ travelers, 10% off for 8+), stack with promo codes, and exclude specific trips. The Pro <strong>Advanced Discount</strong> module unlocks all of this.</p>
-  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/">Unlock advanced discounts →</a>
-</div>
+### Default columns
+
+| Column           | Notes                                                              |
+| ---              | ---                                                                |
+| **Code / Name**  | Code in monospace + a **mode badge** (*Promo Code*, *Group Only*, or *Promo + Group*). Copy-to-clipboard button on the right for non-group codes. Description shown as a subtitle. |
+| **Discount**     | Percentage or fixed amount. Group discounts also show their tiered ranges (10 travelers = 5%, 15 travelers = 10%, etc.). |
+| **Usage**        | `X / max_uses` — or `X / ∞` when unlimited.                       |
+| **Expiry Date**  | Formatted date, or *No expiry* when blank.                         |
+| **Status**       | Badge — see below.                                                 |
+
+### Status filter pills
+
+- **All Status**
+- **Publish** (green)
+- **Draft** (gray)
+- **Trash** (red)
+- **Expired** (orange)
+
+### Discount type filter
+
+- **All Types**
+- **Percentage**
+- **Fixed Amount**
+
+### Bulk actions
+
+- Mark as Publish / Draft / Trash / Expired
+- Delete permanently
+
+Adapts to the current status filter.
+
+### Add a discount
+
+Click **+ Add Discount** → a modal opens with a **mode picker** (Promo Code / Group Only / Promo + Group). Group and combined modes show a 🔒 lock icon and a Pro-upgrade prompt without a Pro license.
+
+After picking a mode you get the full form:
+
+| Field                            | Required | Notes                                                              |
+| ---                              | :-:      | ---                                                                |
+| **Code**                         | ✅ (Promo / Both) | Monospace, validated unique. Auto-uppercased.             |
+| **Name**                         | ✅       | Internal name; not shown to customers.                            |
+| **Description**                  | —        | Subtitle on the listing.                                          |
+| **Type**                         | ✅       | Percentage or fixed amount.                                       |
+| **Amount**                       | ✅       | The discount value (e.g. `15` for 15% off, or `25.00` for $25 off). |
+| **Max Discount Amount**          | —        | Caps a percentage discount at an absolute value.                  |
+| **Valid From** / **Expiry Date** | —        | Both optional; either or both can be left blank.                  |
+| **Usage Limit**                  | —        | Total uses across all customers. `0` = unlimited.                 |
+| **Usage Limit Per Customer**     | —        | Caps per-customer redemptions.                                    |
+| **Min Booking Total**            | —        | Discount only applies above this amount.                          |
+| **Applicable To**                | ✅       | *All trips* or *Specific trips* → picks Trip IDs.                 |
+| **First Time Customer Only**     | —        | Restrict the code to customers with zero previous bookings.       |
+
+For **Group** and **Promo + Group** modes there are extra fields:
+
+| Field                            | Notes                                                              |
+| ---                              | ---                                                                |
+| **Group Discount Min Size**      | Smallest traveler count that triggers the group discount.          |
+| **Group Discount Type**          | Percentage or fixed (per range).                                   |
+| **Group Discount Amount**        | The value per range.                                               |
+| **Group Discount Mode**          | *Total* (one rate for the whole booking) or *Category-based* (different rates per traveler category). |
+| **Category Discounts**           | Per-category tiered ranges when *Category-based* is picked.        |
+
+::: warning Advanced Discount module
+The Group and Promo+Group modes need the **Advanced Discount** Pro module to be active. See [Modules → Advanced Discount](/modules#advanced-discount).
+:::
+
+---
 
 ## Booking flow on the front end
 
-When a customer clicks **Book now** on a trip:
+A quick reminder of the order events fire so the admin behaviour above makes sense:
 
-1. They pick a **date / departure** (date picker on the trip page).
-2. Set **traveler counts** by category (Adult / Child / etc.).
-3. Continue to checkout.
-4. Fill in **contact** + **traveler details** (one form section per traveler).
-5. Optional **emergency contact**.
-6. Pick a **payment method**.
-7. Pay.
+1. Customer picks a trip → clicks **Book Now**.
+2. Customer fills in: lead traveler / contact info, per-traveler fields, optional emergency contact, optional notes — all driven by your [Booking Form Builder](/settings#_4-booking-form).
+3. (Pro) Customer signs any required **Trip Consent** forms.
+4. Customer picks a payment method — Yatra runs the payment intent via the gateway (PayPal / Stripe / etc.).
+5. On success the booking moves from **Pending** → **Confirmed** and a confirmation email goes out.
+6. (Pro) The booking is pushed to **Google Calendar**.
+7. (Pro) If **Scheduled Payments** is on, the balance charge is queued.
+8. Travel date passes → cron flips the booking to **Completed**.
+9. (Free) After *Review Reminder Days* (default 7), an email asks for a review.
 
-After successful payment, they land on the **Booking confirmation** page (rendered from `templates/partials/booking-content.php`).
+---
 
-## What's next
+## Where to go next
 
-- [Payments](/payment-settings) — gateway-by-gateway setup, refunds.
-- [Email & notifications](/email-settings) — what fires on confirmation.
-- [Pro modules](/third-party-integrations) — every Pro feature listed.
+- [Settings → Booking](/settings#_3-booking) — cancellation policy, expiry, waitlist configuration.
+- [Settings → Booking Form](/settings#_4-booking-form) — drag-and-drop builder for the checkout form.
+- [Payments & gateways](/payment-settings) — gateway setup and the Payments admin.
+- [Email & notifications](/email-settings) — what emails fire on booking events.

@@ -33,8 +33,8 @@ A typical co-existing site has:
 
 - `/shop/` — Woo product catalog.
 - `/cart/`, `/checkout/`, `/my-account/` — Woo virtual pages.
-- `/trips/` — Yatra catalog.
-- `/booking/`, `/my-account/` — Yatra virtual pages.
+- `/trip/` — Yatra catalog (singular slug by default).
+- `/book/`, `/my-account/` — Yatra virtual pages.
 
 **Slug collision risk:** Woo also uses `/my-account/`. Two safe configurations:
 
@@ -76,9 +76,9 @@ add_action('woocommerce_payment_complete', function ($order_id) {
 
 Standard advice — exclude:
 
-- `/booking/`, `/my-account/`, `/my-bookings/`
+- `/book/`, `/my-account/`, `/my-bookings/`
 - `/wp-json/*` (especially `/yatra/v1/checkout/*` and `/yatra/v1/me/*` routes)
-- Logged-in cookies on trip-detail pages (Wishlist state)
+- Logged-in cookies on trip-detail pages (so wishlist state, if enabled, is accurate)
 
 ## Plugins that often conflict (and the fix)
 

@@ -44,11 +44,11 @@ After this, these URLs should resolve on the front of your site:
 
 | URL                | What it shows                              |
 | ---                | ---                                        |
-| `/trips/`          | Public trip catalog (archive)              |
+| `/trip/`           | Public trip catalog (archive)              |
 | `/destination/`    | Destinations archive                       |
 | `/activity/`       | Activities archive                         |
 | `/trip-category/`  | Trip categories archive                    |
-| `/booking/`        | Booking flow / cart                        |
+| `/book/`           | Booking flow / cart                        |
 | `/my-account/`     | Customer account                           |
 
 You can rename any of these slugs later in <span class="screen-path">Yatra → Settings → Permalink</span>.
@@ -60,7 +60,7 @@ If you only sell as enquiries, skip to Step 4. Otherwise:
 <ol class="step-list">
   <li>Open <span class="screen-path">Yatra → Settings → Payment</span>.</li>
   <li>Tick <strong>PayPal</strong> (always free).</li>
-  <li>Paste your PayPal email (Simple mode), or Client ID + Secret + Webhook ID (REST mode).</li>
+  <li>Paste your PayPal email (Simple mode), or Client ID + Client Secret (REST mode — there's no separate "Webhook ID" field; PayPal verification uses the same credentials).</li>
   <li>Tick <strong>Test mode</strong> for now.</li>
   <li>Click <strong>Save</strong>.</li>
 </ol>
@@ -100,7 +100,7 @@ Open the trip URL in a private browser window. You should see the public trip pa
     <span class="pro-callout__badge">PRO</span>
     <span class="pro-callout__title">Featured Priority &amp; sticky promotion</span>
   </div>
-  <p class="pro-callout__desc">Use <strong>Featured Priority</strong> on each trip ("featured", "sticky", "high-priority") to control catalog ordering. Combined with <strong>Custom Landing Pages</strong>, you get full control over which trips lead.</p>
+  <p class="pro-callout__desc">Use <strong>Featured Priority</strong> on each trip — set it to <em>Featured</em>, <em>New</em>, or <em>Limited</em> to control catalog ordering and add a corner badge to the trip card. Combined with <strong>Custom Landing Pages</strong>, you get full control over which trips lead.</p>
   <a class="pro-callout__cta" href="https://wpyatra.com/pricing/">Unlock priority sorting →</a>
 </div>
 
@@ -153,6 +153,7 @@ That's a working booking office.
 ## What's next
 
 - [Trips & catalog](/tour-booking) — full Trip Builder walkthrough.
-- [Departures & availability](/departures) — fixed departures and availability rules.
+- [Availability — three-layer system](/availability) — manual dates, recurring rules, and the trip default.
+- [Departures](/departures) — the operator view of every scheduled run.
 - [Bookings & customers](/booking-settings) — the booking lifecycle.
 - [Payments](/payment-settings) — gateway-by-gateway setup.

@@ -14,7 +14,7 @@ next:
 Yatra ships eight shortcodes for placing trip catalogs, search, login and account UIs onto any page or post. The attribute lists below are taken directly from each shortcode class — defaults match what Yatra resolves to when you omit an attribute.
 
 ::: warning Yatra 3.x does not ship cart/checkout shortcodes
-Older 2.x docs sometimes mention `[yatra_cart]`, `[yatra_checkout]`, or `[yatra_mini_cart]`. **These do not exist in Yatra 3.x.** The booking flow uses Yatra's virtual `/{booking_base}/{trip-slug}/` route (default `/book/...`), not a shortcode-driven page. See [Bookings & customers → Booking session and checkout flow](/booking-settings#booking-session-and-checkout-flow).
+Older 2.x docs sometimes mention `[yatra_cart]`, `[yatra_checkout]`, or `[yatra_mini_cart]`. **These do not exist in Yatra 3.x.** The booking flow uses Yatra's virtual `/{booking_base}/{trip-slug}/` route (default `/book/...`), not a shortcode-driven page. See [Bookings & customers → Booking session and checkout flow](/booking-settings#booking-flow-on-the-front-end).
 :::
 
 ## Shortcode index

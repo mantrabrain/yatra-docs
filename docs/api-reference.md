@@ -17,6 +17,17 @@ Yatra exposes a comprehensive REST API under the `yatra/v1` namespace. Every scr
 Base URL:  https://your-site.com/wp-json/yatra/v1/
 ```
 
+::: warning Verify endpoints against your version
+Yatra registers **300+** REST routes across free + Pro. The catalog below covers the most-used endpoints; a complete reference would be impractical to maintain inline. For a guaranteed accurate list of routes your specific build exposes:
+>
+> ```bash
+> # List every yatra/v1/* route
+> wp rest list --namespace=yatra/v1
+> ```
+>
+> Or browse routes interactively at `/wp-json/yatra/v1/` (returns a JSON discovery document with every registered route).
+:::
+
 ## Authentication
 
 Yatra uses WordPress's standard REST authentication:
