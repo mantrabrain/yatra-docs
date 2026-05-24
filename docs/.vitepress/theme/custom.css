@@ -301,3 +301,91 @@
   cursor: zoom-out;
   border-radius: 8px;
 }
+
+/* ============================================================
+ * Mobile improvements
+ * ------------------------------------------------------------
+ * VitePress' default theme is responsive out of the box, but a
+ * few of our custom components and the long tables in the module
+ * docs benefit from extra mobile tuning.
+ * ============================================================ */
+
+/* Make every doc table horizontally scrollable on narrow screens
+ * instead of overflowing the column. VitePress wraps tables in a
+ * .vp-doc element but doesn't apply the scroll container itself. */
+.vp-doc table {
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+  margin: 1rem 0;
+  /* Hint that the table scrolls — subtle right-fade on narrow screens */
+  background:
+    linear-gradient(to right, var(--vp-c-bg), var(--vp-c-bg)) 0 0,
+    linear-gradient(to right, transparent, var(--vp-c-bg)) 100% 0,
+    radial-gradient(farthest-side at 0 50%, rgba(15, 23, 42, 0.08), transparent),
+    radial-gradient(farthest-side at 100% 50%, rgba(15, 23, 42, 0.08), transparent) 100% 0;
+  background-repeat: no-repeat;
+  background-size: 24px 100%, 24px 100%, 12px 100%, 12px 100%;
+  background-attachment: local, local, scroll, scroll;
+}
+
+/* Screen-path pills used to be a single-line inline element; on
+ * mobile some of them are long enough ("Yatra → Channel Manager →
+ * Reconciliation") that they'd push the column. Allow them to wrap. */
+.screen-path {
+  white-space: normal;
+  word-break: break-word;
+}
+
+/* Keep code fenced blocks readable on mobile — slightly smaller font,
+ * and they shouldn't push the layout out at all. */
+@media (max-width: 768px) {
+  .vp-doc div[class*='language-'] pre {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .vp-doc table {
+    font-size: 13px;
+  }
+}
+
+/* Pro banner / callout / upgrade widgets — tighten padding + center
+ * the CTA below the copy on small screens so the whole block stays
+ * inside the viewport. */
+@media (max-width: 600px) {
+  .doc-pro-banner,
+  .doc-pro-callout {
+    padding: 0.85rem 0.95rem;
+  }
+  .doc-pro-callout__cta {
+    margin-left: 0;
+  }
+  .doc-pro-banner__actions {
+    width: 100%;
+  }
+  .doc-btn-pro,
+  .doc-btn-pro-ghost {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}
+
+/* Step-list numbered bubbles — make sure the number circle stays
+ * round on mobile (some content pushes the inner element wider). */
+.step-list > li::before {
+  flex-shrink: 0;
+}
+
+/* Markdown actions bar — wrap on narrow screens so buttons don't
+ * overflow the page header area. */
+@media (max-width: 480px) {
+  .vp-markdown-actions {
+    justify-content: stretch;
+  }
+  .vp-markdown-actions__btn,
+  .vp-markdown-actions__link {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}

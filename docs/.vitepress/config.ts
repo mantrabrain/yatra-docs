@@ -246,7 +246,13 @@ export default defineConfig({
           { text: 'Scheduled Payments', link: '/modules/scheduled-payments' },
           { text: 'Dynamic Pricing', link: '/modules/dynamic-pricing' },
           { text: 'Abandoned Booking Recovery', link: '/modules/abandoned-booking-recovery' },
-          { text: 'Custom Landing Pages', link: '/modules/custom-landing-pages' }
+          { text: 'Custom Landing Pages', link: '/modules/custom-landing-pages' },
+          { text: 'AI Assistant', link: '/modules/ai-assistant' },
+          { text: 'WhatsApp Notifications', link: '/modules/whatsapp' },
+          { text: 'Channel Manager', link: '/modules/channel-manager' },
+          { text: 'Webhooks', link: '/modules/webhooks' },
+          { text: 'White Label', link: '/modules/white-label' },
+          { text: 'Team & Access', link: '/modules/team-access' }
         ]
       },
       {

@@ -147,6 +147,42 @@ Best for: adventure operators with insurance / liability requirements.
 
 ---
 
+## AI & messaging — Growth tier
+
+These modules require a **Growth** (or Agency) Yatra Pro license. Bring-your-own-credentials integrations — no per-call markup, no proxying through Yatra.
+
+### [AI Assistant](/modules/ai-assistant) <span class="pro-pill">PRO</span>
+
+Bring-your-own OpenAI / Anthropic key. Inline sparkle affordances across the trip editor (title, description, itinerary), SEO fields, taxonomy descriptions, and the enquiry inbox ("Draft reply with AI"). Daily AI-written digest on the dashboard. Brand-voice configuration so generated copy stays consistent. Per-day usage + cost tab.
+
+Best for: tour operators publishing many trips or running a leads-heavy enquiry pipeline.
+
+### [WhatsApp Notifications](/modules/whatsapp) <span class="pro-pill">PRO</span>
+
+Transactional WhatsApp Cloud API messages — booking confirmations, payment receipts, T-1 departure reminders, T+1 review requests. Inbound replies route into the Enquiries inbox. Public click-to-WhatsApp widget (floating button + single-trip CTA + shortcode). Customer opt-in flow. Per-message delivery log with Meta's conversation cost.
+
+Best for: operators in markets where WhatsApp is the dominant channel (India, MENA, LATAM, SE Asia) — 90%+ open rate vs ~25% for email.
+
+---
+
+## Distribution & branding — Agency tier
+
+These modules require an **Agency** Yatra Pro license (Yearly or Lifetime). Built for resellers and high-volume operators.
+
+### [Channel Manager](/modules/channel-manager) <span class="pro-pill">PRO</span>
+
+Distribute trips to Viator, GetYourGuide & more OTAs from one dashboard. Real-time inventory + pricing sync. Signed webhook ingestion with replay protection. Lifecycle dispatch — cancel / modify / no-show flow back from the OTA into Yatra automatically. Per-channel circuit breaker so a failing OTA never drags down the rest. Anti-overbooking pessimistic locks so two channels can't sell the last seat simultaneously.
+
+Best for: operators where OTAs drive ≥30% of bookings. Saves $99–299/month vs. standalone channel-manager SaaS.
+
+### [White Label](/modules/white-label) <span class="pro-pill">PRO</span>
+
+Rebrand the entire admin — logo, name, primary color, sidebar menu (rename / reorder / hide / re-icon / promote), theme surfaces, customer-facing PDFs. Remove every Yatra / MantraBrain reference your clients see. Multi-site defaults via filter for agencies managing many installs.
+
+Best for: agencies delivering Yatra as if it were custom software they built.
+
+---
+
 ## Premium payment gateways
 
 A single Yatra Pro license also unlocks **seven** premium payment gateways. These aren't on the Modules screen — they're toggled under <span class="screen-path">Yatra → Settings → Payment</span> directly. The detailed step-by-step setup (with dashboard URLs, key locations, and verification flow) is on [Payments & gateways](/payment-settings).

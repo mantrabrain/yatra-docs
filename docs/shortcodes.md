@@ -103,19 +103,19 @@ Class: `app/Shortcodes/DestinationShortcode.php`.
 
 ### Attributes
 
-| Attribute            | Default                      |
-| ---                  | ---                          |
-| `order`              | `desc`                       |
-| `per_page`           | `10`                         |
-| `columns`            | `3`                          |
-| `show_trip_count`    | `yes`                        |
-| `show_description`   | `yes`                        |
-| `show_image`         | `yes`                        |
-| `show_pagination`    | `yes`                        |
-| `destination`        | `""` (comma-separated **IDs**) |
-| `hide_empty`         | `yes`                        |
-| `featured_only`      | `no`                         |
-| `title`              | `Destination Showcase`       |
+| Attribute            | Default                      | Notes |
+| ---                  | ---                          | --- |
+| `order`              | `desc`                       | `asc` or `desc` |
+| `per_page`           | `10`                         | Items per page; `-1` shows all |
+| `columns`            | `3`                          | Grid columns (1–6) |
+| `show_trip_count`    | `yes`                        | Render the "*N* trips" badge on each card |
+| `show_description`   | `yes`                        | Render the destination description excerpt |
+| `show_image`         | `yes`                        | Render the destination thumbnail |
+| `show_pagination`    | `yes`                        | Show pager links when more pages exist |
+| `destination`        | `""` (comma-separated **IDs**) | Limit to specific destinations |
+| `hide_empty`         | `no`                         | **Opt-in**: when set to `yes`, destinations with zero published trips are skipped. See *Empty-term filtering* below. |
+| `featured_only`      | `no`                         | Only show destinations marked as featured |
+| `title`              | `Destination Showcase`       | Heading rendered above the grid |
 
 ### Examples
 
@@ -123,10 +123,11 @@ Class: `app/Shortcodes/DestinationShortcode.php`.
 [yatra_destination]
 [yatra_destination featured_only="yes" per_page="6" columns="3"]
 [yatra_destination destination="44,55,72" show_trip_count="no"]
+[yatra_destination hide_empty="yes"]
 ```
 
 ::: tip Whole-card click target
-Destination, Activity and Trip-category cards are now fully clickable (not just the title). Implementation uses the WAI-ARIA "stretched link" pattern so screen readers and crawlers see one canonical link per card.
+Destination, Activity and Trip-category cards are fully clickable (not just the title). Implementation uses the WAI-ARIA "stretched link" pattern so screen readers and crawlers see one canonical link per card.
 :::
 
 ---
@@ -137,24 +138,25 @@ Class: `app/Shortcodes/ActivityShortcode.php`.
 
 ### Attributes
 
-| Attribute            | Default              |
-| ---                  | ---                  |
-| `order`              | `desc`               |
-| `per_page`           | `10`                 |
-| `columns`            | `3`                  |
-| `show_trip_count`    | `yes`                |
-| `show_description`   | `yes`                |
-| `show_image`         | `yes`                |
-| `show_pagination`    | `yes`                |
-| `activity`           | `""` (CSV of **IDs**) |
-| `hide_empty`         | `yes`                |
-| `title`              | `Activity Listings`  |
+| Attribute            | Default              | Notes |
+| ---                  | ---                  | --- |
+| `order`              | `desc`               | `asc` or `desc` |
+| `per_page`           | `10`                 | Items per page |
+| `columns`            | `3`                  | Grid columns (1–6) |
+| `show_trip_count`    | `yes`                | Render the "*N* trips" badge on each card |
+| `show_description`   | `yes`                | Render the activity description excerpt |
+| `show_image`         | `yes`                | Render the activity thumbnail |
+| `show_pagination`    | `yes`                | Show pager links when more pages exist |
+| `activity`           | `""` (CSV of **IDs**) | Limit to specific activities |
+| `hide_empty`         | `no`                 | **Opt-in**: when set to `yes`, activities with zero published trips are skipped. See *Empty-term filtering* below. |
+| `title`              | `Activity Listings`  | Heading rendered above the grid |
 
 ### Example
 
 ```html
 [yatra_activity columns="4" per_page="8"]
 [yatra_activity activity="12,18,21"]
+[yatra_activity hide_empty="yes"]
 ```
 
 ---
@@ -165,23 +167,53 @@ Class: `app/Shortcodes/TripCategoryShortcode.php`. Same card layout as destinati
 
 ### Attributes
 
-| Attribute            | Default                |
-| ---                  | ---                    |
-| `order`              | `desc`                 |
-| `per_page`           | `10`                   |
-| `columns`            | `3`                    |
-| `show_trip_count`    | `yes`                  |
-| `show_description`   | `yes`                  |
-| `show_image`         | `yes`                  |
-| `show_pagination`    | `yes`                  |
-| `category`           | `""` (CSV of **IDs**)  |
-| `hide_empty`         | `yes`                  |
-| `featured_only`      | `no`                   |
-| `title`              | `Trip Categories`      |
+| Attribute            | Default                | Notes |
+| ---                  | ---                    | --- |
+| `order`              | `desc`                 | `asc` or `desc` |
+| `per_page`           | `10`                   | Items per page |
+| `columns`            | `3`                    | Grid columns (1–6) |
+| `show_trip_count`    | `yes`                  | Render the "*N* trips" badge on each card |
+| `show_description`   | `yes`                  | Render the category description excerpt |
+| `show_image`         | `yes`                  | Render the category thumbnail |
+| `show_pagination`    | `yes`                  | Show pager links when more pages exist |
+| `category`           | `""` (CSV of **IDs**)  | Limit to specific categories |
+| `hide_empty`         | `no`                   | **Opt-in**: when set to `yes`, categories with zero published trips are skipped. See *Empty-term filtering* below. |
+| `featured_only`      | `no`                   | Only show categories marked as featured |
+| `title`              | `Trip Categories`      | Heading rendered above the grid |
 
 ### Pagination
 
 Append `?trip_category_page=2` (separate from `?trip_page` so multiple paginated lists can co-exist).
+
+---
+
+## Empty-term filtering (`hide_empty`)
+
+All three taxonomy shortcodes — `[yatra_destination]`, `[yatra_activity]`, and `[yatra_trip_category]` — accept `hide_empty="yes"` to **hide terms that have no published trips assigned to them**.
+
+**This is opt-in.** The default (`hide_empty="no"`) preserves the historical behavior: every term renders, including ones with zero trips, so existing sites aren't surprised by terms disappearing after an upgrade.
+
+The check counts only trips with `status = publish` linked to the term via Yatra's classifications table. Drafts, trash, and scheduled posts don't count.
+
+### When to turn it on
+
+Set `hide_empty="yes"` if you want a tighter catalog where empty cards — which would land on empty archive pages when clicked — are simply skipped. Common when:
+
+- The site is live and you don't want visitors clicking a category to land on "no trips found"
+- You're running paid traffic into a destination/activity roundup and need every card to convert
+- The taxonomy term list is large and most have content — the few empty ones become noise
+
+### When to leave it off (the default)
+
+Keep `hide_empty="no"` when:
+
+- You want every term visible regardless of inventory — typical for navigation roundups or editorial preview pages
+- The site is in onboarding and terms are pre-seeded before any trips exist
+- Custom front-end uses the card list as a navigation hint, not a clickthrough target
+
+### Same behavior on the Gutenberg blocks
+
+The **Destination**, **Activity**, and **Trip Category** blocks accept the same `hide_empty` attribute. In the editor, find the toggle under **Block Settings → Display Options → "Hide empty"**. Off by default to match the shortcode default.
 
 ---
 

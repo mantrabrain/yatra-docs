@@ -125,12 +125,41 @@ Your `MyGateway` extends `\Yatra\PaymentGateways\AbstractPaymentGateway` and imp
 
 | Hook                                       | Type    | Purpose                                                  |
 | ---                                        | ---     | ---                                                      |
+| `yatra_email_merge_tag_definitions`        | filter  | (3.0.5+) **Central merge-tag registry.** Append / amend rows in `Yatra\Services\EmailMergeTagRegistry`. Tags added here automatically surface in the Pro Template Editor sidebar for every event they declare in `events`. Must be paired with a dispatcher-side injection (e.g. `yatra_booking_email_variables`) so the value actually renders. |
+| `yatra_email_template_variables_catalog`   | filter  | (3.0.5+) Legacy hook — applied AFTER the registry is grouped for the REST `/email-templates/variables` endpoint. Prefer `yatra_email_merge_tag_definitions` for new code. |
+| `yatra_email_event_variables`              | filter  | (3.0.5+) Extend the per-event variable whitelist for a single event. Args: `(array $keys, string $eventKey)`. Keys not already in the registry surface in an "event-specific" group on the sidebar. |
 | `yatra_send_transactional_email`           | filter  | Short-circuit before sending; return `false` to suppress |
 | `yatra_pro_email_automation_owns_transactional_type` | filter | Let Pro Email Automation own a specific template type |
+| `yatra_booking_email_variables`            | filter  | Final mutation point for booking-event variables (after `variablesFromBooking()` + rich tags). Args: `(array $variables, object $booking)`. |
 | `yatra_email_template_trip_variables`      | filter  | Add or rewrite the per-trip merge tags available to email templates |
 | `yatra_email_template_preview_variables`   | filter  | Same, for the template preview pane                      |
 | `yatra_send_booking_status_email_html`     | filter  | Rendered HTML for booking-status emails before send       |
 | `yatra_email_template_enquiry_admin` / `_received` / `_response` | filter | Override the rendered HTML per enquiry email template |
+
+### Adding a merge tag end-to-end
+
+The registry is the single source of truth — adding a tag means registering it AND wiring up the dispatcher value. Skip step 2 and your tag will render as an empty string; skip step 1 and the sidebar won't surface it.
+
+```php
+// 1. Declare the tag so the editor sidebar lists it for the right events.
+add_filter( 'yatra_email_merge_tag_definitions', function ( array $catalog ) {
+    $catalog['gst_invoice_number'] = [
+        'key'         => 'gst_invoice_number',
+        'label'       => 'GST Invoice Number',
+        'description' => 'Tax-invoice number printed on the GST receipt.',
+        'category'    => 'booking',
+        'sample'      => 'GST-2025-00042',
+        'events'      => [ 'booking.created', 'booking.confirmed', 'payment.received' ],
+    ];
+    return $catalog;
+} );
+
+// 2. Inject the real value so the rendered email actually contains it.
+add_filter( 'yatra_booking_email_variables', function ( array $vars, $booking ) {
+    $vars['gst_invoice_number'] = (string) get_post_meta( $booking->id, '_gst_invoice_number', true );
+    return $vars;
+}, 10, 2 );
+```
 
 ## Enquiries
 

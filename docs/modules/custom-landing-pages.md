@@ -5,8 +5,8 @@ prev:
   text: Abandoned Booking Recovery
   link: /modules/abandoned-booking-recovery
 next:
-  text: Mailchimp
-  link: /modules/mailchimp
+  text: AI Assistant
+  link: /modules/ai-assistant
 ---
 
 # Custom Landing Pages <span class="pro-pill">PRO</span>

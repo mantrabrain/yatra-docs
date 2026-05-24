@@ -156,6 +156,8 @@ When customers pick **Pay Later** at checkout, Yatra creates a **Pending** booki
 
 ---
 
+<a id="stripe"></a>
+
 ## Stripe <span class="pro-pill">PRO</span>
 
 <div class="pro-callout">
@@ -246,6 +248,8 @@ Signature verification is HMAC-SHA256 over `{timestamp}.{raw-body}` with a 5-min
 
 ---
 
+<a id="razorpay"></a>
+
 ## Razorpay <span class="pro-pill">PRO</span>
 
 Popular in India — supports cards, UPI, netbanking, and wallets in INR.
@@ -298,6 +302,8 @@ Razorpay's test mode accepts the test card `4111 1111 1111 1111`, any future exp
 
 ---
 
+<a id="mollie"></a>
+
 ## Mollie <span class="pro-pill">PRO</span>
 
 Strong in Europe (Netherlands, Belgium, Germany, France) — iDEAL, Bancontact, SEPA, cards.
@@ -349,6 +355,8 @@ Mollie only delivers webhooks to internet-accessible URLs. On a local-dev site (
 
 ---
 
+<a id="paystack"></a>
+
 ## Paystack <span class="pro-pill">PRO</span>
 
 Africa-first — cards, bank transfer, USSD, mobile money. Primary in Nigeria, Ghana, Kenya, South Africa.
@@ -394,6 +402,8 @@ Paystack lets you set one webhook URL per environment.
 - Paystack supported countries: <https://paystack.com/pricing>
 
 ---
+
+<a id="square"></a>
 
 ## Square <span class="pro-pill">PRO</span>
 
@@ -445,6 +455,8 @@ Sandbox uses its own credentials. The global *Test mode* flag picks which set Ya
 
 ---
 
+<a id="authorize-net"></a>
+
 ## Authorize.Net <span class="pro-pill">PRO</span>
 
 US-centric — popular with established merchants who already have an Authorize.Net merchant account through their acquirer.
@@ -492,6 +504,8 @@ Sandbox URL: `https://sandbox.authorize.net`. The global *Test mode* flag flips 
 - Test credit cards: <https://developer.authorize.net/hello_world/testing_guide.html>
 
 ---
+
+<a id="bank-transfer"></a>
 
 ## Bank Transfer <span class="pro-pill">PRO</span>
 
