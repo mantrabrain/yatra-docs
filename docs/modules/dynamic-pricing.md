@@ -157,6 +157,39 @@ A booking matching both starts at $499 → after Early Bird (priority 10): $424.
 Use the live preview card in the rule form to verify expected behaviour. If your stacking surprises you, set *Stack* to off on the higher-priority rule to force it as the final adjustment.
 :::
 
+## How Dynamic Pricing interacts with discounts
+
+When a booking *also* qualifies for an [Advanced Discount](/modules/advanced-discount)
+(promo code or group discount), by default Yatra applies **both
+reductions against the trip's catalog (regular) price** and subtracts
+both from what the customer pays:
+
+- Dynamic Pricing changes the per-unit price the customer sees in the
+  sidebar (e.g. catalog $149 → DP-adjusted $131.12).
+- The discount percentage is then calculated against the **catalog**
+  $149 base, not the DP-adjusted $131.12. So a 9% group discount on
+  8 adults shows as **−$107.28** (9% × $149 × 8), not −$94.41 (9% ×
+  $131.12 × 8). The customer ends up with the larger combined saving.
+
+The customer sees the DP-adjusted price on each row but the discount
+line item is calculated off the original catalog price — this is by
+design and produces the customer-friendliest stacked total.
+
+::: tip Want different stacking behaviour?
+The [**Discount Stacking** setting](/settings/general#pricing) (Settings →
+Pricing, visible only when both Dynamic Pricing and Advanced Discount
+modules are enabled) lets operators choose how the two combine:
+
+- **Both apply** *(default — additive stacking off catalog)*
+- **Best for the customer** — apply whichever gives the larger
+  reduction; never combine
+- **Discount only** — skip Dynamic Pricing when a discount is valid
+- **Dynamic Pricing only** — skip the discount when DP fired
+
+See [Advanced Discount → How Dynamic Pricing and discounts combine](/modules/advanced-discount#how-dynamic-pricing-and-discounts-combine)
+for the full worked example.
+:::
+
 ## Common patterns
 
 | Goal                                                                  | Rule type    | Adjustment            |

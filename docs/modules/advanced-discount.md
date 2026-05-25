@@ -123,8 +123,52 @@ Each tier is a row in the Category Discounts repeater with a *min travelers*, *m
 | ---                                                        | ---                                                                            |
 | Multiple promo codes                                       | Only one code can be active per booking. The latest applied wins.              |
 | Promo + Group on a multi-category booking                  | Yatra applies the category-based rates internally and sums them into one line. |
-| [Dynamic Pricing](/modules/dynamic-pricing) also matching  | Dynamic Pricing runs first, then the discount is applied to the adjusted price. |
+| [Dynamic Pricing](/modules/dynamic-pricing) also matching  | Default: both discounts come off the trip's **catalog price** (additive — customer-friendliest). See "How Dynamic Pricing and discounts combine" below. |
 | [Additional Services](/modules/additional-services) attached | Services are added *after* the trip-price discount — they're never discounted. |
+
+## How Dynamic Pricing and discounts combine
+
+When both [Dynamic Pricing](/modules/dynamic-pricing) and an Advanced
+Discount apply to the same booking, by default Yatra calculates **both
+reductions against the trip's catalog (regular) price**, then subtracts
+both from what the customer pays. This is the customer-friendliest
+behaviour and matches how most travel sites stack discounts.
+
+**Worked example** — Trip catalog price $149/adult, Dynamic Pricing
+saves $17.88/adult (early bird), Group Discount 9%, 8 adults booked:
+
+| Line | Amount |
+| --- | --- |
+| Catalog price per adult                          | $149.00 |
+| Dynamic Pricing saving                           | −$17.88 |
+| Price per adult **shown in the booking sidebar** | $131.12 |
+| × 8 adults                                       | $1,048.96 |
+| + Additional services                            | $800.00 |
+| **Trip Subtotal**                                | **$1,848.96** |
+| Group Discount: 9% × catalog ($149 × 8 = $1,192) | −$107.28 |
+| Subtotal (taxable)                               | $1,741.68 |
+
+The Group Discount percentage is applied to **$1,192** (the catalog
+base), not **$1,048.96** (the DP-adjusted base the customer sees on
+screen) — that's why the displayed discount is larger than a naive
+"9% of $1,048.96" mental check would suggest. The customer benefits
+from both savings stacking off the original price.
+
+::: tip Want different stacking behaviour?
+The [**Discount Stacking** setting](/settings/general#pricing) (Settings →
+Pricing, visible only when both Advanced Discount and Dynamic Pricing
+modules are enabled) lets operators switch between four modes:
+
+- **Both apply** *(default — the additive stacking shown above)*
+- **Best for the customer** — apply whichever single mechanism gives the
+  larger reduction; never combine
+- **Discount only** — when a coupon or group discount is valid, skip
+  Dynamic Pricing for that booking
+- **Dynamic Pricing only** — when a DP rule fires, ignore the discount
+
+Pick the policy that matches how your business prefers to communicate
+pricing.
+:::
 
 ## On the booking detail page
 
