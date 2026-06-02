@@ -1,6 +1,6 @@
 ---
 title: White Label
-description: Step-by-step setup for the Yatra Pro White Label module — rebrand the entire admin (logo, name, colors, menu, PDFs) as your own product. Agency-tier only. Remove every reference to Yatra and MantraBrain from what your clients see.
+description: Step-by-step setup for the Yatra Pro White Label module — rebrand the entire admin (logo, name, colors, menu, PDFs) as your own product. Scale-tier only. Remove every reference to Yatra and MantraBrain from what your clients see.
 prev:
   text: Webhooks
   link: /modules/webhooks
@@ -19,12 +19,12 @@ The **White Label** module rebrands the entire Yatra plugin as your own product.
 
 | Thing | Where to get it |
 | --- | --- |
-| Yatra Pro license — **Agency** tier (Yearly or Lifetime) | <span class="screen-path">Yatra → License</span> |
+| Yatra Pro license — **Scale** tier (Yearly or Lifetime) | <span class="screen-path">Yatra → License</span> |
 | White Label module enabled | <span class="screen-path">Yatra → Modules → White Label</span> |
 | A logo (PNG / SVG / WebP, ~64×64 px) | Your design |
 | A primary brand color (hex code) | Your style guide |
 
-> **Agency tier only.** White Label is the only feature gated to Agency licenses specifically — Growth licenses see the upgrade card. Personal sees no module at all.
+> **Scale tier only.** White Label is the only feature gated to Scale licenses specifically — Growth licenses see the upgrade card. Starter sees no module at all.
 
 ## What gets rebranded
 
@@ -48,7 +48,7 @@ The **White Label** module rebrands the entire Yatra plugin as your own product.
 ## Step 1 — Enable the module
 
 1. Open <span class="screen-path">Yatra → Modules</span>.
-2. Find **White Label** → toggle on. The toggle is disabled on Personal / Growth tier — only Agency Yearly + Agency Lifetime price IDs qualify.
+2. Find **White Label** → toggle on. The toggle is disabled on Starter / Growth tier — only Scale Yearly + Scale Lifetime price IDs qualify.
 3. A new menu entry **White Label** appears in the sidebar (under the Crown icon).
 
 ## Step 2 — Brand identity (Branding tab)
@@ -86,7 +86,7 @@ The sidebar editor lets you fully restructure the Yatra admin menu. Every Yatra 
 
 ### Common patterns
 
-**Hide the things your clients don't need.** Modules, License, Tools — your clients shouldn't manage these. Hide them. As Agency admin you still see them when logged in with your own role.
+**Hide the things your clients don't need.** Modules, License, Tools — your clients shouldn't manage these. Hide them. As Scale admin you still see them when logged in with your own role.
 
 **Rename to your domain language.** *Trips* → *Tours*. *Departures* → *Trips on calendar*. *Enquiries* → *Leads*. *Customers* → *Guests*. Pick the vocabulary your client uses.
 
@@ -135,7 +135,7 @@ After saving all tabs:
 
 ## Multi-site agencies
 
-If you manage many client sites with Agency licenses, you can ship a single small PHP file that pre-fills your default branding on every install — saving you from re-entering the same logo, colors, and naming on each new client setup. This file goes into a special WordPress directory called **`mu-plugins`** (short for "must-use plugins" — plugins that load automatically without needing to be activated). Put the file at `wp-content/mu-plugins/agency-defaults.php`:
+If you manage many client sites with Scale licenses, you can ship a single small PHP file that pre-fills your default branding on every install — saving you from re-entering the same logo, colors, and naming on each new client setup. This file goes into a special WordPress directory called **`mu-plugins`** (short for "must-use plugins" — plugins that load automatically without needing to be activated). Put the file at `wp-content/mu-plugins/agency-defaults.php`:
 
 ```php
 // wp-content/mu-plugins/agency-defaults.php
@@ -158,9 +158,9 @@ Defaults apply until the client overrides them via the UI, so you can ship a bra
 | Endpoint | Verb | Purpose |
 | --- | --- | --- |
 | `/yatra/v1/white-label/settings` | GET | Read settings + meta (license tier, agency info, upgrade URL). |
-| `/yatra/v1/white-label/settings` | PUT | Save settings. Rejects non-Agency licenses with HTTP 403. |
+| `/yatra/v1/white-label/settings` | PUT | Save settings. Rejects non-Scale licenses with HTTP 403. |
 
-Both gated on `manage_options` + Agency-active license. The response shape is documented in [REST API reference](/api-reference#white-label).
+Both gated on `manage_options` + Scale-active license. The response shape is documented in [REST API reference](/api-reference#white-label).
 
 ## WP-CLI: `wp yatra white-label audit`
 
@@ -197,23 +197,23 @@ Doesn't catch every possible leak (it can't scan PDFs already generated, third-p
 | `yatra_get_brand_name` (filter) | Override the brand name everywhere — handy for sub-site instance variations. |
 | `yatra_get_brand_icon_url` (filter) | Override the logo URL. |
 | `yatra_white_label_default_settings` (filter) | Set agency-wide defaults — see *Multi-site agencies* above. |
-| `yatra_is_agency_active` (filter) | Drives every Agency-gated feature. Returns `true` when the license is Agency Yearly or Agency Lifetime. Filter return value is cached per-request. |
-| `yatra_is_ai_eligible` (filter) | Same shape, returns `true` for Growth + Agency. Drives the AI Assistant + WhatsApp gates. |
+| `yatra_is_agency_active` (filter) | Drives every Agency-gated feature. Returns `true` when the license is Scale Yearly or Scale Lifetime. Filter return value is cached per-request. |
+| `yatra_is_ai_eligible` (filter) | Same shape, returns `true` for Growth + Scale. Drives the AI Assistant + WhatsApp gates. |
 | `yatra_pro_agency_license_info` (filter) | Returns the agency license payload (expires, tier, customer info) for use in dashboards. |
 | `yatra_white_label_active` (filter) | Returns `true` when the module toggle is on. Use to gate code that depends on rebranding being live. |
 
-## What "Agency tier" means
+## What "Scale tier" means
 
-EDD price IDs that qualify as Agency, in order of seniority:
+EDD price IDs that qualify as Scale, in order of seniority:
 
 | Price ID | Tier | Source |
 | --- | --- | --- |
-| 4 | **Agency Lifetime** | Default. |
-| 3 | **Agency Yearly** | Default. |
+| 4 | **Scale Lifetime** | Default. |
+| 3 | **Scale Yearly** | Default. |
 | 2 | Growth Yearly | Unlocks AI + WhatsApp **not** White Label. |
 | 1 | Personal Yearly | No premium modules. |
 
-Override the defaults via the `YATRA_PRO_AGENCY_PRICE_IDS` constant or the `yatra_pro_agency_price_ids` filter — agencies running their own reseller stores can map custom EDD price IDs to Agency tier.
+Override the defaults via the `YATRA_PRO_AGENCY_PRICE_IDS` constant or the `yatra_pro_agency_price_ids` filter — agencies running their own reseller stores can map custom EDD price IDs to Scale tier.
 
 EDD's `expires === "lifetime"` sentinel is also honored, so lifetime variants surface correctly even when their price ID isn't on the explicit allowlist.
 
@@ -221,7 +221,7 @@ EDD's `expires === "lifetime"` sentinel is also honored, so lifetime variants su
 
 - Branding lives in `wp_options.yatra_white_label_settings`. Standard WordPress backup tooling captures it.
 - Logo URLs can point at WordPress Media library attachments (preferred — survives migrations) or external CDNs.
-- The Agency license check makes one HTTP call per day to `store.mantrabrain.com` to verify the license. No customer data is sent.
+- The Scale license check makes one HTTP call per day to `store.mantrabrain.com` to verify the license. No customer data is sent.
 
 ## Security note: brand text replacement uses DOM-safe substitution
 
@@ -229,9 +229,9 @@ The brand-name rewrite in the admin replaces text nodes only — it walks the DO
 
 ## Troubleshooting
 
-**"White Label" doesn't appear in the sidebar** — verify (1) your license is Agency Yearly or Agency Lifetime, **not** Growth, (2) the module is toggled on under Modules. The free-plugin React Layout reads `window.yatraAdmin.isAgency` + `window.yatraAdmin.whiteLabelEnabled` — both must be true.
+**"White Label" doesn't appear in the sidebar** — verify (1) your license is Scale Yearly or Scale Lifetime, **not** Growth, (2) the module is toggled on under Modules. The free-plugin React Layout reads `window.yatraAdmin.isAgency` + `window.yatraAdmin.whiteLabelEnabled` — both must be true.
 
-**Save returns `403 Forbidden`** — license has expired or downgraded to Growth/Personal. The save endpoint re-validates Agency on every PUT to prevent stale UI state from succeeding.
+**Save returns `403 Forbidden`** — license has expired or downgraded to Growth/Starter. The save endpoint re-validates Scale on every PUT to prevent stale UI state from succeeding.
 
 **Logo doesn't show in the sidebar after save** — hard-reload the admin (Cmd/Ctrl+Shift+R). Yatra's React admin caches `window.yatraAdmin` at page load; a soft reload preserves the stale snapshot.
 
@@ -252,6 +252,6 @@ The brand-name rewrite in the admin replaces text nodes only — it walks the DO
 ## Where to read more
 
 - [All modules](/modules#white-label) — module catalog.
-- [Channel Manager](/modules/channel-manager) — the other Agency-only module.
-- [AI Assistant](/modules/ai-assistant) — Growth + Agency content help.
-- [WhatsApp Notifications](/modules/whatsapp) — Growth + Agency messaging.
+- [Channel Manager](/modules/channel-manager) — the other Scale-only module.
+- [AI Assistant](/modules/ai-assistant) — Growth + Scale content help.
+- [WhatsApp Notifications](/modules/whatsapp) — Growth + Scale messaging.

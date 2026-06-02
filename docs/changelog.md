@@ -218,7 +218,7 @@ Documentation-only release for the plugin directory listing; no code changes req
 ### 3.0.0
 
 - **Major release:** redesigned admin experience, streamlined booking and traveler account flows, expanded gateway and module architecture for Pro, and ongoing hardening for production travel sites.
-- See [wpyatra.com/yatra-3-0/](https://wpyatra.com/yatra-3-0/) for the release writeup.
+- See [wpyatra.com/yatra-3-0/](https://wpyatra.com/yatra-3-0/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs) for the release writeup.
 - **Always back up** before upgrading from 2.x; follow migration guidance in [Installation](/installation).
 
 ### Earlier versions (2.x)
@@ -321,4 +321,4 @@ Safe to update from 3.0.0.1.
 
 - [WordPress.org Yatra plugin page](https://wordpress.org/plugins/yatra/) — official release dates and download counts.
 - [GitHub releases](https://github.com/MantraBrain/yatra/releases) — release notes and downloadable ZIPs.
-- [wpyatra.com/blog](https://wpyatra.com/) — long-form release writeups for major versions.
+- [wpyatra.com/blog](https://wpyatra.com/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs) — long-form release writeups for major versions.

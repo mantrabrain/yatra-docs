@@ -11,17 +11,17 @@ next:
 
 # Webhooks <span class="pro-pill">PRO</span>
 
-> **Agency tier.** Enterprise-grade outbound webhooks for tour operators wiring Yatra into a custom tech stack — sync bookings to a CRM, post revenue events to accounting, trigger Zapier workflows, ping Slack on VIP bookings.
+> **Scale tier.** Enterprise-grade outbound webhooks for tour operators wiring Yatra into a custom tech stack — sync bookings to a CRM, post revenue events to accounting, trigger Zapier workflows, ping Slack on VIP bookings.
 
 If you've ever wished Yatra could *tell* your other tools when something happens — a booking gets paid, an enquiry comes in, a trip gets cancelled — that's what webhooks are for. Yatra fires a signed HTTPS POST to whatever URL you configure, the receiving system reads the JSON, does something useful with it. Stripe-style. GitHub-style. Same shape, same security guarantees.
 
-This module is **Agency-only** because it's how agencies integrate Yatra into bigger systems. The Personal and Growth tiers don't need it — Email Automation, WhatsApp, and the built-in modules cover most operators.
+This module is **Scale-only** because it's how agencies integrate Yatra into bigger systems. The Personal and Growth tiers don't need it — Email Automation, WhatsApp, and the built-in modules cover most operators.
 
 ## What you'll need
 
 | Thing | Where to get it |
 | --- | --- |
-| Yatra Pro license — **Agency** tier (Yearly or Lifetime) | <span class="screen-path">Yatra → License</span> |
+| Yatra Pro license — **Scale** tier (Yearly or Lifetime) | <span class="screen-path">Yatra → License</span> |
 | Webhooks module enabled | <span class="screen-path">Yatra → Modules → Webhooks</span> |
 | A receiver URL — Zapier catch-hook, Make scenario, n8n workflow, custom endpoint, anything that speaks HTTPS | The receiving system gives you this URL |
 | HTTPS — receivers without TLS are rejected (except on local dev with `WP_DEBUG`) | Your receiver must serve a valid TLS cert |
@@ -65,7 +65,7 @@ If it replies with 5xx (server error), 429 (rate-limited), or there's a network 
 
 Open <span class="screen-path">Yatra → Modules</span>, scroll to **Webhooks**, flip it on. A new <span class="screen-path">Yatra → Webhooks</span> entry appears in the sidebar.
 
-If you don't see Webhooks in the module list, check your license tier — it's Agency-only. The module shows an upgrade card to non-Agency operators so you know it exists.
+If you don't see Webhooks in the module list, check your license tier — it's Scale-only. The module shows an upgrade card to non-Scale operators so you know it exists.
 
 ### 2. Add an endpoint
 
@@ -329,6 +329,6 @@ Two ways. (a) Configure your existing Zapier / Make scenario to point at a new "
 
 ## Pricing
 
-Webhooks ship in the **Agency** tier. Same price as Channel Manager and White Label — no per-event metering, no per-delivery surcharge, no rate limit beyond the soft concurrent-delivery throttle. Send a million events a month if your traffic warrants it.
+Webhooks ship in the **Scale** tier. Same price as Channel Manager and White Label — no per-event metering, no per-delivery surcharge, no rate limit beyond the soft concurrent-delivery throttle. Send a million events a month if your traffic warrants it.
 
-See [pricing](https://wpyatra.com/pricing/) for tier breakdown.
+See [pricing](https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs) for tier breakdown.

@@ -8,7 +8,7 @@ description: Edit Yatra's transactional emails, configure deliverability, and un
 <div class="doc-pro-callout">
   <span class="doc-pro-pill">Pro</span>
   <span><strong>Sequences, full delivery logs &amp; Mailchimp sync are Yatra Pro.</strong> The free plugin already sends every transactional email — you can edit subject, body, and HTML on all 25 templates without a Pro license.</span>
-  <a class="doc-pro-callout__cta" href="https://wpyatra.com/pricing/" target="_blank" rel="noopener">View pricing →</a>
+  <a class="doc-pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs" target="_blank" rel="noopener">View pricing →</a>
 </div>
 
 Yatra sends transactional emails at every important moment — booking confirmation, admin notice, payment receipt, departure reminder, post-trip review request. This page is the practical guide for editing them, making them deliverable, and unlocking multi-step sequences with Pro Email Automation.
@@ -3309,7 +3309,7 @@ This section enumerates every template and the exact tags that resolve when it s
     <span class="pro-callout__title">Email Automation — multi-step sequences</span>
   </div>
   <p class="pro-callout__desc">Trigger a sequence on booking confirmed → wait 7 days → send "tips for your upcoming trip" → wait until 1 day before travel → send "weather + packing list" → wait until day after travel → send "leave a review" — all without a separate marketing tool.</p>
-  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/">Unlock sequences →</a>
+  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">Unlock sequences →</a>
 </div>
 
 ![Sequences tab — multi-step automation list with stats](/screenshots/email/email-sequences.webp)

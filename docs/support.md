@@ -13,7 +13,7 @@ Yatra is supported in three places, depending on what you need.
 | ---                                                                           | ---                                            | ---            |
 | [WordPress.org plugin forum](https://wordpress.org/support/plugin/yatra/)     | Public Q&A on the free plugin                   | Best effort    |
 | [GitHub issues](https://github.com/MantraBrain/yatra)                         | Bug reports, feature requests, code-level talk  | Best effort    |
-| [wpyatra.com priority support](https://wpyatra.com/contact/)                  | Pro license holders, billing, urgent issues    | Per plan SLA   |
+| [wpyatra.com priority support](https://wpyatra.com/contact/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs)                  | Pro license holders, billing, urgent issues    | Per plan SLA   |
 
 <div class="pro-callout">
   <div class="pro-callout__head">
@@ -21,7 +21,7 @@ Yatra is supported in three places, depending on what you need.
     <span class="pro-callout__title">Priority support is included with every Pro plan</span>
   </div>
   <p class="pro-callout__desc">Pro license holders get faster response times via the priority queue. Severity-1 ("site down") tickets are escalated.</p>
-  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/">Compare Pro plans →</a>
+  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">Compare Pro plans →</a>
 </div>
 
 ## Filing a useful bug report
@@ -103,9 +103,9 @@ We prioritize features that solve a problem affecting many sites, fit Yatra's "W
 ## Useful links
 
 - 📖 [Yatra documentation](https://docs.wpyatra.com/) — official docs hub.
-- 🛒 [Buy Yatra Pro](https://wpyatra.com/pricing/) — license plans.
+- 🛒 [Buy Yatra Pro](https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs) — license plans.
 - 🐙 [GitHub](https://github.com/MantraBrain/yatra) — issues and source.
-- 📨 [Contact wpyatra.com](https://wpyatra.com/contact/) — sales + support.
+- 📨 [Contact wpyatra.com](https://wpyatra.com/contact/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs) — sales + support.
 
 ## What's next
 

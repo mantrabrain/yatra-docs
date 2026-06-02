@@ -24,25 +24,26 @@ If a module page mentions a UI surface ("open <span class="screen-path">Yatra �
 
 | Module                                                       | Tier         | What it does                                                          |
 | ---                                                          | ---          | ---                                                                   |
-| [Google Calendar](/modules/google-calendar)                  | Personal +   | Two-way sync between Yatra departures and Google Calendar.            |
-| [Additional Services](/modules/additional-services)          | Personal +   | Per-trip add-ons (transfers, gear hire, meal plans).                  |
-| [Trip Consent](/modules/trip-consent)                        | Personal +   | Pre-trip waivers and consent forms with digital signature.            |
-| [Email Automation](/modules/email-automation)                | Personal +   | Multi-step email sequences and full delivery logs.                    |
-| [Dynamic Form Field](/modules/dynamic-form-field)            | Personal +   | Per-trip custom fields on the booking form.                           |
-| [Advanced Discount](/modules/advanced-discount)              | Personal +   | Group / early-bird / last-minute / category-based discount rules.     |
-| [Mailchimp](/modules/mailchimp)                              | Personal +   | Auto-subscribe customers to a Mailchimp audience after booking.       |
-| [Facebook Pixel](/modules/facebook-pixel)                    | Personal +   | Drop the Facebook Pixel and fire the standard e-commerce events.      |
-| [Google Analytics](/modules/google-analytics)                | Personal +   | GA4 measurement ID + GA4 e-commerce events for the booking flow.      |
-| [Flexible Payments](/modules/flexible-payments)              | Personal +   | Deposits and partial payments at checkout.                            |
-| [Scheduled Payments](/modules/scheduled-payments)            | Personal +   | Auto-charge the remaining balance on a future date.                   |
-| [Dynamic Pricing](/modules/dynamic-pricing)                  | Personal +   | Demand-, season-, last-minute-based price adjustments.                |
-| [Abandoned Booking Recovery](/modules/abandoned-booking-recovery) | Personal + | Recover lost checkouts via a 3-step email sequence.                |
-| [Custom Landing Pages](/modules/custom-landing-pages)        | Personal +   | Trip-specific landing pages for paid traffic.                         |
+| [Google Calendar](/modules/google-calendar)                  | Starter +   | Two-way sync between Yatra departures and Google Calendar.            |
+| [Additional Services](/modules/additional-services)          | Starter +   | Per-trip add-ons (transfers, gear hire, meal plans).                  |
+| [Trip Consent](/modules/trip-consent)                        | Starter +   | Pre-trip waivers and consent forms with digital signature.            |
+| [Email Automation](/modules/email-automation)                | Starter +   | Multi-step email sequences and full delivery logs.                    |
+| [Dynamic Form Field](/modules/dynamic-form-field)            | Starter +   | Per-trip custom fields on the booking form.                           |
+| [Advanced Discount](/modules/advanced-discount)              | Starter +   | Group / early-bird / last-minute / category-based discount rules.     |
+| [Mailchimp](/modules/mailchimp)                              | Starter +   | Auto-subscribe customers to a Mailchimp audience after booking.       |
+| [Facebook Pixel](/modules/facebook-pixel)                    | Starter +   | Drop the Facebook Pixel and fire the standard e-commerce events.      |
+| [Google Analytics](/modules/google-analytics)                | Starter +   | GA4 measurement ID + GA4 e-commerce events for the booking flow.      |
+| [Flexible Payments](/modules/flexible-payments)              | Starter +   | Deposits and partial payments at checkout.                            |
+| [Scheduled Payments](/modules/scheduled-payments)            | Starter +   | Auto-charge the remaining balance on a future date.                   |
+| [Dynamic Pricing](/modules/dynamic-pricing)                  | Starter +   | Demand-, season-, last-minute-based price adjustments.                |
+| [Abandoned Booking Recovery](/modules/abandoned-booking-recovery) | Starter + | Recover lost checkouts via a 3-step email sequence.                |
+| [Custom Landing Pages](/modules/custom-landing-pages)        | Starter +   | Trip-specific landing pages for paid traffic.                         |
 | [AI Assistant](/modules/ai-assistant)                        | **Growth +** | Bring-your-own-key AI generation across trip editor, SEO, enquiries.  |
 | [WhatsApp Notifications](/modules/whatsapp)                  | **Growth +** | Transactional WhatsApp Cloud API messages + inbound replies + widget. |
-| [Channel Manager](/modules/channel-manager)                  | **Agency**   | Distribute trips to Viator, GetYourGuide & more OTAs. Real-time sync. |
-| [Webhooks](/modules/webhooks)                                | **Agency**   | Signed outbound HTTPS webhooks to any CRM / Zapier / custom receiver. |
-| [White Label](/modules/white-label)                          | **Agency**   | Full admin rebrand — logo, name, colors, menu, PDFs.                  |
+| [Channel Manager](/modules/channel-manager)                  | **Scale**   | Distribute trips to Viator, GetYourGuide & more OTAs. Real-time sync. |
+| [Webhooks](/modules/webhooks)                                | **Scale**   | Signed outbound HTTPS webhooks to any CRM / Zapier / custom receiver. |
+| [White Label](/modules/white-label)                          | **Scale**   | Full admin rebrand — logo, name, colors, menu, PDFs.                  |
+| [Team & Access](/modules/team-access)                        | **Scale**   | Roles & capabilities, audit log, 2FA and staff invitations.           |
 
 ## Common patterns
 

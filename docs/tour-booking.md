@@ -135,7 +135,7 @@ At least one valid price (Regular Original, or one Traveler-Based row) must be s
     <span class="pro-callout__title">Dynamic pricing rules</span>
   </div>
   <p class="pro-callout__desc">Apply percentage / fixed-amount adjustments by trip, destination, season, or last-minute window. Group-size discounts, early-bird bumps, and per-traveler-category multipliers — manageable from <span class="screen-path">Yatra → Dynamic Pricing</span>.</p>
-  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/">Unlock dynamic pricing →</a>
+  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">Unlock dynamic pricing →</a>
 </div>
 
 ## 4. Availability & Booking

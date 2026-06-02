@@ -194,7 +194,7 @@ While a customer is in checkout, Yatra holds their seats with a temporary **book
     <span class="pro-callout__title">Recover abandoned bookings</span>
   </div>
   <p class="pro-callout__desc">When the session expires (or the customer leaves before paying), Yatra Pro can email them a personalized recovery link. Three-step sequence (1 hour / 1 day / 3 days), per-trip exclusions, and reporting on recovered revenue.</p>
-  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/">Unlock abandoned recovery →</a>
+  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">Unlock abandoned recovery →</a>
 </div>
 
 ---

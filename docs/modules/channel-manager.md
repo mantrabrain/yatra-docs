@@ -17,13 +17,13 @@ next:
 
 The **Channel Manager** module connects your Yatra site directly to each OTA. When a booking lands on Viator, it flows straight into your Yatra bookings list. When you change a price or add availability in Yatra, it pushes out to every connected channel. You manage one calendar, not three.
 
-Standalone "channel manager" tools (separate paid products that do this same job) typically cost **$99–299 per month**. Yatra includes it in the Agency plan at no extra cost.
+Standalone "channel manager" tools (separate paid products that do this same job) typically cost **$99–299 per month**. Yatra includes it in the Scale plan at no extra cost.
 
 ## What you'll need
 
 | Thing | Where to get it |
 | --- | --- |
-| Yatra Pro license — **Agency** tier (Yearly or Lifetime) | <span class="screen-path">Yatra → License</span> |
+| Yatra Pro license — **Scale** tier (Yearly or Lifetime) | <span class="screen-path">Yatra → License</span> |
 | Channel Manager module enabled | <span class="screen-path">Yatra → Modules → Channel Manager</span> |
 | Partner-program approval from each OTA | See *Supported channels* below |
 | Per-channel API key + webhook signing secret | Issued by the OTA's partner portal |
@@ -81,7 +81,7 @@ Once approved, the OTA gives you a partner portal with API key + webhook signing
 ## Step 2 — Enable the module
 
 1. Open <span class="screen-path">Yatra → Modules</span>.
-2. Find **Channel Manager** → toggle on. (Personal / Growth tier shows an *Upgrade to Agency* CTA instead.)
+2. Find **Channel Manager** → toggle on. (Starter / Growth tier shows an *Upgrade to Scale* CTA instead.)
 3. A new menu entry **Channel Manager** appears in the sidebar.
 4. Database tables are created automatically on toggle-on — no separate install step.
 
@@ -361,7 +361,7 @@ The Channel Manager is designed for unattended operation — operators **never h
 | `/yatra/v1/channel-manager/latency` | GET | Per-channel + per-provider + global latency percentiles. |
 | `/yatra/v1/channel-manager/webhook/{channel_id}` | POST | Public webhook receiver — **always available** even when the module is disabled, gated by signature + (optional) IP allowlist + rate limit. |
 
-All write endpoints require `manage_options` + Agency-active license + module enabled. See [REST API reference](/api-reference#channel-manager) for the full schema.
+All write endpoints require `manage_options` + Scale-active license + module enabled. See [REST API reference](/api-reference#channel-manager) for the full schema.
 
 ## Hooks & filters
 
@@ -411,7 +411,7 @@ This is the most-asked question by operators, so it deserves an honest answer. T
 
 ## Troubleshooting
 
-**"Channel Manager" doesn't appear in the sidebar** — verify (1) your license is Agency on the License page, (2) the module is toggled on under Modules. Personal / Growth tier shows the upgrade card under <span class="screen-path">Yatra → Channel Manager</span> but no sidebar menu.
+**"Channel Manager" doesn't appear in the sidebar** — verify (1) your license is Scale on the License page, (2) the module is toggled on under Modules. Starter / Growth tier shows the upgrade card under <span class="screen-path">Yatra → Channel Manager</span> but no sidebar menu.
 
 **"Failed to create channel: Table doesn't exist"** — this was a bug fixed in module v1.0.1. The schema is now created synchronously on module toggle-on. If you're seeing it, refresh the admin page once — the safety-net hook will install the tables.
 
@@ -440,5 +440,5 @@ This is the most-asked question by operators, so it deserves an honest answer. T
 ## Where to read more
 
 - [All modules](/modules#channel-manager) — module catalog.
-- [White Label](/modules/white-label) — Agency-only deeper rebrand.
-- [AI Assistant](/modules/ai-assistant) — Growth/Agency content generation.
+- [White Label](/modules/white-label) — Scale-only deeper rebrand.
+- [AI Assistant](/modules/ai-assistant) — Growth/Scale content generation.

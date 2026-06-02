@@ -51,7 +51,7 @@ After you install Yatra, open **WordPress admin → Yatra**. You’ll see a mode
 | **License** | Activate Yatra Pro license | [Installation → Step 2](/installation#step-2-install-yatra-pro) |
 | **Settings** | The 13-tab settings hub | [Settings overview](/settings) |
 
-WordPress may also show **Upgrade to Pro** under the Yatra menu when you’re on the free plugin—it opens [wpyatra.com pricing](https://wpyatra.com/pricing/) in a new tab.
+WordPress may also show **Upgrade to Pro** under the Yatra menu when you’re on the free plugin—it opens [wpyatra.com pricing](https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs) in a new tab.
 
 ## What your customers see (front of the site)
 

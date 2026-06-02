@@ -84,7 +84,7 @@ See [Payments](/payment-settings) for the full guide.
     <span class="pro-callout__badge">PRO</span>
     <span class="pro-callout__title">Seven premium gateways — one license</span>
   </div>
-  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/">Compare Yatra Pro plans →</a>
+  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">Compare Yatra Pro plans →</a>
 </div>
 
 ### Does Yatra support deposits or partial payments?
@@ -95,7 +95,7 @@ See [Payments](/payment-settings) for the full guide.
     <span class="pro-callout__title">Deposits + Scheduled Payments</span>
   </div>
   <p class="pro-callout__desc">The <strong>Flexible Payments</strong> module lets you collect a deposit at booking time. Combine with <strong>Scheduled Payments</strong> to auto-charge the balance on a future date.</p>
-  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/">Unlock deposits →</a>
+  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">Unlock deposits →</a>
 </div>
 
 ### Can I issue refunds?
@@ -135,7 +135,7 @@ Yes — the booking form includes optional emergency contact fields. For passpor
     <span class="pro-callout__title">Dynamic Form Field</span>
   </div>
   <p class="pro-callout__desc">Drag-drop booking form builder. Add text / select / checkbox / file / date fields with conditional visibility.</p>
-  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/">Unlock the form builder →</a>
+  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">Unlock the form builder →</a>
 </div>
 
 ### Can I collect waivers and consent forms?
@@ -146,7 +146,7 @@ Yes — the booking form includes optional emergency contact fields. For passpor
     <span class="pro-callout__title">Trip Consent</span>
   </div>
   <p class="pro-callout__desc">Liability waivers and signature-required consent forms tied to trips. Each traveler signs digitally; bookings show "consent signed" status.</p>
-  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/">Unlock trip consent →</a>
+  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">Unlock trip consent →</a>
 </div>
 
 ## Availability & departures
@@ -183,7 +183,7 @@ Yes (free) — set adult / child / infant / senior prices in the trip's Pricing 
     <span class="pro-callout__title">Dynamic Pricing</span>
   </div>
   <p class="pro-callout__desc">Rules engine for seasonal / demand / group-size / per-day pricing. <span class="screen-path">Yatra → Dynamic Pricing</span> after enabling.</p>
-  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/">Unlock dynamic pricing →</a>
+  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">Unlock dynamic pricing →</a>
 </div>
 
 ## Privacy, GDPR, data ownership
@@ -232,6 +232,6 @@ No. Yatra outputs normal WordPress pages and URLs. Yoast / Rank Math / SEOPress 
 
 - [WordPress.org support forum](https://wordpress.org/support/plugin/yatra/) — public threads.
 - [GitHub](https://github.com/MantraBrain/yatra) — bug reports.
-- [wpyatra.com priority support](https://wpyatra.com/contact/) — Pro license holders.
+- [wpyatra.com priority support](https://wpyatra.com/contact/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs) — Pro license holders.
 
 See [Support](/support) for routing details.

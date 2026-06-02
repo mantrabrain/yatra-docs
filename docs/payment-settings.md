@@ -8,7 +8,7 @@ description: Beginner-friendly setup guides for every Yatra payment gateway — 
 <div class="doc-pro-callout">
   <span class="doc-pro-pill">Pro</span>
   <span><strong>Stripe and six other gateways are Yatra Pro.</strong> The free plugin ships with PayPal &amp; Pay Later. Activate a license under <em>Yatra → License</em> to unlock the rest.</span>
-  <a class="doc-pro-callout__cta" href="https://wpyatra.com/pricing/" target="_blank" rel="noopener">View pricing →</a>
+  <a class="doc-pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs" target="_blank" rel="noopener">View pricing →</a>
 </div>
 
 Yatra's free plugin includes **PayPal** and **Pay Later** as fully-working gateways. The other seven — Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net, Bank Transfer — are part of **Yatra Pro**.
@@ -166,7 +166,7 @@ When customers pick **Pay Later** at checkout, Yatra creates a **Pending** booki
     <span class="pro-callout__title">Stripe — cards, wallets, scheduled balance payments</span>
   </div>
   <p class="pro-callout__desc">Yatra Pro includes Stripe with first-class checkout integration plus support for the <strong>Scheduled Payments</strong> module — auto-charge the balance on a future date.</p>
-  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/">Unlock Stripe →</a>
+  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">Unlock Stripe →</a>
 </div>
 
 ![Yatra → Settings → Payment → Stripe panel](/screenshots/gateways/stripe-settings.webp)
@@ -527,7 +527,7 @@ No external account, no credentials — you just publish your bank details on th
     <span class="pro-callout__title">Seven premium gateways — one license</span>
   </div>
   <p class="pro-callout__desc">Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net, and Bank Transfer all unlock with a single Yatra Pro license.</p>
-  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/">Compare Yatra Pro plans →</a>
+  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">Compare Yatra Pro plans →</a>
 </div>
 
 ---

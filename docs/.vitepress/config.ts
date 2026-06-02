@@ -25,7 +25,9 @@ export default defineConfig({
       }
     ],
     ['meta', { name: 'theme-color', content: '#2563eb' }],
-    ['link', { rel: 'icon', href: '/favicon.ico' }],
+    ['link', { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+    ['link', { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' }],
+    ['link', { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' }],
     [
       'link',
       {
@@ -172,14 +174,15 @@ export default defineConfig({
       },
       {
         text: 'Yatra Pro',
-        link: 'https://wpyatra.com/pricing/',
+        link: 'https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs',
         target: '_blank',
         rel: 'noopener'
       },
       {
         text: 'wpyatra.com',
-        link: 'https://wpyatra.com/',
-        target: '_blank'
+        link: 'https://wpyatra.com/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs',
+        target: '_blank',
+        rel: 'noopener'
       }
     ],
 
@@ -287,7 +290,7 @@ export default defineConfig({
 
     footer: {
       message:
-        '© MantraBrain · GPLv2+ · <a href="https://wpyatra.com/pricing/" target="_blank" rel="noopener"><strong>Yatra Pro</strong> — pricing</a>',
+        '© MantraBrain · GPLv2+ · <a href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs" target="_blank" rel="noopener"><strong>Yatra Pro</strong> — pricing</a>',
       copyright: `Copyright © ${new Date().getFullYear()} MantraBrain`
     },
 
@@ -351,8 +354,9 @@ export default defineConfig({
     }
   },
 
-  // Tolerate cross-page links to pages that may not yet exist
-  ignoreDeadLinks: true,
+  // Fail the build on broken internal links/anchors so a bad cross-reference
+  // can never ship to production (the site currently has zero dead links).
+  ignoreDeadLinks: false,
 
   sitemap: {
     hostname: 'https://docs.wpyatra.com'

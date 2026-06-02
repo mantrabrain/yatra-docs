@@ -155,7 +155,7 @@ screen) — that's why the displayed discount is larger than a naive
 from both savings stacking off the original price.
 
 ::: tip Want different stacking behaviour?
-The [**Discount Stacking** setting](/settings/general#pricing) (Settings →
+The [**Discount Stacking** setting](/settings#discount-stacking) (Settings →
 Pricing, visible only when both Advanced Discount and Dynamic Pricing
 modules are enabled) lets operators switch between four modes:
 

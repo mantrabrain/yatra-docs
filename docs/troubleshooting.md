@@ -40,7 +40,7 @@ This page lists the issues we see most often and the fastest way through them.
     <span class="pro-callout__badge">PRO</span>
     <span class="pro-callout__title">Unlock Stripe + 6 more gateways</span>
   </div>
-  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/">Compare Pro plans →</a>
+  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">Compare Pro plans →</a>
 </div>
 
 ## "PayPal webhook shows but no booking is confirmed"
@@ -92,7 +92,7 @@ This page lists the issues we see most often and the fastest way through them.
     <span class="pro-callout__title">Email Automation logs</span>
   </div>
   <p class="pro-callout__desc">With <strong>Email Automation</strong> on, the <strong>Email logs</strong> tab shows every send, recipient, status, and ESP response code — invaluable for debugging delivery.</p>
-  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/">Unlock email automation →</a>
+  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">Unlock email automation →</a>
 </div>
 
 ## "Featured priority filter doesn't work in shortcode / block"
@@ -234,7 +234,7 @@ Before filing, please:
   <li>Capture the exact steps + a <code>WP_DEBUG</code> log of the error.</li>
 </ol>
 
-Then [file a bug on GitHub](https://github.com/MantraBrain/yatra) (free) or open a [priority support ticket](https://wpyatra.com/contact/) (Pro).
+Then [file a bug on GitHub](https://github.com/MantraBrain/yatra) (free) or open a [priority support ticket](https://wpyatra.com/contact/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs) (Pro).
 
 ## What's next
 

@@ -19,7 +19,7 @@ WhatsApp drives 90%+ open rates and a fraction of the spam complaints email gets
 
 | Thing | Where to get it |
 | --- | --- |
-| Yatra Pro license — **Growth** or **Agency** tier | <span class="screen-path">Yatra → License</span> |
+| Yatra Pro license — **Growth** or **Scale** tier | <span class="screen-path">Yatra → License</span> |
 | WhatsApp Notifications module enabled | <span class="screen-path">Yatra → Modules → WhatsApp</span> |
 | Meta for Developers account | [developers.facebook.com](https://developers.facebook.com/) (free, requires a Facebook account) |
 | Meta Business Manager account | [business.facebook.com](https://business.facebook.com/) — owns your WhatsApp Business Account (WABA) |
@@ -237,7 +237,7 @@ After each successful sweep, the `yatra_whatsapp_retention_swept` action fires w
 | `/yatra/v1/whatsapp/templates/{id}/versions` | GET | List the template's version snapshots, newest first. |
 | `/yatra/v1/whatsapp/templates/{id}/versions/{versionId}/restore` | POST | Restore the template from a snapshot. Captures the current state first so the restore itself can be undone. |
 
-All write endpoints require `manage_options` + Growth/Agency-active license. See [REST API reference](/api-reference#whatsapp) for the full schema.
+All write endpoints require `manage_options` + Growth/Scale-active license. See [REST API reference](/api-reference#whatsapp) for the full schema.
 
 ## Hooks & filters
 
@@ -254,7 +254,7 @@ All write endpoints require `manage_options` + Growth/Agency-active license. See
 
 ## Troubleshooting
 
-**"WhatsApp" doesn't appear in the sidebar** — verify (1) your license is Growth or Agency on the License page, (2) the module is toggled on under Modules.
+**"WhatsApp" doesn't appear in the sidebar** — verify (1) your license is Growth or Scale on the License page, (2) the module is toggled on under Modules.
 
 **Test connection returns `401 OAuthException`** — token expired (you're using the temporary 24h token) or revoked. Generate a **permanent** System User token with the right scopes — see Step 1.
 
@@ -280,4 +280,4 @@ All write endpoints require `manage_options` + Growth/Agency-active license. See
 
 - [All modules](/modules#whatsapp-notifications) — module catalog.
 - [AI Assistant](/modules/ai-assistant) — the other Growth-tier module that ships with the same license.
-- [Channel Manager](/modules/channel-manager) — Agency-only OTA distribution hub.
+- [Channel Manager](/modules/channel-manager) — Scale-only OTA distribution hub.

@@ -17,7 +17,7 @@ If you run your travel business with more than one person, **Team & Access** let
 
 Out of the box, you get **8 ready-to-use roles** that cover the most common jobs (sales agents, accountants, guides, marketers, and so on). If those don't fit, you can build your own custom roles in a few clicks.
 
-**You'll need**: the **Yatra Pro plugin** with the **Team & Access module enabled** (Agency tier).
+**You'll need**: the **Yatra Pro plugin** with the **Team & Access module enabled** (Scale tier).
 
 ## Who is this for?
 
@@ -49,7 +49,7 @@ If you're a solo operator, you don't need this. The module's still available, bu
 
 Go to **Yatra → Modules** and turn on **Team & Access**.
 
-> If you don't see this module, you're not on the Agency tier. [See pricing](https://wpyatra.com/pricing/) or [try Pro free](https://try.wpyatra.com/try-yatra-pro/).
+> If you don't see this module, you're not on the Scale tier. [See pricing](https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs) or [try Pro free](https://try.wpyatra.com/try-yatra-pro/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs).
 
 ### Step 2 — Open the Team & Access page
 
@@ -292,9 +292,9 @@ It's append-only by design — there's no "edit" action on a row. You can delete
 
 ### Does the Team & Access module work on the free Yatra plugin?
 
-No — it's an Agency-tier Pro module. The free plugin gives the standard WordPress administrator full access to everything. Team & Access is for when you need granular roles for multiple staff.
+No — it's a Scale-tier Pro module. The free plugin gives the standard WordPress administrator full access to everything. Team & Access is for when you need granular roles for multiple staff.
 
-[Try Yatra Pro for free](https://try.wpyatra.com/try-yatra-pro/) (no credit card required) — spin up a sandbox site with the module pre-installed.
+[Try Yatra Pro for free](https://try.wpyatra.com/try-yatra-pro/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs) (no credit card required) — spin up a sandbox site with the module pre-installed.
 
 ## Related
 

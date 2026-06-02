@@ -73,7 +73,7 @@ You can also enable **Pay Later** (free) — useful for travel agents who confir
     <span class="pro-callout__title">Need Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net, or Bank Transfer?</span>
   </div>
   <p class="pro-callout__desc">These gateways are part of <strong>Yatra Pro</strong>. You'll see them listed in <span class="screen-path">Settings → Payment</span> with a <strong>PRO</strong> badge — enabling them requires an active Pro license.</p>
-  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/">Compare Yatra Pro plans →</a>
+  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">Compare Yatra Pro plans →</a>
 </div>
 
 The full gateway-by-gateway guide lives on the [Payments](/payment-settings) page.
@@ -101,7 +101,7 @@ Open the trip URL in a private browser window. You should see the public trip pa
     <span class="pro-callout__title">Featured Priority &amp; sticky promotion</span>
   </div>
   <p class="pro-callout__desc">Use <strong>Featured Priority</strong> on each trip — set it to <em>Featured</em>, <em>New</em>, or <em>Limited</em> to control catalog ordering and add a corner badge to the trip card. Combined with <strong>Custom Landing Pages</strong>, you get full control over which trips lead.</p>
-  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/">Unlock priority sorting →</a>
+  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">Unlock priority sorting →</a>
 </div>
 
 ## Step 5 — Make a test booking
@@ -147,7 +147,7 @@ That's a working booking office.
     <span class="pro-callout__title">Dynamic pricing &amp; deposits</span>
   </div>
   <p class="pro-callout__desc">Sell by demand, season, group size, or last-minute. Take 30% deposits up front and auto-charge balances later. <strong>Dynamic Pricing</strong>, <strong>Flexible Payments</strong>, and <strong>Scheduled Payments</strong> are the three Pro modules that make this happen.</p>
-  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/">Upgrade to Yatra Pro →</a>
+  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">Upgrade to Yatra Pro →</a>
 </div>
 
 ## What's next

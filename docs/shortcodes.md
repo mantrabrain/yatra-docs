@@ -11,7 +11,7 @@ next:
 
 # Shortcodes
 
-Yatra ships eight shortcodes for placing trip catalogs, search, login and account UIs onto any page or post. The attribute lists below are taken directly from each shortcode class — defaults match what Yatra resolves to when you omit an attribute.
+Yatra ships eight core (free) shortcodes for placing trip catalogs, search, login and account UIs onto any page or post. The attribute lists below are taken directly from each shortcode class — defaults match what Yatra resolves to when you omit an attribute. Yatra Pro adds a few module-specific shortcodes too — see [Pro shortcodes](#pro-shortcodes) at the end.
 
 ::: warning Yatra 3.x does not ship cart/checkout shortcodes
 Older 2.x docs sometimes mention `[yatra_cart]`, `[yatra_checkout]`, or `[yatra_mini_cart]`. **These do not exist in Yatra 3.x.** The booking flow uses Yatra's virtual `/{booking_base}/{trip-slug}/` route (default `/book/...`), not a shortcode-driven page. See [Bookings & customers → Booking session and checkout flow](/booking-settings#booking-flow-on-the-front-end).
@@ -347,3 +347,19 @@ Each shortcode runs its query through the centralized `TripListingFilterBuilder`
 - **Replace card markup:** filter `yatra_trip_listing_card_html` to wrap, append, or replace the rendered card.
 
 See [Hooks & filters](/hooks-filters#shortcodes-and-listings) for the full list.
+
+---
+
+## Pro shortcodes
+
+With **Yatra Pro** active, a few modules register their own shortcodes. Each only does something when the matching module is enabled (and a valid license is active); on a Free-only site they render nothing.
+
+| Shortcode | Module | What it outputs |
+| --- | --- | --- |
+| `[yatra_consent_form]` | [Trip Consent](/modules/trip-consent) | Embeds a digital consent / waiver form so travellers can sign before departure. |
+| `[yatra_whatsapp_button]` | [WhatsApp Notifications](/modules/whatsapp) | A "Chat on WhatsApp" button you can drop anywhere (page builders, widgets, templates). |
+| `[yatra_pro_features]` | Yatra Pro | Renders the Pro feature/marketing grid (for landing / upsell pages). |
+| `[yatra_pro_modules]` | Yatra Pro | Lists the available Pro modules and their on/off status. |
+| `[yatra_pro_license]` | Yatra Pro | Shows license status and the activation UI. |
+
+Each module's own page covers its shortcode attributes and setup in detail — see the linked module docs above.

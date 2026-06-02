@@ -23,7 +23,7 @@ The **AI Assistant** adds in-place AI writing help across Yatra's editors — tr
 
 | Thing | Where to get it |
 | --- | --- |
-| Yatra Pro license — **Growth** or **Agency** tier | <span class="screen-path">Yatra → License</span> |
+| Yatra Pro license — **Growth** or **Scale** tier | <span class="screen-path">Yatra → License</span> |
 | AI Assistant module enabled | <span class="screen-path">Yatra → Modules → AI Assistant</span> |
 | OpenAI API key (or Anthropic — pick one) | [platform.openai.com → API keys](https://platform.openai.com/api-keys) · [console.anthropic.com → API keys](https://console.anthropic.com/) |
 | ~$5–20 in provider credit | OpenAI / Anthropic dashboard — most operators spend $1–3 per 100 generations |
@@ -46,7 +46,7 @@ The module surfaces six AI affordances across the admin:
 ## Step 1 — Enable the module
 
 1. Open <span class="screen-path">Yatra → Modules</span>.
-2. Find **AI Assistant** → toggle on. (The toggle is disabled on Personal tier — you'll see an *Upgrade to Growth or Agency* CTA instead.)
+2. Find **AI Assistant** → toggle on. (The toggle is disabled on Starter tier — you'll see an *Upgrade to Growth or Scale* CTA instead.)
 3. A new menu entry **AI Assistant** appears in the sidebar.
 
 ## Step 2 — Connect your provider
@@ -62,7 +62,7 @@ Open <span class="screen-path">Yatra → AI Assistant → Providers</span>.
 | **Test** | Sends a tiny ping to the provider's `/models` endpoint to verify the key works. Returns a clear error if billing isn't enabled or the key has been revoked. |
 
 ::: tip Multi-provider failover
-Save keys for both providers. Surfaces that fail with provider A (rate-limited, model deprecated, billing depleted) can fall back to provider B via the `yatra_ai_providers` filter. Recommended for Agency clients with high-volume editorial use.
+Save keys for both providers. Surfaces that fail with provider A (rate-limited, model deprecated, billing depleted) can fall back to provider B via the `yatra_ai_providers` filter. Recommended for Scale-tier clients with high-volume editorial use.
 :::
 
 ## Step 3 — Set your brand voice
@@ -153,7 +153,7 @@ For agencies embedding AI generation into custom workflows:
 | `/yatra/v1/ai/enquiry/{id}/draft-reply` | POST | Draft an AI reply for an enquiry. |
 | `/yatra/v1/ai/dashboard/digest` | GET | Today's AI digest (cached 24h). |
 
-All write endpoints require `manage_options` capability + a Growth/Agency-active license. See [REST API reference](/api-reference#ai-assistant) for the full schema.
+All write endpoints require `manage_options` capability + a Growth/Scale-active license. See [REST API reference](/api-reference#ai-assistant) for the full schema.
 
 ## Hooks & filters
 
@@ -302,7 +302,7 @@ No UI surface ships with the streaming hook yet — the chat-draft and itinerary
 
 ## Troubleshooting
 
-**"AI Assistant" doesn't appear in the sidebar** — verify (1) your license is Growth or Agency on the <span class="screen-path">Yatra → License</span> page, (2) the module is toggled on under <span class="screen-path">Yatra → Modules</span>. Personal-tier licenses see the upgrade card under <span class="screen-path">Yatra → AI Assistant</span> but no sparkle affordances.
+**"AI Assistant" doesn't appear in the sidebar** — verify (1) your license is Growth or Scale on the <span class="screen-path">Yatra → License</span> page, (2) the module is toggled on under <span class="screen-path">Yatra → Modules</span>. Starter-tier licenses see the upgrade card under <span class="screen-path">Yatra → AI Assistant</span> but no sparkle affordances.
 
 **"Test" button reports `401 Unauthorized`** — the key is wrong, revoked, or you copied a publishable key instead of a secret key. Regenerate in your provider dashboard.
 
@@ -324,4 +324,4 @@ No UI surface ships with the streaming hook yet — the chat-draft and itinerary
 
 - [All modules](/modules#ai-assistant) — module catalog.
 - [WhatsApp Notifications](/modules/whatsapp) — the other Growth-tier module that ships with the same license.
-- [White Label](/modules/white-label) — Agency-only deeper rebrand.
+- [White Label](/modules/white-label) — Scale-only deeper rebrand.

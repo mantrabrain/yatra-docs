@@ -8,7 +8,7 @@ description: A grouped narrative of every Yatra Pro module — what it does, whe
 <div class="doc-pro-callout">
   <span class="doc-pro-pill">Pro</span>
   <span><strong>Every module on this page is Yatra Pro.</strong> Looking for the flat catalog with one card per module? See <a href="/modules">All modules</a>. Each per-module page is linked inline below.</span>
-  <a class="doc-pro-callout__cta" href="https://wpyatra.com/pricing/" target="_blank" rel="noopener">View pricing →</a>
+  <a class="doc-pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs" target="_blank" rel="noopener">View pricing →</a>
 </div>
 
 Yatra Pro is a separate plugin you install on top of the free Yatra plugin. After activating your license under <span class="screen-path">Yatra → License</span>, toggle individual modules under <span class="screen-path">Yatra → Modules</span>. This page groups them by *what business problem they solve* so you can pick the right one for the situation.
@@ -149,7 +149,7 @@ Best for: adventure operators with insurance / liability requirements.
 
 ## AI & messaging — Growth tier
 
-These modules require a **Growth** (or Agency) Yatra Pro license. Bring-your-own-credentials integrations — no per-call markup, no proxying through Yatra.
+These modules require a **Growth** (or Scale) Yatra Pro license. Bring-your-own-credentials integrations — no per-call markup, no proxying through Yatra.
 
 ### [AI Assistant](/modules/ai-assistant) <span class="pro-pill">PRO</span>
 
@@ -165,9 +165,9 @@ Best for: operators in markets where WhatsApp is the dominant channel (India, ME
 
 ---
 
-## Distribution & branding — Agency tier
+## Distribution & branding — Scale tier
 
-These modules require an **Agency** Yatra Pro license (Yearly or Lifetime). Built for resellers and high-volume operators.
+These modules require a **Scale** Yatra Pro license (Yearly or Lifetime). Built for resellers and high-volume operators.
 
 ### [Channel Manager](/modules/channel-manager) <span class="pro-pill">PRO</span>
 
@@ -202,4 +202,4 @@ A single Yatra Pro license also unlocks **seven** premium payment gateways. Thes
 - [All modules](/modules) — flat catalog with one card per module + premium gateway.
 - [Per-module reference](/modules/) — every module's deep-dive setup page.
 - [Settings → Integration](/settings#_10-integration) — every field for the integration modules in one place.
-- [Pricing](https://wpyatra.com/pricing/) — pick the Yatra Pro plan that includes the modules you need.
+- [Pricing](https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs) — pick the Yatra Pro plan that includes the modules you need.

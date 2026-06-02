@@ -21,14 +21,14 @@ next:
     <div class="yatra-hero__actions">
       <a class="yatra-btn yatra-btn--primary" href="/installation">Install Yatra (free)</a>
       <a class="yatra-btn yatra-btn--ghost" href="/quick-start">Setup wizard</a>
-      <a class="doc-btn-pro" href="https://wpyatra.com/pricing/" target="_blank" rel="noopener">Get Yatra Pro</a>
+      <a class="doc-btn-pro" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs" target="_blank" rel="noopener">Get Yatra Pro</a>
     </div>
     <p class="yatra-hero__chip-label">What you need to run Yatra:</p>
     <div class="yatra-hero__chip-grid" role="list">
       <span class="yatra-hero__chip" role="listitem">WordPress 6.0+</span>
       <span class="yatra-hero__chip" role="listitem">PHP 7.4+</span>
       <span class="yatra-hero__chip yatra-hero__chip--free" role="listitem"><strong>Free</strong> PayPal · Pay Later</span>
-      <span class="yatra-hero__chip yatra-hero__chip--prolane" role="listitem"><span class="doc-pro-pill">Pro</span> Stripe · Razorpay · Mollie · Paystack · Square · Authorize.Net · Bank Transfer<a class="doc-pro-upgrade-link" href="https://wpyatra.com/pricing/" target="_blank" rel="noopener">Compare plans →</a></span>
+      <span class="yatra-hero__chip yatra-hero__chip--prolane" role="listitem"><span class="doc-pro-pill">Pro</span> Stripe · Razorpay · Mollie · Paystack · Square · Authorize.Net · Bank Transfer<a class="doc-pro-upgrade-link" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs" target="_blank" rel="noopener">Compare plans →</a></span>
     </div>
   </div>
 </div>
@@ -36,7 +36,7 @@ next:
 <div class="doc-pro-banner" role="note">
   <p class="doc-pro-banner__copy"><strong><span class="doc-pro-pill">Pro</span> Ready to unlock more gateways &amp; modules?</strong> Activate a license once, turn features on under <strong>Yatra → Modules</strong>. Same docs—menus in WordPress gain more items automatically.</p>
   <div class="doc-pro-banner__actions">
-    <a class="doc-btn-pro" href="https://wpyatra.com/pricing/" target="_blank" rel="noopener">View pricing &amp; buy</a>
+    <a class="doc-btn-pro" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs" target="_blank" rel="noopener">View pricing &amp; buy</a>
     <a class="doc-btn-pro-ghost" href="/third-party-integrations">What Pro includes →</a>
   </div>
 </div>
@@ -193,14 +193,14 @@ next:
 | Saved trips / wishlist (when enabled)             | —    | ✅  |
 | Custom Landing Pages for taxonomies               | —    | ✅  |
 
-> Modules need a paid plan. Purchase on [wpyatra.com/pricing](https://wpyatra.com/pricing/) — WordPress adds **Upgrade to Pro** under the Yatra menu when you’re still on free.
+> Modules need a paid plan. Purchase on [wpyatra.com/pricing](https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs) — WordPress adds **Upgrade to Pro** under the Yatra menu when you’re still on free.
 
 ## Need help fast?
 
 - 📖 Start with [Installation](/installation) and the [Quick start](/quick-start).
 - 🧪 Try Yatra in WordPress Playground via [try.new/plugins/yatra](https://try.new/plugins/yatra).
 - 🐛 File issues on [GitHub](https://github.com/MantraBrain/yatra) or post in the [WordPress.org support forum](https://wordpress.org/support/plugin/yatra/).
-- 💎 Pro license holders get [priority support](https://wpyatra.com/pricing/) — see [Support](/support) for routing details.
+- 💎 Pro license holders get [priority support](https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs) — see [Support](/support) for routing details.
 
 <style>
 .yatra-hero {

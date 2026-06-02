@@ -13,13 +13,13 @@ next:
 
 ![Yatra Settings landing page — left tab list and General section open](/screenshots/settings/general.webp)
 
-The Settings screen at <span class="screen-path">Yatra → Settings</span> is one screen with **13 tabs** in a left-hand sidebar. This page tells you what each tab is for, lists every control inside it, and points at the deeper docs ([Bookings](/booking-settings), [Payments](/payment-settings), [Email](/email-settings)) when there's a dedicated guide.
+The Settings screen at <span class="screen-path">Yatra → Settings</span> is one screen with **15 tabs** in a left-hand sidebar (Pricing only appears when its Pro modules are active). This page tells you what each tab is for, lists every control inside it, and points at the deeper docs ([Bookings](/booking-settings), [Payments](/payment-settings), [Email](/email-settings)) when there's a dedicated guide.
 
 ::: tip Where Yatra stores settings
 Each control writes to its own row in the WordPress `wp_options` table — for example, the **Default currency** dropdown writes to the `yatra_currency` option. Developers can read or override these programmatically — see the [Reading settings programmatically](#reading-settings-programmatically) section at the bottom of this page.
 :::
 
-## The 13 tabs
+## The 15 tabs
 
 | # | Tab | What it controls | Pro-only fields? |
 | --- | --- | --- | --- |
@@ -28,14 +28,16 @@ Each control writes to its own row in the WordPress `wp_options` table — for e
 | 3 | [Booking](#_3-booking) | Checkout behaviour, expiry, cancellation, waitlist | No |
 | 4 | [Booking Form](#_4-booking-form) | Drag-and-drop builder for the checkout form | No (Pro extends per-trip) |
 | 5 | [Payment](#_5-payment) | Test mode, deposits, partial / scheduled payments | Some (deposit / scheduled = Pro) |
-| 6 | [Customer](#_6-customer) | Account behaviour, registration, wishlist | Wishlist = Pro |
-| 7 | [Review](#_7-review) | Review system toggles & moderation | No |
-| 8 | [Tax](#_8-tax) | Tax rates, inclusive pricing, VAT number | No |
-| 9 | [Currency](#_9-currency) | Currency code, position, separators, decimals | No |
-| 10 | [Integration](#_10-integration) | Mailchimp, Facebook Pixel, GA4, Google Calendar, reCAPTCHA | All Pro-conditional |
-| 11 | [Permalink](#_11-permalink) | URL slugs for trips, destinations, activities, categories | No |
-| 12 | [SEO](#_12-seo) | Meta tags for the trip archive | No |
-| 13 | [Advanced](#_13-advanced) | Logging, cache, legal pages, telemetry | No |
+| 6 | [Pricing](#_6-pricing) | Discount stacking — how Advanced Discount and Dynamic Pricing combine | Pro-conditional (visible when both modules are on) |
+| 7 | [Customer](#_7-customer) | Account behaviour, registration, wishlist | Wishlist = Pro |
+| 8 | [Review](#_8-review) | Review system toggles & moderation | No |
+| 9 | [Tax](#_9-tax) | Tax rates, inclusive pricing, VAT number | No |
+| 10 | [Currency](#_10-currency) | Currency code, position, separators, decimals | No |
+| 11 | [Integration](#_11-integration) | Mailchimp, Facebook Pixel, GA4, Google Calendar, reCAPTCHA | All Pro-conditional |
+| 12 | [Permalink](#_12-permalink) | URL slugs for trips, destinations, activities, categories | No |
+| 13 | [SEO](#_13-seo) | Meta tags for the trip archive | No |
+| 14 | [Advanced](#_14-advanced) | Logging, cache, legal pages, telemetry | No |
+| 15 | [Search & Listing](#search-listing) | Which trip search-bar fields show; collapse listing filters on mobile (sits between Booking Form and Payment in the admin) | No |
 
 ## How to use this page
 
@@ -174,7 +176,45 @@ The list of available gateways (PayPal, Pay Later — free; Stripe, Razorpay, Mo
 The `POST /payment/create-intent` endpoint **ignores** any client-supplied `amount` and recomputes from the booking row when a `booking_id` is provided. See [Payments → security model](/payment-settings#payment-flow-security-model-3-0-4).
 :::
 
-## 6. Customer
+## 6. Pricing <span class="pro-pill">PRO</span>
+
+Controls how the **Advanced Discount** module (group + coupon discounts) and the **Dynamic Pricing** module combine when both can fire on the same booking.
+
+::: tip Conditional tab
+This tab is only rendered when **both** the Advanced Discount module **and** the Dynamic Pricing module are enabled under <span class="screen-path">Yatra → Modules</span>. On installs that have only one (or neither) of those Pro modules on, the Pricing tab is hidden — the underlying setting still exists in `wp_options` but has no effect.
+
+When the tab is visible, a status banner at the top reports the current state ("Active" — both modules enabled, your choice is being applied to every new booking) or which module(s) still need to be enabled before the choice takes effect.
+:::
+
+### Discount Stacking
+
+| Control            | Setting key                | Default | Notes                                                                            |
+| ---                | ---                        | ---     | ---                                                                              |
+| Discount Stacking  | `discount_stacking_mode`   | `both`  | One of four modes (below). Backend silently coerces any other value to `both` so a malformed POST can't change pricing behaviour. |
+
+The four modes:
+
+| Mode                                        | Value                  | Behaviour                                                                                                                                              |
+| ---                                         | ---                    | ---                                                                                                                                                    |
+| **Both apply** *(default — legacy stacking)* | `both`                 | Dynamic Pricing and the discount both apply against the trip's catalog price; the customer gets the larger combined saving. Matches the math every existing site uses today. |
+| **Best for the customer**                   | `best_for_customer`    | Calculates the booking total under "DP-only" and "discount-only" scenarios, then picks the cheaper for the customer. Never combines.                  |
+| **Discount only**                           | `discount_only`        | When a coupon or group discount is valid for the booking, Dynamic Pricing is skipped — the discount applies against the un-adjusted catalog price.    |
+| **Dynamic Pricing only**                    | `dynamic_pricing_only` | When a Dynamic Pricing rule reduced the trip price, any coupon / group discount is ignored for that booking.                                          |
+
+::: warning Default preserves legacy behaviour
+After upgrading to a build that ships this setting, every site stays on **Both apply** (`both`). That's the math your sidebar already uses today: catalog price × Dynamic Pricing → customer-shown per-unit price; group / coupon discount % calculated against the original catalog base. Nothing changes until an operator explicitly switches modes.
+:::
+
+### How to choose a mode
+
+- **You're not sure / you don't want anything to change** — leave it on **Both apply**. Same bottom-line math as before this setting existed.
+- **You want a single, easy-to-explain discount on the displayed price** — pick **Discount only**. The customer sees the catalog price, the discount comes off that, and Dynamic Pricing operates as an internal pricing lever you don't need to expose.
+- **You only use Dynamic Pricing for occasional flash sales** — pick **Dynamic Pricing only**. Coupon codes still work in normal periods; during a DP-driven sale they're blocked so customers can't double-dip.
+- **You want the strict customer-friendliest single discount** — pick **Best for the customer**. Yatra computes both alternatives and silently uses whichever produces the lower total.
+
+See [Advanced Discount → How Dynamic Pricing and discounts combine](/modules/advanced-discount#how-dynamic-pricing-and-discounts-combine) for the fully-worked example showing the exact line-by-line numbers each mode produces.
+
+## 7. Customer
 
 ![Customer settings tab — registration, account page, wishlist, email verification](/screenshots/settings/customer.webp)
 
@@ -187,7 +227,7 @@ Account behaviour on the customer-facing site.
 | Enable wishlist (saved trips)   | `enable_wishlist`            | `false` | **Pro-only field.** The control is **only rendered when Pro is active** (`window.yatraAdmin.isPro === true`). Without Pro, a "Saved Trips — Pro feature" call-out appears in its place. |
 | Require Email Verification      | `require_email_verification` | `false` | Customers must click the verification link before account activation.  |
 
-## 7. Review
+## 8. Review
 
 ![Review settings tab — enable reviews, require booking, moderation, minimum rating, reminder days](/screenshots/settings/review.webp)
 
@@ -202,7 +242,7 @@ Trip-review form behaviour.
 | Minimum Rating                | `min_rating`              | `1`     | Lowest star value the form accepts (1–5).                   |
 | Review Reminder Days          | `review_reminder_days`    | `7`     | Days after trip completion to email the *Leave a review* link. |
 
-## 8. Tax
+## 9. Tax
 
 ![Tax settings tab — multiple-taxes editor, inclusive pricing, VAT number](/screenshots/settings/tax.webp)
 
@@ -217,7 +257,7 @@ Trip-review form behaviour.
 The schema supports per-country tax bands (`multiple_taxes_by_country`) for site owners that need it. There's no UI yet — set the value via the REST API or a custom plugin if you need it today.
 :::
 
-## 9. Currency
+## 10. Currency
 
 ![Currency settings tab — default currency, position, separators, decimal places](/screenshots/settings/currency.webp)
 
@@ -235,7 +275,7 @@ Display formatting for monetary values across the site.
 Per-trip currency overrides and a customer-facing currency switcher are provided by Pro modules. The free schema stores only a single base currency.
 :::
 
-## 10. Integration
+## 11. Integration
 
 ![Integration settings tab — third-party module config populated by active Pro modules](/screenshots/settings/integration.webp)
 
@@ -355,9 +395,35 @@ Diagnostics, caching, legal-page wiring, and telemetry.
 
 ### Telemetry (opt-in)
 
-The **Help us improve Yatra** section enables anonymous usage tracking via the `yatra_usage_tracking_enabled` option. What gets collected is documented at [wpyatra.com/what-we-collect/](https://wpyatra.com/what-we-collect/). It is **off by default** — switch it on to help the team prioritise features.
+The **Help us improve Yatra** section enables anonymous usage tracking via the `yatra_usage_tracking_enabled` option. What gets collected is documented at [wpyatra.com/what-we-collect/](https://wpyatra.com/what-we-collect/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs). It is **off by default** — switch it on to help the team prioritise features.
 
 The endpoint behind it is `POST /yatra/v1/usage-tracking`.
+
+---
+
+## Search & Listing
+
+Controls the storefront **trip search bar** (the `[yatra_search]` form) and the **filter sidebar** on the trip listing page. In the admin this tab sits between *Booking Form* and *Payment*. Every option here defaults to the previous behaviour, so existing sites are unchanged until you opt in.
+
+### Search bar fields
+
+Turn individual fields of the search bar on or off for a cleaner search. All default to **shown**.
+
+| Control | Setting key | Default | Notes |
+| --- | --- | --- | --- |
+| Keyword search | `search_show_keyword` | `true` | Free-text "trip name or keyword" field. |
+| Destination | `search_show_destination` | `true` | Destination dropdown. |
+| Activities | `search_show_activities` | `true` | Activity dropdown. |
+| Duration | `search_show_duration` | `true` | Trip-length range slider. |
+| Budget | `search_show_budget` | `true` | Price-range dropdown. |
+
+Hiding a field only removes it from the bar — searching by that criterion via a URL parameter still works.
+
+### Mobile filters
+
+| Control | Setting key | Default | Notes |
+| --- | --- | --- | --- |
+| Collapse filters by default on mobile | `collapse_filters_on_mobile` | `false` | On screens ≤768px, the listing filter sections start collapsed so trip cards are visible immediately; visitors tap a section to expand it. Desktop is unaffected. Off by default, so existing sites keep today's expanded layout until you enable it. |
 
 ---
 

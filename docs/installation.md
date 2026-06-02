@@ -27,7 +27,7 @@ Open <span class="screen-path">Tools → Site Health → Info</span> in WordPres
 
 ## Step 1 — Install the free plugin
 
-The free **Yatra** plugin gives you the full booking office — trips, departures, customer accounts, native checkout (PayPal + Pay Later), enquiries, reviews, and the email pipeline.
+The free **Yatra** plugin gives you the full booking office — trips, departures, customer accounts, native checkout (PayPal + Pay Later), enquiries, reviews, and the email pipeline. It's hosted free on its official [WordPress.org plugin page](https://wordpress.org/plugins/yatra/).
 
 You have three options:
 
@@ -52,7 +52,7 @@ When you activate, Yatra does a one-time setup behind the scenes:
     <span class="pro-callout__title">Yatra Pro is the upgrade plugin</span>
   </div>
   <p class="pro-callout__desc">Yatra Pro is a separate plugin that unlocks licensed modules — Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net, and Bank Transfer gateways; Dynamic Pricing; Flexible / Scheduled Payments; Email Automation sequences; Google Calendar sync; Additional Services upsells; Trip Consent waivers; Mailchimp / GA4 / Facebook Pixel; Abandoned Booking Recovery; Custom Landing Pages; Advanced Discount; Dynamic Form Field; and more. The free plugin must be installed and active first.</p>
-  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/">View Yatra Pro plans →</a>
+  <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">View Yatra Pro plans →</a>
 </div>
 
 If you bought a Pro license:

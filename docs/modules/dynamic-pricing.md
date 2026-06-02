@@ -176,7 +176,7 @@ line item is calculated off the original catalog price — this is by
 design and produces the customer-friendliest stacked total.
 
 ::: tip Want different stacking behaviour?
-The [**Discount Stacking** setting](/settings/general#pricing) (Settings →
+The [**Discount Stacking** setting](/settings#discount-stacking) (Settings →
 Pricing, visible only when both Dynamic Pricing and Advanced Discount
 modules are enabled) lets operators choose how the two combine:
 
