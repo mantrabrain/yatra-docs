@@ -95,6 +95,14 @@ This page lists the issues we see most often and the fastest way through them.
   <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">Unlock email automation →</a>
 </div>
 
+## "Every checkout is rejected with 'A valid email address is required'"
+
+**Symptom:** After customising the Booking Form, no one can complete a booking — checkout always fails with *"A valid email address is required to complete this booking."*
+
+**Cause:** You turned the **Contact** section off (or hid/disabled its **Email** field) on <span class="screen-path">Yatra → Settings → Booking Form</span>, and **no other section collects an email**. A booking always needs an email (for the confirmation, the customer account, and the voucher).
+
+**Fix:** Either turn the Contact section back on, **or** add an `email`-type field to the **Per-Traveler** form. When the Contact section is off, Yatra uses the first traveller's email as the booking contact — but the default Per-Traveler form has no email field, so you must add one. The builder shows a warning banner when no section is set to collect an email. See [Settings → Booking Form → Turning sections on or off](/settings#turning-sections-on-or-off).
+
 ## "Featured priority filter doesn't work in shortcode / block"
 
 **Symptom:** `[yatra_trip featured_priority="featured"]` returns nothing.

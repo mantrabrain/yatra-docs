@@ -223,29 +223,36 @@ Class: `app/Shortcodes/SearchShortcode.php`.
 
 ### Attributes
 
-| Attribute              | Default          |
-| ---                    | ---              |
-| `show_filters`         | `yes`            |
-| `show_categories`      | `yes`            |
-| `show_destinations`    | `yes`            |
-| `show_activities`      | `yes`            |
-| `show_price_range`     | `yes`            |
-| `show_duration`        | `yes`            |
-| `show_difficulty`      | `yes`            |
-| `placeholder`          | `Search trips…`  |
-| `button_text`          | `Search`         |
+Each attribute below maps to a checkbox in **Settings → Search & Listing → Search Bar Fields**. **Omit** an attribute and that field **inherits the global toggle**; pass `yes` / `no` to force it on or off for this one placement.
+
+| Attribute       | Default             | Controls               |
+| ---             | ---                 | ---                    |
+| `keyword`       | *(inherits toggle)* | Keyword search field   |
+| `destination`   | *(inherits toggle)* | Destination dropdown   |
+| `activities`    | *(inherits toggle)* | Activities dropdown    |
+| `duration`      | *(inherits toggle)* | Duration range slider  |
+| `budget`        | *(inherits toggle)* | Budget dropdown        |
+
+Accepted values: `yes` / `no` (also `true` / `false`, `on` / `off`, `1` / `0`). An unrecognised value falls back to the global toggle.
 
 ### Examples
 
 ```html
-<!-- Full search bar with all facets -->
+<!-- Inherit the Settings → Search & Listing toggles (default) -->
 [yatra_search]
 
-<!-- Minimal search bar (keyword only) -->
-[yatra_search show_filters="no" placeholder="Search our trips"]
+<!-- Hide the Budget filter in this placement only -->
+[yatra_search budget="no"]
+
+<!-- Compact bar: keyword + destination only, hide the rest here -->
+[yatra_search activities="no" duration="no" budget="no"]
 ```
 
-The form submits via Yatra's search endpoint and renders results on the same page.
+The built-in trip listing page builds these arguments **automatically** from your **Search & Listing** settings, so its search bar always matches your toggles. Reach for the attributes when you want a *different* set of fields in a specific manual placement. The form submits via Yatra's search endpoint and renders results on the listing page.
+
+::: tip Deprecated attributes
+Older builds listed `show_filters`, `show_destinations`, `show_price_range`, `show_difficulty`, etc. Those were never wired to the rendered form and are ignored — use the per-field attributes above (`keyword`, `destination`, `activities`, `duration`, `budget`).
+:::
 
 ---
 

@@ -122,12 +122,36 @@ This tab renders the **Booking Form Builder** component — a drag-and-drop buil
 
 - The entire configuration is stored as one JSON blob under the `booking_form_config` option.
 - Defaults live in `SettingsService::getDefaultBookingFormConfig()` — the lead-traveler `first_name`, `last_name`, `email`, `phone`, and `country` fields are **locked**: you can hide them but cannot remove them.
-- **Field types supported:** `text`, `email`, `tel`, `date`, `select` (with options), `country`, `textarea`, `number`, `checkbox`.
+- **Field types supported:** `text`, `email`, `tel`, `date`, `select` (with options), `country`, `textarea`, `number`, `checkbox`, and **Text Block** (display-only — see below).
 - **Per-field width:** `full`, `half`, `third` — controls how many fields sit on a row.
 - Each field has a **Required** toggle, **Label** text, **Placeholder**, and (for `select`) an **Options** repeater.
+- **Each section has its own on/off toggle.** Turning a whole section off hides every field in it (including locked ones) from the checkout — see [Turning sections on or off](#turning-sections-on-or-off) below.
 
 ::: tip Custom fields per trip
 For per-trip overrides (e.g. a "Dietary requirements" question only on Food Tours), enable the Pro **Dynamic Form Field** module — it adds a **Custom fields** tab on each trip's edit screen. See [Modules](/modules#dynamic-form-field).
+:::
+
+### Text Block (display-only content)
+
+Use a **Text Block** field to show **read-only text between fields** — booking instructions, a short policy note, a "Travellers" divider, a deposit reminder, etc. It is **not an input**: customers can't type in it, it's never required, it collects and stores nothing, and it never appears in emails as a value.
+
+- Add it like any field, then drag it to sit between whichever fields you want.
+- You only fill in **Content** and a **Width** — there's no label, field ID, placeholder, or *Required* toggle.
+- **Basic HTML** is allowed in the content (bold, links, lists); plain text gets paragraph spacing automatically.
+- It can go in any section (Contact, Emergency, or Per-Traveler). Placed in the **Per-Traveler** section it repeats once per traveler — handy for a per-traveller note, but keep that in mind.
+
+### Turning sections on or off
+
+Each of the three sections — **Contact**, **Emergency**, **Per-Traveler** — can be switched off entirely. Existing/un-customised sites have all three on, so nothing changes unless you turn one off.
+
+::: warning A booking always needs an email — don't strand checkout
+An email address is **always required** to complete a booking (it's used for the confirmation email, the customer account, and the voucher). The lead-traveler **Email** field lives in the **Contact** section and is *locked* — but you can still switch the **whole Contact section off**, which hides that email field too.
+
+When the Contact section is off, Yatra recovers the email from the **Per-Traveler** form: it uses the **first traveller that has a valid email** and treats that traveller as the booking's contact (adopting their name and phone as well).
+
+**So if you turn the Contact section off, first add an `email`-type field to the Per-Traveler form.** The default Per-Traveler form has *no* email field — if neither the Contact section nor the Per-Traveler form collects an email, **no customer can check out** (every attempt is rejected with *"A valid email address is required to complete this booking"*).
+
+The builder shows a banner when no section is set to collect an email — heed it. (The Emergency section never captures the booking email.)
 :::
 
 ## 5. Payment
