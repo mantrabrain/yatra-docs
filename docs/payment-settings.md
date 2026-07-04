@@ -193,16 +193,16 @@ For tighter security in production you can use a **restricted key** (`rk_live_�
 
 ### Step 2 — Create a webhook
 
-1. Open <https://dashboard.stripe.com/webhooks> (or `/test/webhooks` for the test endpoint).
-2. Click **+ Add endpoint**.
-3. **Endpoint URL:** `https://yoursite.com/wp-json/yatra/v1/payment/stripe/webhook`
+1. In **Yatra → Settings → Payment → Stripe**, copy the **Webhook Endpoint URL** shown in that panel (use the **Copy** button). It is pre-filled for your site, e.g. `https://yoursite.com/wp-json/yatra/v1/payment/webhook/stripe`.
+2. Click the **Open Stripe → add this endpoint** link next to it (it opens the Test or Live webhooks screen to match your current mode), or go to <https://dashboard.stripe.com/webhooks> (`/test/webhooks` for test).
+3. Click **+ Add endpoint** and paste the URL as the **Endpoint URL**.
 4. **Listen to events** — pick **Select events** and tick at minimum:
    - `payment_intent.succeeded`
    - `payment_intent.payment_failed`
    - `charge.refunded`
 5. Click **Add endpoint**.
 6. On the endpoint detail page, find **Signing secret** → click **Reveal** → copy the `whsec_…` value.
-7. Repeat for the live mode if you have a separate live endpoint.
+7. Paste it into the **Webhook Secret** field in Yatra. **Create the endpoint in the same mode (Test/Live) as your API keys** — test and live have separate endpoints and separate `whsec_` secrets.
 
 ### Step 3 — Enable payment methods (optional)
 
@@ -214,14 +214,22 @@ By default Stripe only enables card payments. To add Apple Pay / Google Pay / Kl
 
 ### Step 4 — Paste in Yatra
 
-| Yatra field                       | Setting ID                  | Where it comes from                                                                                |
-| ---                               | ---                         | ---                                                                                                |
-| **Live publishable key**          | `live_publishable_key`      | `pk_live_…` from step 1 (live tab).                                                                |
-| **Live secret key**               | `live_secret_key`           | `sk_live_…` from step 1 (live tab).                                                                |
-| **Test publishable key**          | `test_publishable_key`      | `pk_test_…` from step 1 (test tab).                                                                |
-| **Test secret key**               | `test_secret_key`           | `sk_test_…` from step 1 (test tab).                                                                |
-| **Webhook signing secret**        | `webhook_secret`            | `whsec_…` from step 2 — required since Yatra Pro 3.0.4.                                            |
-| **Enabled payment methods**       | `enabled_methods`           | Multi-select. Tick the methods you enabled in step 3.                                              |
+| Yatra field                       | Setting ID          | Where it comes from                                                                 |
+| ---                               | ---                 | ---                                                                                 |
+| **Publishable Key**               | `api_key`           | `pk_live_…` (or `pk_test_…` in Test Mode) from step 1.                               |
+| **Secret Key**                    | `api_secret`        | `sk_live_…` (or `sk_test_…` in Test Mode) from step 1.                               |
+| **Webhook Endpoint URL**          | `webhook_url`       | Read-only, pre-filled for your site. Copy it into Stripe (step 2).                   |
+| **Webhook Secret**                | `webhook_secret`    | `whsec_…` from step 2 — required since Yatra Pro 3.0.4.                              |
+| **Enabled Payment Methods**       | `enabled_methods`   | Multi-select. Tick the methods you enabled in step 3 (default: Card).               |
+
+::: danger Keys must match the mode — or the card is never charged
+Stripe has **one** Publishable/Secret pair, and a **global Test Mode** toggle (Settings → Payment → **Test Mode**) decides test vs live. Enter the keys for the mode you're in:
+
+- **Test Mode ON** → `pk_test_…` + `sk_test_…`
+- **Test Mode OFF (live)** → `pk_live_…` + `sk_live_…`
+
+If Test Mode is **off** but you paste a `pk_test_` / `sk_test_` key (a very common mistake), Stripe runs in test mode on your live site and **real cards are never charged** even though the booking completes. The publishable and secret keys must **both** be the same mode.
+:::
 
 ### Step 5 — Test it
 
@@ -641,22 +649,20 @@ If you write a custom gateway, follow the same pattern by either calling `\Yatra
 
 ## Webhook URLs (cheat sheet)
 
-The free PayPal gateway uses a unified webhook controller (`/payment/webhook/{slug}`). Mollie, Paystack, and Stripe expose their own gateway-specific routes. The remaining gateways either don't surface a webhook field in this build, or fall through to the unified route.
+Most gateways — including **Stripe** and PayPal — use a single **unified** webhook route: `/payment/webhook/{gateway}` (the gateway slug comes **after** `webhook`). Mollie and Paystack use their own gateway-specific routes. Tip: every gateway's settings panel shows its exact **Webhook Endpoint URL** with a Copy button, pre-filled for your site — that is always the authoritative value.
 
 ```
-# Free
+# Unified route — /payment/webhook/{gateway}
 https://yoursite.com/wp-json/yatra/v1/payment/webhook/paypal
 https://yoursite.com/wp-json/yatra/v1/payment/webhook/paypal-ipn
-
-# Pro — gateway-specific routes
-https://yoursite.com/wp-json/yatra/v1/payment/stripe/webhook
-https://yoursite.com/wp-json/yatra/v1/payment/mollie/webhook
-https://yoursite.com/wp-json/yatra/v1/payment/paystack/webhook
-
-# Pro — unified route (fallback)
+https://yoursite.com/wp-json/yatra/v1/payment/webhook/stripe
 https://yoursite.com/wp-json/yatra/v1/payment/webhook/razorpay
 https://yoursite.com/wp-json/yatra/v1/payment/webhook/square
 https://yoursite.com/wp-json/yatra/v1/payment/webhook/authorize_net
+
+# Gateway-specific routes
+https://yoursite.com/wp-json/yatra/v1/payment/mollie/webhook
+https://yoursite.com/wp-json/yatra/v1/payment/paystack/webhook
 ```
 
 ::: tip Where the routes are registered
