@@ -136,6 +136,10 @@ Identical mechanism for Deposit and Partial — both create a booking in `partia
 
 The `payment_terms` per-trip text isn't enforced by code — it's a customer-facing note rendered on the booking confirmation. If you need an *enforced* due date for the balance, use Scheduled Payments.
 
+::: tip Deposits disappear close to departure (tour-anchored balances)
+When [Scheduled Payments](/modules/scheduled-payments) is set to the **tour-date anchor** (e.g. *balance due 14 days before the tour*), a customer booking **inside that window** is charged **100% up front** — the deposit and partial options are hidden at checkout, because there's no time left to collect a balance. This is automatic; you configure the window in Scheduled Payments.
+:::
+
 ## Common patterns
 
 | Goal | Settings combo |
