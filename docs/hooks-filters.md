@@ -48,6 +48,7 @@ Fired around trip lifecycle and rendering.
 | `yatra_trip_display_price`                 | filter  | Last-mile override for the displayed price               |
 | `yatra_dynamic_pricing_enabled`            | filter  | Toggle Pro Dynamic Pricing per-trip                      |
 | `yatra_availability_price`                 | filter  | Override price on a specific departure                   |
+| `yatra_availability_horizon_months`        | filter  | `(int $months)` — How far ahead the storefront offers dates (the **Booking horizon** setting, default 12, clamped 1–36). Return a different value per request, e.g. `add_filter('yatra_availability_horizon_months', fn($m) => is_page('summer') ? 6 : $m);`. Out-of-range returns are ignored. Callers that pass an explicit `to_date` are not affected. |
 | `yatra_get_dynamic_pricing_display_settings`| filter | Customize how dynamic-pricing surcharges/discounts render |
 | `yatra_calculate_demand_scores`            | action  | Override demand-score calculation (Pro)                  |
 
@@ -59,7 +60,11 @@ Lifecycle and per-booking rendering.
 | ---                                        | ---     | ---                                                      |
 | `yatra_booking_created`                    | action  | New booking submitted                                    |
 | `yatra_booking_updated`                    | action  | Booking row updated                                      |
-| `yatra_booking_status_changed`             | action  | Args: `($booking, $new_status, $old_status)`             |
+| `yatra_booking_status_changed`             | action  | Every status transition. Args: `($bookingId, $oldStatus, $newStatus)` |
+| `yatra_booking_confirmed`                  | action  | Booking reached *confirmed*. Args: `($bookingId, $booking)` |
+| `yatra_booking_cancelled`                  | action  | Booking reached *cancelled* — admin, customer, unpaid-booking sweep or OTA. Args: `($bookingId, $booking)` |
+| `yatra_booking_expired`                    | action  | An unpaid booking was auto-cancelled by the expiry sweep. Args: `($bookingId)` |
+| `yatra_auto_expire_bookings`               | filter  | Return `false` to disable the unpaid-booking expiry sweep |
 | `yatra_booking_deleted`                    | action  | Before a booking is deleted                              |
 | `yatra_booking_email_variables`            | filter  | Augment the merge-tag map for booking emails             |
 | `yatra_booking_email_traveler_identity_field_keys` | filter | Customize identity-table fields                  |
@@ -98,6 +103,7 @@ The implementation lives in `app/Services/CalculationService.php`. Each filter r
 | `yatra_pdf_remote_enabled`                 | filter  | (3.0.4+) Enable / disable dompdf remote image loading. Default `true` so PDFs can render the site logo and trip images. Return `false` to lock the PDF generator down to ABSPATH only (recommended if your invoices never contain external images). |
 | `yatra_pro_writable_settings_schema`       | filter  | (3.0.4+) Pro-only. Receives `key => sanitizer-callable` map of settings keys the `POST /yatra/v1/settings` REST endpoint is allowed to write. Modules can register their own keys here; anything not in this map is silently rejected by the endpoint. |
 | `yatra_pass_gateway_ids_for_scheduled_payments` | filter | Whether to forward the gateway's customer / payment-method IDs into the scheduled-payments pipeline even when `save_card` was off. Useful for gateways that auto-vault. |
+| `yatra_confirm_booking_on_payment`         | filter  | Override whether a successful payment auto-confirms the booking, on top of the **Auto-Confirm mode**. Args: `($shouldConfirm, bool $fullyPaid, int $bookingId, bool $autoConfirm)`. Default `$shouldConfirm` is `true` for mode `all`, or mode `online` when the balance is fully paid. `$autoConfirm` keeps its original meaning — the old on/off toggle, i.e. `true` only for mode `all` — so callbacks written against 3.0.10–3.0.14 behave the same; read the full mode with `yatra_get_auto_confirm_mode()` if you need to tell `online` from `none`. Example — confirm on *any* full payment regardless of mode: `add_filter('yatra_confirm_booking_on_payment', fn($c, $full) => $c || $full, 10, 2);` |
 
 ### Stripe-specific actions (Pro)
 
@@ -281,6 +287,8 @@ Drop a copy of any template at `wp-content/themes/{your-theme}/yatra/{name}.php`
 | `yatra_payment_method_options`             | filter  | `($options, $booking_data)` — Adds *Pay X% Deposit* / *Pay X% Now* radios to the booking form. `$booking_data['trip_id']` lets Pro show the deposit option whenever a trip has per-trip values, even with the global flag off |
 | `yatra_scheduled_payments_module_active`   | filter  | Whether scheduled payments processing should run         |
 | `yatra_scheduled_payment_setting`          | filter  | Per-setting reads                                        |
+| `yatra_scheduled_payment_success`          | action  | A scheduled (installment / balance) charge succeeded. Args: `(int $scheduledPaymentId, array $gatewayResult, array $context)`. **The first arg is the scheduled-payment row id, not the booking** — read `$context['booking_id']`. `$context` also carries `scheduled_payment_id`, `payment_id`, `amount`, `currency`, `gateway`, `method`, `transaction_id`, `payment_type`, `amount_due`, `fully_paid`, plus the display-ready `scheduled_amount_formatted`, `scheduled_date_formatted`, `payment_type_label`, `balance_after_formatted` (formatted identically to the transactional email). Webhooks, WhatsApp and Email Automation bind their *Scheduled payment succeeded* event here. |
+| `yatra_scheduled_payment_failed`           | action  | A scheduled charge failed (`$context['permanent']` is `true` once max attempts is reached). Args: `(int $scheduledPaymentId, string $error, array $context)` — the first two are unchanged from earlier releases; `$context` (`booking_id`, `scheduled_payment_id`, `reason`, `error`, `failure_reason`, `permanent`, `gateway`, `amount`, `currency`, `payment_type`, `scheduled_amount_formatted`, `scheduled_date_formatted`, `payment_type_label`) is new. Read the booking from `$context['booking_id']`, never from the first arg. |
 
 ::: tip Per-trip overrides
 The `$context` argument added to `yatra_deposit_percentage`, `yatra_calculate_amount_due`, and `yatra_payment_method_options` since Yatra Free 3.0.5 / Pro 3.0.3 is what lets the Flexible Payments module read `trip.deposit_amount` / `trip.deposit_percentage` for a specific booking. If you implement your own filter callback that ignores `$context`, you'll only get site-wide behaviour — which is fine, but match the new signature if you want trip-aware behaviour.

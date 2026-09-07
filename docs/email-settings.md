@@ -114,6 +114,8 @@ Every template's content is editable from the Templates tab; module-gated ones a
 | Template key                   | Display name                | Trigger                          | Module-gated by                       |
 | ---                            | ---                         | ---                              | ---                                   |
 | `customer_email_verification`  | Email Verification          | `account.email_verification`    | —                                     |
+| `account_email_change_request` | Account Email Change Request | `account.email_change_request` | —                                     |
+| `account_email_changed`        | Account Email Changed       | `account.email_changed`         | —                                     |
 | `trip_consent_request`         | Trip Consent Request        | `consent.requested`             | Trip Consent <span class="pro-pill">PRO</span> |
 
 #### Abandoned booking recovery <span class="pro-pill">PRO</span>
@@ -327,7 +329,7 @@ Resolve on `consent.requested` (Trip Consent module).
 
 ### Account / verification tags
 
-Resolve on `account.email_verification`.
+Resolve on the account events — `account.email_verification`, `account.email_change_request` and `account.email_changed`. Not every tag applies to every one of them (for example the "changed" notice carries no `{{verification_link}}`); each event's section further down lists exactly what it offers.
 
 <table>
   <thead><tr><th>Tag</th><th>Renders</th></tr></thead>
@@ -1309,6 +1311,101 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 <tr><td><code>{{intro_paragraph}}</code></td><td>Opening sentence (registration / resend variant).</td></tr>
 <tr><td><code>{{footer_note}}</code></td><td>Disclaimer for unintended recipients.</td></tr>
 <tr><td><code>{{expiry_notice_html}}</code></td><td>Link-expiry messaging block (consent / verification emails).</td></tr>
+</tbody></table>
+
+</details>
+
+---
+
+### `account.email_change_request` — Account Email Change Request
+
+**When it fires.** A logged-in customer asks to change the email address on their account (or re-requests the confirmation). The email goes to the **new** address and carries a magic link; the change only takes effect once that link is opened.
+
+**Dispatcher.** `CustomerService::sendEmailChangeConfirmation()` → `TYPE_ACCOUNT_EMAIL_CHANGE_REQUEST`
+
+**Templates listening to this event:**
+
+- `account_email_change_request` — Account Email Change Request (Customer)
+
+**Variables available** (13 across 3 groups):
+
+<details><summary><strong>Universal</strong> (6)</summary>
+
+<table><thead><tr><th>Tag</th><th>Explanation</th></tr></thead><tbody>
+<tr><td><code>{{site_name}}</code></td><td>Your website name (from WordPress Site Title).</td></tr>
+<tr><td><code>{{site_url}}</code></td><td>Your website home URL.</td></tr>
+<tr><td><code>{{admin_email}}</code></td><td>Site administrator email address.</td></tr>
+<tr><td><code>{{admin_url}}</code></td><td>Link to the Yatra admin dashboard.</td></tr>
+<tr><td><code>{{current_date}}</code></td><td>Today&#039;s date formatted per the site&#039;s date format.</td></tr>
+<tr><td><code>{{current_year}}</code></td><td>Current four-digit year.</td></tr>
+</tbody></table>
+
+</details>
+
+<details><summary><strong>Customer</strong> (3)</summary>
+
+<table><thead><tr><th>Tag</th><th>Explanation</th></tr></thead><tbody>
+<tr><td><code>{{customer_name}}</code></td><td>Full name (first + last) of the customer / enquirer.</td></tr>
+<tr><td><code>{{customer_first_name}}</code></td><td>Customer first name only.</td></tr>
+<tr><td><code>{{customer_email}}</code></td><td>Customer email address (the current one).</td></tr>
+</tbody></table>
+
+</details>
+
+<details><summary><strong>Account</strong> (4)</summary>
+
+<table><thead><tr><th>Tag</th><th>Explanation</th></tr></thead><tbody>
+<tr><td><code>{{verification_link}}</code></td><td>Magic link the customer opens to confirm the requested new address.</td></tr>
+<tr><td><code>{{new_email}}</code></td><td>The address the customer asked to switch their account to.</td></tr>
+<tr><td><code>{{intro_paragraph}}</code></td><td>Opening sentence, set by the sender for this email.</td></tr>
+<tr><td><code>{{footer_note}}</code></td><td>Disclaimer for unintended recipients.</td></tr>
+</tbody></table>
+
+</details>
+
+---
+
+### `account.email_changed` — Account Email Changed
+
+**When it fires.** The customer opens the confirmation link and the account email is switched. A security notice goes to the **previous** address so the real owner is alerted if they did not make the change. This email carries no link.
+
+**Dispatcher.** `CustomerService::sendEmailChangedNotice()` → `TYPE_ACCOUNT_EMAIL_CHANGED`
+
+**Templates listening to this event:**
+
+- `account_email_changed` — Account Email Changed (Customer)
+
+**Variables available** (12 across 3 groups):
+
+<details><summary><strong>Universal</strong> (6)</summary>
+
+<table><thead><tr><th>Tag</th><th>Explanation</th></tr></thead><tbody>
+<tr><td><code>{{site_name}}</code></td><td>Your website name (from WordPress Site Title).</td></tr>
+<tr><td><code>{{site_url}}</code></td><td>Your website home URL.</td></tr>
+<tr><td><code>{{admin_email}}</code></td><td>Site administrator email address.</td></tr>
+<tr><td><code>{{admin_url}}</code></td><td>Link to the Yatra admin dashboard.</td></tr>
+<tr><td><code>{{current_date}}</code></td><td>Today&#039;s date formatted per the site&#039;s date format.</td></tr>
+<tr><td><code>{{current_year}}</code></td><td>Current four-digit year.</td></tr>
+</tbody></table>
+
+</details>
+
+<details><summary><strong>Customer</strong> (3)</summary>
+
+<table><thead><tr><th>Tag</th><th>Explanation</th></tr></thead><tbody>
+<tr><td><code>{{customer_name}}</code></td><td>Full name (first + last) of the customer / enquirer.</td></tr>
+<tr><td><code>{{customer_first_name}}</code></td><td>Customer first name only.</td></tr>
+<tr><td><code>{{customer_email}}</code></td><td>The previous email address (the one this notice is sent to).</td></tr>
+</tbody></table>
+
+</details>
+
+<details><summary><strong>Account</strong> (3)</summary>
+
+<table><thead><tr><th>Tag</th><th>Explanation</th></tr></thead><tbody>
+<tr><td><code>{{new_email}}</code></td><td>The address the account was switched to.</td></tr>
+<tr><td><code>{{intro_paragraph}}</code></td><td>Opening sentence, set by the sender for this email.</td></tr>
+<tr><td><code>{{footer_note}}</code></td><td>Disclaimer for unintended recipients.</td></tr>
 </tbody></table>
 
 </details>

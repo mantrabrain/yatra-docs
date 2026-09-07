@@ -58,6 +58,7 @@ Class: `app/Shortcodes/TripShortcode.php`. Registered as both `yatra_trip` and `
 | `columns`            | `3`          | Grid columns (1–4 sensible)                                                        |
 | `show_pagination`    | `yes`        | `yes` or `no`                                                                      |
 | `title`              | `Our Trips`  | Heading rendered above the grid                                                    |
+| `card_layout`        | `inherit`    | Card style for this listing, overriding the site-wide **Settings → Design → Listing Card Layout**. `inherit` (follow the site setting), `standard`, `compact_mobile` (compact on phones only), or `compact_all` (compact everywhere). |
 
 ::: tip How attribute filtering works
 - Omit an attribute or leave it blank to *not filter* on it (equivalent to "All published" in the block).
@@ -86,6 +87,9 @@ Class: `app/Shortcodes/TripShortcode.php`. Registered as both `yatra_trip` and `
 
 <!-- Back-compat: equivalent to featured_priority="featured" -->
 [yatra_trip featured="1"]
+
+<!-- Compact (Booking.com-style) cards for this listing only, overriding the site default -->
+[yatra_trip per_page="6" card_layout="compact_all"]
 ```
 
 Pagination URL: append `?trip_page=2` (or use the rendered pagination links).

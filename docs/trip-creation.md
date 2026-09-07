@@ -119,6 +119,14 @@ You only need this phase to publish a working trip. Everything later is optional
 | **Featured Image**   | WordPress media picker | Recommended | 1200 × 800 px recommended. Preview + Remove button below the picker.                              |
 | **Trip Highlights**  | repeater (text rows)  | Optional     | Add bullet-point highlights ("Sunrise over Mt. Batur", "Private boat to Nusa Lembongan", etc.).   |
 
+**Trip Type & Duration** (same tab, below the highlights)
+
+| Field                 | Type   | Notes                                                                                                                                                                                                                                                                                     |
+| ---                   | ---    | ---                                                                                                                                                                                                                                                                                       |
+| **Trip Type**         | radio  | *Single Day Trip* or *Multi-Day Trip*. Choosing Single Day fixes the duration at 1 day / 0 nights and switches the departure-time controls below (see [1.4](#_1-4-availability-booking)).                                                                                                   |
+| **Duration (Days)** / **(Nights)** | number | Multi-day trips. Shown across the site as *5 days / 4 nights*.                                                                                                                                                                                                |
+| **Duration (Hours)**  | number | Single-day trips only, 1–24. Optional. Set it to **8** and the storefront shows **8 hours** instead of *1 day* — trip cards, the trip hero and quick facts, availability date cards, checkout, the confirmation page and email, saved trips, and the voucher / itinerary PDF. Google Calendar also creates a same-day timed event rather than an all-day one. Leave it empty for a normal day tour; switching the trip to Multi-Day clears it. |
+
 **Save Draft** any time — the trip becomes browsable in the admin even with only the title + slug filled in.
 
 ### 1.2 Location & Route

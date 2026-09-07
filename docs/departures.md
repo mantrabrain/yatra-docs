@@ -32,24 +32,38 @@ Open <span class="screen-path">Yatra → Departures</span>.
 
 ### Status filter pills
 
-Five statuses + *All*, with live counts beside each label:
+Four lifecycle statuses + *All*, with live counts beside each label:
 
-| Pill          | What's in it                                                                  |
-| ---           | ---                                                                           |
-| **All**       | Everything except trash.                                                      |
-| **Upcoming**  | Departures whose date is today or later, with at least one seat available.    |
-| **Full**      | Departures where booked count equals max capacity.                            |
-| **Past**      | Departures whose date is in the past.                                         |
-| **Cancelled** | Manually cancelled departures (kept for reporting + refund auditing).         |
-| **Trash**     | Soft-deleted rows. Restore or permanently delete from here.                   |
+| Pill          | What's in it                                                                                          |
+| ---           | ---                                                                                                   |
+| **All**       | Everything except trash.                                                                              |
+| **Upcoming**  | Every departure whose date is today or later — **regardless of capacity** (available, partially booked, or full). |
+| **Past**      | Departures whose date is in the past.                                                                 |
+| **Cancelled** | Manually cancelled departures (kept for reporting + refund auditing).                                 |
+| **Trash**     | Soft-deleted rows. Restore or permanently delete from here.                                           |
+
+Status is about *when* a departure runs. Whether it still has seats is a separate question — use the **Availability** filter below for that. A sold-out departure stays in **Upcoming**; it no longer drops out of the list just because it filled up.
+
+### Availability filter
+
+Next to the Status filter, **Availability** narrows the list by capacity and combines with whichever status pill is active:
+
+| Option                | What's in it                                                          |
+| ---                   | ---                                                                   |
+| **All Availability**  | No capacity filter (default).                                         |
+| **Available**         | Departures with at least one seat free — unbooked or partially booked. |
+| **Partially Booked**  | Departures with some bookings but seats still free.                   |
+| **Full**              | Departures at or over capacity.                                       |
+
+Availability is computed live from the booked count against the departure's capacity, so it is accurate even before the daily status maintenance has run. Pick **Upcoming + Full** to see every future departure that has sold out, or **Upcoming + Available** for what you can still sell.
 
 ::: warning The old "Active / Archived" wording
-Earlier doc revisions described departure statuses as *Active / Archived / Cancelled*. The current admin uses *Upcoming / Full / Past / Cancelled / Trash* — they're auto-computed from the date and the booked-count, not a manual field.
+Earlier doc revisions described departure statuses as *Active / Archived / Cancelled*, and later ones listed *Full* as a status. The current admin uses *Upcoming / Past / Cancelled / Trash* for status — auto-computed from the date, not a manual field — with capacity handled by the separate **Availability** filter.
 :::
 
 ### Search
 
-Search matches **trip title** and free-text in the **notes** field.
+Search matches the departure **date** — start or end, so `2026-09` finds every September departure and a full `2026-09-14` finds that day — and free-text in the **notes** field. It combines with the Status and Availability filters, and the tab counts and pagination follow the search. (It does not match the trip title; pick a trip from the trip selector to narrow by trip.)
 
 ### Column visibility
 

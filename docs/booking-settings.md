@@ -353,15 +353,30 @@ Open <span class="screen-path">Yatra → Enquiries</span>. These are pre-sale le
 - **Spam** (red)
 - **Trash** (gray, strikethrough)
 
+### Row actions
+
+Each row's three-dot (⋮) menu handles an enquiry without opening it:
+
+| Action | Notes |
+| ---    | ---   |
+| **View** / **Edit** | Open the enquiry. |
+| **Respond** | See below. Hidden once the enquiry is completed, closed, spam, trashed or archived. |
+| **Mark as Completed** | Quick status change — the enquiry is fully handled. |
+| **Mark as Closed** | Quick status change — no further action needed. |
+| **Mark as Spam** | Quick status change — moves it to the Spam view. |
+| **Delete** | Requires the delete-enquiries capability. |
+
+The three status actions change **only** the status — the message, notes and response history are untouched — and each is hidden when the enquiry already has that status. They need the same *respond to enquiries* capability as **Edit**, and are not offered in the **Trash** view (there, an enquiry is either restored by editing it or deleted).
+
 ### Bulk actions
 
 Vary by current status filter:
 
-| Current view | Available actions                                          |
-| ---          | ---                                                        |
-| Default      | Mark as Spam, Move to Trash, Delete permanently            |
-| Spam         | Move to Trash, Delete permanently                          |
-| Trash        | Delete permanently                                         |
+| Current view | Available actions                                                                |
+| ---          | ---                                                                              |
+| Default      | Mark as Completed, Mark as Closed, Mark as Spam, Move to Trash, Delete permanently |
+| Spam         | Move to Trash, Delete permanently                                                |
+| Trash        | Delete permanently                                                               |
 
 ### Respond to an enquiry
 

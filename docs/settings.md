@@ -89,6 +89,9 @@ Front-end appearance — what your customers see on trip and booking pages.
 | ---                   | ---                            | ---         | ---                                                         |
 | Primary brand color   | `frontend_primary_color`       | `#3b82f6`   | Hex value with a color-picker and a paired text input. **Reset to default** button restores `#3b82f6`. Drives buttons, links, and highlights via CSS variables. |
 | Container max width   | `frontend_container_max_width` | (empty)     | Optional CSS length (`1200px`, `72rem`, `min(100%,80rem)`). Empty = inherit your block theme `theme.json` / theme content width. |
+| Listing Card Layout   | `frontend_listing_card_layout` | `standard`  | How trip cards look in listings. Picked from an illustrated selector: **Standard** (the full card), **Compact (mobile only)** (`compact_mobile` — dense horizontal cards on phones, desktop unchanged), or **Compact (everywhere)** (`compact_all`). Opt-in and additive — existing sites keep the Standard card. |
+
+The **Compact** card keeps only the image, title, price and *View Details* button, so mobile listings show more trips per screen. It applies everywhere trips are listed — the archive/taxonomy pages, the `[yatra_trip]` / `[yatra_tour]` shortcode, and the **Trip** block — and respects the visitor's Grid / List toggle. A single shortcode or block can override the site-wide choice with its own `card_layout` / **Card layout** control (see [Shortcodes](/shortcodes)).
 
 ## 3. Booking
 
@@ -99,20 +102,37 @@ Day-to-day checkout behaviour. **For the full operator guide, see [Bookings & cu
 | Control                       | Setting key                  | Default          | Notes                                                                            |
 | ---                           | ---                          | ---              | ---                                                                              |
 | Enable Booking Confirmation   | `booking_confirmation`       | `true`           | Whether to send the confirmation email after status change to *Confirmed*.       |
-| Auto-Confirm Bookings         | `auto_confirm_bookings`      | `false`          | Skip the *Pending* state — useful for instant-confirmation activities.           |
+| Auto-Confirm Bookings         | `auto_confirm_mode`          | `online`         | When a booking becomes *Confirmed* — a 3-way choice: `none`, `online` (default), or `all`. See **[Auto-Confirm modes](#auto-confirm-modes)** below.  |
 | Require Login for Booking     | `require_login`              | `false`          | Forces login at the start of checkout.                                           |
 | Allow Guest Checkout          | `allow_guest_checkout`       | `true`           | If off, customers must log in before they can complete checkout.                 |
 | Allow Waitlist                | `allow_waitlist`             | `true`           | Show the *Join waitlist* CTA when a departure is sold out.                       |
+| Booking horizon (months)      | `availability_horizon_months` | `12`            | How far ahead customers can see and book dates on the storefront (1–36). A trip whose *Available To* is earlier stops there. Developers: `yatra_availability_horizon_months` filter. |
 | Waitlist Auto-Confirm         | `waitlist_auto_confirm`      | `false`          | Auto-promote waitlisted bookings when capacity opens up.                         |
 | Cancellation Policy           | `cancellation_policy`        | `full_refund`    | One of `no_refund`, `partial_refund`, `full_refund`. Surfaces on confirmation.   |
 | Cancellation Days Before Departure | `cancellation_days`     | `7`              | Days before travel after which a customer cannot self-cancel.                    |
 | Refund Policy                 | `refund_policy`              | (empty)          | Free-text shown on the booking summary page.                                     |
-| Booking Expiry (hours)        | `booking_expiry_hours`       | `24`             | A booking left in *Pending* longer than this is auto-cancelled by the cron.      |
-| Booking Reminder (days)       | `booking_reminder_days`      | `3`              | How many days before travel to send the reminder email.                          |
+| Booking Expiry (hours)        | `booking_expiry_hours`       | `24`             | An unpaid booking left in *Pending* longer than this is cancelled by an hourly sweep, and its seat released. `0` disables it. Only bookings created **after** you update to 3.0.15 are ever expired, so an existing backlog is never cancelled retroactively. Deposit-paid, confirmed and unverified-guest bookings are never touched. Developers: `yatra_auto_expire_bookings`. |
+| Booking Reminder (days)       | `booking_reminder_days`      | `3`              | How many days before travel the pre-trip reminder is emailed. Sent by a daily sweep to bookings travelling exactly that many days out — confirmed ones, plus pending ones that have paid a deposit. `0` disables it. |
 
 ::: tip Where's the booking page picker?
 The booking flow lives at `/{booking_base}/{trip-slug}/` by default (configured on the [Permalink](#_11-permalink) tab). There's no "embed the booking app inside a WordPress page" toggle in this build — earlier versions of the doc mentioned `use_booking_page` and `booking_page_id`, but the source no longer exposes that setting.
 :::
+
+### Auto-Confirm modes
+
+The **Auto-Confirm Bookings** control (`auto_confirm_mode`) decides when a booking is automatically set to *Confirmed*:
+
+| Mode | Behaviour |
+| --- | --- |
+| **Don't auto-confirm** (`none`) | Every booking stays *Pending* until you confirm it manually — for operators who vet each booking before committing. |
+| **Auto-confirm online payments only** (`online`, default) | When an online payment (Stripe, PayPal, Razorpay, …) settles the balance **in full**, the booking is confirmed. Deposits / partial payments and offline methods (bank transfer, pay-later) stay *Pending*. |
+| **Auto-confirm all** (`all`) | Every booking is confirmed at checkout, whether or not it was paid. |
+
+::: tip Upgrading from an older version
+**Upgrading from the on/off toggle.** A site that had *Auto-Confirm Bookings* **on** maps to `all` — identical behaviour. A site that had it **off** maps to `online` — identical for PayPal, the synchronous gateways and every payment that settles the balance in full (3.0.14 already confirmed those). The one difference: with the toggle off, a **deposit / partial payment through Stripe, Razorpay or T-Bank** used to confirm the booking anyway (those gateways ignored the setting — the bug this release fixes); it now waits as *Pending* until the balance is paid. Choose `all` to keep deposits confirming. A pending deposit booking still holds its seat, is never expired by the unpaid-booking cleanup, has its scheduled installments processed, and receives the pre-trip reminder (with its outstanding-balance note). Brand-new installs default to `online`. Pick **Don't auto-confirm** if you want every booking to wait for manual review.
+:::
+
+Offline methods are governed separately: **bank transfer** always waits for manual verification, and **pay-later** confirmation is controlled by *Settings → Payment → Auto-confirm Pay Later bookings* (which applies under the `none` mode). Developers can override the decision per booking with the [`yatra_confirm_booking_on_payment`](/hooks-filters) filter.
 
 ## 4. Booking Form
 
@@ -481,11 +501,13 @@ curl -u "user:application-password" \
 ```bash
 curl -u "user:application-password" \
      -H "Content-Type: application/json" \
-     -d '{"settings":{"booking_expiry_hours":48}}' \
+     -d '{"booking_expiry_hours":48,"availability_horizon_months":18}' \
      https://example.com/wp-json/yatra/v1/settings
 ```
 
-The REST endpoint also exposes `POST /yatra/v1/settings/flush-rewrites` (re-flush WP rewrite rules without changing settings) and `GET /yatra/v1/settings/pages` (list candidate WP pages for the booking / account / TOS dropdowns). See [REST API → Settings](/api-reference#settings-modules-license).
+The body is a flat map of setting keys (no `settings` wrapper). Invalid values are rejected per key with HTTP 400 — e.g. *"Invalid value for setting: availability_horizon_months"* for a horizon outside 1–36 — and the previously stored value is kept.
+
+The REST endpoint also exposes `POST /yatra/v1/settings/flush-rewrite-rules` (re-flush WP rewrite rules without changing settings) and `GET /yatra/v1/settings/pages` (list candidate WP pages for the booking / account / TOS dropdowns). See [REST API → Settings](/api-reference#settings-modules-license).
 
 ## Pro settings (3.0.2+)
 

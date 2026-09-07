@@ -105,7 +105,8 @@ The list below groups the routes by area. Each row shows the path (relative to `
 | `/trips/{id}/revisions`                           | List trip revisions                                  |
 | `/trips/{id}/attributes`                          | List / set per-trip attributes                       |
 | `/trips/{id}/services`                            | (Pro) Additional services attached to a trip         |
-| `/trips/{id}/availability`                        | List computed departures (fixed + recurring)         |
+| `/trips/{id}/available-dates`                     | Public. List computed bookable dates (fixed + recurring). `from_date` defaults to today; `to_date` defaults to today + the **Booking horizon** setting (12 months unless changed) — pass both to control the window |
+| `/trips/{id}/availability-template`               | Rendered month-list / date-card HTML the trip page loads (`month_filter`, `page`, `per_page`); range = today + the Booking horizon |
 | `/trips/{id}/downloads`                           | List trip-attached downloads                         |
 | `/trips/search`                                   | Search trips by title / slug                         |
 | `/trips/public`                                   | Public listing endpoint used by `[yatra_trip]`       |
@@ -137,7 +138,9 @@ The block-editor pickers also expose lightweight read endpoints under `/block-ed
 | ---                                               | ---                                                  |
 | `/availability`, `/availability/{id}`             | Fixed departures CRUD                                |
 | `/recurring-availability`, `/recurring-availability/{id}` | Recurring availability rules                |
-| `/trips/{id}/availability`                        | Computed merged list                                 |
+| `/trips/{id}/available-dates`                     | Computed merged list, public (`from_date` / `to_date`; `to_date` defaults to today + the Booking horizon setting) |
+| `/departures`                                     | Departures across all trips (operator list). `status=upcoming` includes full departures; filter capacity with `availability`; `search` matches the departure date or notes |
+| `/trips/{id}/departures`                          | Departures for one trip — same filters as `/departures` |
 
 ### Trip downloads
 
@@ -285,6 +288,7 @@ Most list endpoints accept the following query parameters:
 | `orderby`     | varies  | Endpoint-specific sort key                         |
 | `search`      | —       | Free-text search                                   |
 | `status`      | varies  | Filter by status                                   |
+| `availability` | —      | Departures only: `available`, `partial` or `full` — capacity, independent of `status` |
 | `from`, `to`  | —       | Date range (ISO 8601)                              |
 
 Total counts are returned in the `meta.total` body field and as the `X-WP-Total` / `X-WP-TotalPages` headers.

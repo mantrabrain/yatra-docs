@@ -48,7 +48,7 @@ Field reference: [Create a trip → 1.4 Availability & Booking](/trip-creation#_
 
 ### Layer 2 — Recurring Availability Rules
 
-**When you'd use it:** trips that run on a regular pattern ("Every Saturday and Sunday from May to September", "Daily, July through August", "First Monday of every month"). Rules generate dates automatically — you set the pattern once and Yatra fills the calendar for the next year.
+**When you'd use it:** trips that run on a regular pattern ("Every Saturday and Sunday from May to September", "Daily, July through August", "First Monday of every month"). Rules generate dates automatically — you set the pattern once and Yatra fills the calendar up to the site's **booking horizon** (Settings → Booking → *Booking horizon (months)*, 12 months by default; raise it if you sell further ahead).
 
 **Form fields** (from `DepartureRecurringRuleForm.tsx`):
 

@@ -552,6 +552,48 @@ These three flows live above the gateway list on **Settings → Payment** — th
 
 Per-trip overrides live in the **Advanced** section of the Trip Builder (see [Create a trip → 4.1 Advanced Settings](/trip-creation#_4-1-advanced-settings)).
 
+### The Scheduled Payments screen <span class="pro-pill">PRO</span>
+
+Open <span class="screen-path">Yatra → Payments → Scheduled</span>. The entry appears under **Payments** only while the **Scheduled Payments** module is enabled. It lists every balance payment Yatra has scheduled:
+
+| Column | Notes |
+| ---    | ---   |
+| **Booking** | Booking reference and customer. Flags a booking that no longer exists. |
+| **Amount** | The balance to collect, in the booking's currency. |
+| **Scheduled for** | When it will be collected. |
+| **Collection** | **Auto-charge** (a saved card is charged off-session) or **Payment link** (the customer is emailed a secure link). |
+| **Status** | Scheduled, Processing, Paid, Failed or Cancelled — with the last error and attempt count on a failure. |
+
+Filter by status, or search by booking reference or customer. The row menu opens the booking, and can **Cancel scheduled payment** for anything that has not run yet (a paid row is payment history and cannot be cancelled). Cancelling stops the automatic collection only — the booking keeps its outstanding balance for you to collect manually.
+
+### The Outstanding tab
+
+The **Scheduled** tab only shows what Yatra collects on its own. Switch to **Outstanding** for the other half: every confirmed or pending booking that still owes money and has *nothing* scheduled to collect it — the deposits taken by bank transfer, Pay Later or recorded by hand.
+
+| Column | Notes |
+| ---    | ---   |
+| **Booking** | Reference and customer. |
+| **Outstanding** | Amount still due, with how much of the total is already paid. |
+| **Tour date** | Departure date and how many days away it is. |
+| **Not scheduled because** | *No payment received yet*, *Balance due is anchored to the booking date*, *Booking has no tour date*, *Reminder starts closer to the tour*, or *Reminder goes out on the next daily run*. |
+
+The row menu can **Send balance payment link** — it emails the customer the same secure pay link the reminder cron uses, immediately, instead of waiting for the daily scan's window. Doing so records a schedule row, so the send is visible on the Scheduled tab and a second click cannot send a duplicate. A booking drops off this tab as soon as it is paid or has an active schedule.
+
+### When is a balance payment actually scheduled?
+
+A row exists only when Yatra has something to collect automatically. Nothing is scheduled — and the list stays empty — unless one of these applies:
+
+- **Auto-charge** — the deposit was captured by a gateway that saved a reusable card (the module turns card-saving on for you). Deposits paid by bank transfer, Pay Later, or recorded manually by an admin save no card, so nothing can be auto-charged.
+- **Payment link** — a daily scan creates a link-based reminder row, but **only when *Balance due* is anchored to the tour date** (`balance_anchor = tour`). With the default booking-date anchor this scan does nothing.
+
+An outstanding balance itself is **not** a scheduled payment: it is stored on the booking (`total_amount`, `amount_paid`, `amount_due`) and shown on the booking and in [Payments](#the-payments-admin). A balance with no scheduled row is simply one you collect yourself.
+
+### What happens when a booking is cancelled or deleted
+
+- **Cancelled, refunded or trashed** — the booking's scheduled payments are set to **Cancelled** straight away. Rows that already ran (Paid / Failed) are left alone as history.
+- **Deleted** — the scheduled payments are deleted with it.
+- Nothing is ever charged against a booking that is cancelled or gone, independently of the above: the balance is re-checked immediately before every charge, and the charge is capped at the balance still due. Reminder emails apply the same rules, so a cancelled booking's customer is never chased for a balance.
+
 ---
 
 ## The Payments admin

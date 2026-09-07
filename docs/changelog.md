@@ -21,6 +21,106 @@ This is the operator-facing release log for Yatra Free and Yatra Pro. The canoni
 
 ## Yatra Free
 
+### 3.0.15 — 7 September 2026
+
+Backward-compatible feature + fix release. Safe to update — **no existing site changes behaviour on upgrade.**
+
+**Auto-Confirm Bookings is now a 3-way choice**
+
+- The old on/off *Auto-Confirm Bookings* toggle becomes a three-way setting (`auto_confirm_mode`): **Don't auto-confirm** (`none`), **Auto-confirm online payments only** (`online`, the new default for fresh installs), and **Auto-confirm all** (`all`). See [Settings → Auto-Confirm modes](/settings#auto-confirm-modes).
+- **What existing sites get.** A site that had the toggle **on** maps to `all` — identical behaviour. A site that had it **off** maps to `online` — identical for PayPal, the synchronous gateways and every *full* payment (3.0.14 already confirmed a payment that settled the balance in full). The **one** change is for sites with it off that take a **deposit / partial payment through Stripe, Razorpay or T-Bank**: those Pro gateways used to confirm the booking regardless of the setting, and a deposit now leaves it *Pending* until the balance is paid — which is the bug this release fixes. Choose **Auto-confirm all** to keep deposits confirming, or **Don't auto-confirm** to hold every booking for manual review (previously impossible, because *off* still confirmed full online payments).
+- Because a deposit booking may now sit as *Pending* until the balance is paid, the **pre-trip reminder** now also goes to pending bookings that have paid a deposit (it already includes the outstanding-balance note); previously only confirmed bookings were reminded. Unpaid pending bookings are still not reminded. A pending deposit booking keeps its seat and is never expired by the unpaid-booking cleanup (that only touches bookings with no payment at all).
+- Under `online`, only a payment that settles the balance **in full** confirms the booking; deposits / partial payments and offline methods (bank transfer, pay-later) stay *Pending*.
+- Developers can override the decision per booking with the [`yatra_confirm_booking_on_payment`](/hooks-filters#payments) filter.
+
+**Fix — payment gateways ignored the Auto-Confirm setting**
+
+- Several gateways (Stripe, Razorpay, Mollie, Paystack, TBank in Pro; and the client-side *complete payment* endpoint used by Square) force-confirmed a booking on a successful payment **regardless** of the Auto-Confirm setting. They now honour the mode consistently, matching PayPal and the synchronous-gateway path.
+
+**Fix — confirmation email missing when an online payment auto-confirms**
+
+- When a booking was auto-confirmed by a gateway payment (Stripe, PayPal, …), the customer received no **"Booking confirmed"** email — that email was only sent when an admin confirmed the booking manually. Gateway auto-confirmations now send it (and fire the `yatra_booking_status_changed` action, so Pro Email Automation `booking.confirmed` sequences run too).
+- **Existing sites, please read:** this is a *new* customer email for every auto-confirmed online booking, and any `booking.confirmed` automation sequence, webhook or WhatsApp template you already have will now run for those bookings as well. If you had worked around the missing email with a *Booking Created* email or sequence worded as a confirmation, customers may now receive both — review those templates before updating. On Pro sites the email is the **Booking Confirmed** template under Email → Templates and can be switched off on its own. On free-only sites it renders through the **Booking Confirmation** template, whose on/off setting is shared with the "booking received" email — turning that off silences both.
+
+**Fix — "Resend confirmation email" used the wrong template**
+
+- The admin **Resend → Booking confirmation** action always resent the initial "booking received" email. For an already-confirmed booking it now resends the **"Booking confirmed"** email (matching the automated one); pending bookings still resend the "received" email.
+
+**Fix — pre-trip reminder emails were not being sent at all**
+
+- Two separate faults stopped it. The booking query referenced a `currency` column on the trips table that does not exist, so the database rejected it and the cron found zero bookings to remind. Underneath that, **the reminder cron was never scheduled and had no handler at all** — the code that wires it up was never called — so even a working query would have sent nothing. Both are fixed: the query no longer references the phantom column, and the event is scheduled (daily) and handled. **Existing sites:** customers will start receiving the pre-trip reminder again — check the *Trip Reminder* template under Settings → Emails is worded the way you want before updating. Set **Booking Reminder (days)** to `0` to keep it off.
+
+**Fix — cancelling a booking notified nothing**
+
+- `yatra_booking_cancelled` is the action Google Calendar, the Pro `booking.cancelled` webhook and the WhatsApp cancellation template all listen to — but nothing in Yatra ever fired it. Only a cancellation arriving from an OTA (Channel Manager) did, so cancelling a booking in the admin removed no calendar event, sent no WhatsApp message and delivered no webhook. It now fires on every transition to *cancelled*, from the admin, the customer's own cancellation and the unpaid-booking sweep alike. The OTA path is untouched, so it cannot fire twice.
+- A separate `yatra_booking_expired` action distinguishes "the customer never paid" from an ordinary cancellation.
+- **Existing sites, please read:** cancellations will now reach these integrations for the first time. If you use Google Calendar sync, cancelled bookings start being removed from the calendar; if you have a WhatsApp cancellation template or a `booking.cancelled` webhook, they start firing. Review those templates before updating.
+
+**Fix — "Booking Expiry (hours)" never expired anything**
+
+- <span class="screen-path">Settings → Booking → Booking Expiry (hours)</span> (default 24) is documented to auto-cancel unpaid bookings, but the sweep was **never scheduled and had no handler** — the same missing wiring as the reminder above — so unpaid bookings sat in the list indefinitely and had to be cancelled by hand. The sweep now runs hourly and honours the setting (`0` disables it; developers can also disable it with the new `yatra_auto_expire_bookings` filter).
+- **Existing sites are protected from a mass cancellation.** The first run only records an activation date; bookings created before that moment are never expired, however old they are. Only unpaid bookings taken from that point on are cancelled once they pass the expiry window. Deposit-paid, confirmed and unverified-guest bookings are never touched.
+- Both sweeps now read the **site's own clock**. The expiry threshold and the reminder's target day were derived from PHP's clock (UTC in WordPress) while booking dates are stored in site-local time — so a site at UTC-5 expired unpaid bookings five hours early, and reminders could target the wrong day near midnight. Sites running on UTC are unaffected.
+- The hourly sweep is **batched** (200 bookings a run, oldest first). It emails each customer, so an unbounded run could have tried to send hundreds of emails in a single cron request; a backlog now drains over successive runs instead.
+- Deactivating the plugin clears its booking cron events instead of leaving them orphaned in WP-Cron; they are re-scheduled automatically when it is active again, and the expiry activation date survives.
+- Expiring a booking now also **releases its departure seat**. The sweep wrote the cancellation directly instead of going through the normal cancel path, so the seat stayed reserved — a departure could slowly "sell out" to bookings nobody ever paid for. It now unlinks the departure and decrements the booked count exactly as an admin cancellation does.
+
+**Fix — Departures "Upcoming" filter hid full departures**
+
+- The **Upcoming** filter on the Departures page only showed future departures that still had a seat free — a departure that had sold out silently dropped out of Upcoming (its stored status flips from `upcoming` to `full`). **Upcoming now lists every future departure** regardless of capacity: available, partially booked, or full.
+- Capacity is now its own **Availability** filter — **Available**, **Partially Booked**, or **Full** — which combines with the status filter instead of replacing it. It is computed from the live booked count against capacity, so it stays correct even if the daily status cron has not run yet. See [Departures → Filters](/departures#status-filter-pills).
+- API: `GET /departures` and `GET /trips/{id}/departures` accept a new optional `availability` query parameter (`available` \| `partial` \| `full`); `status=upcoming` now includes full departures, while `status=full` is unchanged for existing integrations.
+- The Departures list is now genuinely paginated. `page` / `per_page` were previously ignored — every matching row came back on every "page" and `meta.total` was just the size of that response. They are now honoured server-side (only when `per_page` is sent, so integrations that never paginated still receive every row), and `meta` reports the true `total` plus `page`, `per_page` and `total_pages`. **Integration note:** a client that *sent* `per_page` but relied on getting every row back now receives exactly the page it asked for — drop the parameter or page through `total_pages`. Likewise `status=upcoming` now includes full departures, and a `search` term is now applied instead of ignored.
+- The Departures **search box now works**. The term was sent to the server but never applied, so typing anything returned the unfiltered list. It now matches the departure date (start or end) or the notes, and combines with every other filter, the tab counts and pagination. Also available to integrations as the `search` query parameter on both departures endpoints.
+
+**Fix — account email-change events missing from the email registry**
+
+- The merge-tag registry now defines `account.email_change_request` (sent to the *new* address with the confirmation link) and `account.email_changed` (security notice to the *previous* address), alongside the existing `account.email_verification`. Both were already sent, but the registry didn't know them — which is why Yatra Pro's template editor rejected their templates with **"Invalid event key"** (see the Pro notes below).
+- New `{{new_email}}` merge tag for those two events; `{{verification_link}}`, `{{intro_paragraph}}` and `{{footer_note}}` are now offered on the account events that actually supply them.
+
+**Fix — "Payment not completed" notice could not be translated**
+
+- The notice shown after a cancelled gateway payment (*"Payment not completed. Your payment was cancelled and no charge was made…"*) was written translatably but never made it into the plugin's translation catalog (`yatra.pot`), which had not been regenerated since before the notice was added — so Loco Translate, Poedit and translate.wordpress.org never offered it. The catalog is regenerated with this release and now includes it, along with every other string added since.
+
+**Fix — admin screens can now be translated**
+
+- The React admin (Bookings, Departures, Settings, …) already went through WordPress's `wp.i18n`, and its strings were already in the catalog, but the bundle was never registered with `wp_set_script_translations()` — so a translation you made in Loco Translate or received from translate.wordpress.org never reached the admin UI. It is registered now; WordPress loads `yatra-{locale}-{hash}.json` from the plugin's `i18n/languages/` or `wp-content/languages/plugins/` (Loco generates that file automatically when you save a translation).
+
+**New — Configurable booking horizon**
+
+- The storefront previously offered dates no more than **12 months ahead**, hard-coded — a trip with an *Available To* date further out was silently cut off in both the date picker and the month list. **Settings → Booking → Booking horizon (months)** now controls it (1–36; default **12**, so nothing changes until you raise it). A trip's own *Available To* still wins when it is earlier. Long horizons make flexible-booking trips (no dates or rules configured) generate more dates per page, so raise it only as far as you sell. REST clients that pass their own `to_date`, admin previews and the Pro OTA inventory sync are unaffected. Developers: `yatra_availability_horizon_months` filter.
+
+**Fix — Day trips with an hour duration showed "1 Day"**
+
+- A trip set up as a **single-day tour with a duration in hours** (e.g. 8 hours) already showed *8 hours* on the trip card, the quick facts and the checkout summary, but several places still printed **"1 Day"**: the single-trip hero badge, the availability date cards, the *Similar Adventures* cards, the booking-confirmation page, the confirmation email, the saved-trips list, and the travel voucher / itinerary PDF. All of them now show the hour duration instead. Trips without an hour duration — every existing trip — keep their exact day / night wording.
+- Only a **positive** hours value changes anything: `duration_hours` is empty on every trip created before 3.0.14 and on every multi-day trip, so day-based trips are untouched. Sites whose upgrade has not yet added the `duration_hours` column keep working — the queries that read it check for the column first.
+- Saving a trip also clears the hours value whenever the trip is multi-day. Previously that was enforced only when the request carried the trip type (as the trip form always does); a partial API update that changed just the duration could leave an hour value stranded on a multi-day trip, which would now read as *8 hours* on the storefront. A duration of more than one day clears it too.
+
+**New — Listing Card Layout (compact trip cards)**
+
+- A new **Settings → Design → Listing Card Layout** option renders trip cards in a compact, Booking.com-style layout so mobile listings show more trips per screen. Choose **Standard**, **Compact (mobile only)**, or **Compact (everywhere)** from an illustrated selector.
+- Applies to archive / taxonomy pages, the `[yatra_trip]` / `[yatra_tour]` shortcode, and the **Trip** block, and respects the visitor's Grid / List toggle. Any single shortcode or block can override the site default with its own `card_layout` attribute / **Card layout** control. Opt-in and additive — existing sites keep the Standard card.
+
+**New — Quick status changes for enquiries**
+
+- The Enquiries list's ⋮ menu gains **Mark as Completed**, **Mark as Closed** and **Mark as Spam**, so an enquiry can be handled from the list instead of being opened in edit mode. Each is hidden when the enquiry already has that status, needs the same *respond to enquiries* capability as **Edit**, and changes only the status — message, notes and response history are untouched. Not offered in the Trash view. See [Enquiries → Row actions](/booking-settings#row-actions).
+- **Mark as Closed** is also available as a bulk action, and `PUT /enquiries/bulk` accepts the matching `mark_closed` action. Existing bulk actions are unchanged.
+
+**Fix — "Mark as Completed" bulk action did nothing**
+
+- Choosing **Mark as Completed** in the Enquiries bulk dropdown and confirming it closed the dialog and cleared the selection without sending anything to the server — the confirm handler only submitted delete / spam / trash. It now applies whichever action was chosen and reports success or failure.
+- The enquiry status tab counts also refresh after bulk actions, quick status changes, responding and deleting; they previously kept showing pre-action numbers until the page was reloaded.
+- The bulk confirmation dialog now names the action in a translatable sentence ("Are you sure you want to apply *Mark as Completed*…") instead of an untranslatable string showing the raw `mark_completed` slug.
+
+**Fix — every Enquiries status tab showed 0**
+
+- The counts on the **All / New / Pending / Responded / Completed / Converted / Closed / Spam / Trash** tabs were always **0**, however many enquiries existed. The screen read the counts from the wrong level of the stats response, so each one resolved to nothing. The tabs now show the real totals (and update as you change statuses).
+- Enquiries whose status is *Read* or *Archived* — reachable through the REST bulk endpoint — now show a translated badge instead of the raw status slug.
+
+**Fix — an enquiry submission containing a "subject" field returned a server error**
+
+- The enquiry writer mapped a `subject` field onto a column the enquiries table has never had, so the database rejected the whole insert. Any submission to the public `POST /enquiries` endpoint that included `subject` — a custom form, a third-party integration, a tweaked theme template — failed with a **500** that echoed the raw database error back to the visitor, and an admin update carrying the same field failed with "Failed to update enquiry." `subject` is now ignored (as it always was when reading), and a rejected insert returns the normal friendly error instead of a server error with database details. Yatra's own enquiry forms never sent the field and are unaffected.
+
 ### 3.0.5
 
 Routing, FSE compatibility, and bug-fix release. **Strongly recommended** for any site running a block theme. Backward compatible with 3.0.4.
@@ -226,6 +326,58 @@ Documentation-only release for the plugin directory listing; no code changes req
 For 2.x changelog entries, see the plugin's [GitHub releases](https://github.com/MantraBrain/yatra/releases).
 
 ## Yatra Pro
+
+### 3.0.12 — 7 September 2026
+
+Pair with the matching Yatra Free release for the 3-way **Auto-Confirm mode**. Free and Pro update independently, so this Pro release is also safe on older Free versions: with Free 3.0.10–3.0.14 the gateways honour the old on/off toggle (confirm when it is on, or when the payment settles the balance in full); with Free older than 3.0.10 they keep confirming on every payment exactly as before — no fatal, no lost payment.
+
+**Fix — webhooks delivered the wrong booking event**
+
+- `booking.confirmed` and `booking.completed` both listen to Yatra's status-change action, which fires for *every* transition, and nothing checked which status was reached. An endpoint subscribed to **Booking Confirmed** therefore received a delivery when a booking was **cancelled** — and `booking.cancelled` / `booking.expired` never arrived at all. Each event is now delivered only for the transition it names.
+- `booking.expired` moves to its own trigger (the free plugin's new `yatra_booking_expired`), so an automatic expiry can be told apart from a manual cancellation — previously impossible, since both land on the `cancelled` status.
+- Requires the matching free release for `booking.cancelled` and `booking.expired` to fire; on an older free plugin they simply stay silent, exactly as before.
+
+**New — Scheduled Payments are visible in the admin**
+
+- A new <span class="screen-path">Yatra → Payments → Scheduled</span> screen lists every scheduled balance payment: booking, customer, amount, when it runs, whether it is an **auto-charge** or a **payment link**, and its status — with the last error and attempt count on failures. Filter by status, search by booking reference or customer, and cancel anything that has not run yet. The entry sits under **Payments** (as **Scheduled**) and appears only while the Scheduled Payments module is enabled. See [Payments → The Scheduled Payments screen](/payment-settings#the-scheduled-payments-screen-pro).
+- An **Outstanding** tab on the same screen answers the question the schedule table cannot: every confirmed or pending booking that still owes money with *nothing* scheduled to collect it — with the amount due, the tour date, and why it isn't scheduled (no payment yet, balance anchored to the booking date, tour still far off, …). Its row menu can **Send balance payment link**, emailing the customer the same secure pay link the reminder cron uses without waiting for the daily window; the send is recorded as a schedule row, so it shows on the Scheduled tab and cannot be sent twice by accident.
+- New endpoints for the same data: `GET /scheduled-payments`, `GET /scheduled-payments/stats`, `GET /scheduled-payments/outstanding`, `POST /scheduled-payments/{id}/cancel` and `POST /scheduled-payments/outstanding/{booking_id}/send-link` (reading requires *view bookings* or *view financial reports*; cancelling and sending require *edit bookings*). They exist only while the module is enabled.
+
+**Fix — schedules outlived their booking**
+
+- Cancelling, refunding or trashing a booking now cancels its scheduled balance payments immediately, and deleting a booking deletes them. Previously nothing cleaned them up: the rows sat at *Scheduled* forever, and a deleted booking left its schedules behind permanently.
+- No money behaviour changes — a cancelled or deleted booking was never charged, because the balance is re-checked immediately before every charge and reminder emails already excluded cancelled bookings. What changes is that the new Scheduled Payments list reports the truth instead of showing pending rows that would never run. Rows that already ran (Paid / Failed) are kept as history.
+
+**Gateway auto-confirm consistency**
+
+- Stripe, Razorpay, Mollie, Paystack and TBank now honour the free **Auto-Confirm mode** on payment completion instead of always confirming the booking. Under `none` a paid booking stays *Pending*; under `online` it confirms only when the payment settles the balance in full; under `all` it confirms as before.
+- **What existing sites get:** with auto-confirm **on** — identical. With it **off** — full payments still confirm; the one change is a **deposit / partial payment through Stripe, Razorpay or T-Bank**, which no longer confirms the booking until the balance is paid (those gateways used to confirm it regardless of the setting). Pick **Auto-confirm all** to keep the old behaviour for deposits.
+- **Scheduled Payments:** a deposit booking paid off in installments now confirms automatically on the installment that clears the balance (under `online` / `all`), instead of remaining *Pending* forever.
+
+**Email Automation — partial vs full payment events**
+
+- A **deposit / partial payment** now fires the **Partial Payment Received** (`payment.partial_received`) automation event; only a payment that settles the balance **in full** fires **Payment Received** (`payment.received`). Previously every payment — including deposits — fired `payment.received`.
+- **Upgrade note:** if you built a *Payment Received* automation **sequence** and want it to run for deposits too, add a matching **Partial Payment Received** sequence (the event is in the Trigger Event dropdown). This only affects custom automation sequences — the customer's transactional payment email is unchanged.
+- To send a distinct deposit email to customers, enable **Settings → Emails → Partial Payment Received** (`email_template_partial_payment`); left off, deposits keep receiving the standard payment-received email.
+
+**Confirmation email now sent when an online payment auto-confirms**
+
+- When a booking is auto-confirmed by a gateway payment (Stripe, PayPal, Razorpay, …), the customer now receives the **"Booking confirmed"** email and Pro **Email Automation** `booking.confirmed` sequences now fire — previously these ran only for a manual (admin) confirmation, so gateway auto-confirmations sent no confirmation email.
+
+**Fix — "Invalid event key" when editing the account email-change templates**
+
+- Saving the **Account email change request** or **Account email changed** template failed with *Invalid event key*. Both templates are seeded and both emails were being sent, but their events (`account.email_change_request`, `account.email_changed`) were never registered in the event catalog, so the editor's validation rejected them. They now appear in the **Trigger Event** dropdown with their merge tags — including the new `{{new_email}}` — and the templates save normally. Requires the matching Yatra Free update (the events are defined in the free merge-tag registry); on an older free plugin they are simply not listed, as before.
+
+**Stripe — payment-error fallbacks are now translatable**
+
+- When Stripe reports an incomplete or failed payment without its own message, the fallback text shown to the customer (*"Payment not completed."*, *"Payment failed. Please try again with a different payment method."*, *"Additional action required to complete payment."*) was hard-coded in English. It now goes through the normal `yatra-pro` translation system like the other gateways.
+
+**Fix — "Scheduled payment succeeded / failed" notifications never fired, or fired for the wrong booking**
+
+- A successful scheduled (installment) charge fired no action at all, so the **Scheduled payment succeeded** event in Webhooks, WhatsApp and Email Automation could never trigger. A new `yatra_scheduled_payment_success` action now fires and all three consumers are bound to it.
+- The existing `yatra_scheduled_payment_failed` action leads with the *scheduled-payment* id, and the Webhook / WhatsApp payload builders took that first integer as the *booking* id — resolving the wrong booking. The action now also carries a context array with the real `booking_id` (existing arguments unchanged), the builders prefer an explicit `booking_id` over a positional integer, and Email Automation now listens to it too.
+- **Behaviour change:** endpoints, templates or sequences already configured for these events start firing. See [Hooks → Scheduled Payments](/hooks-filters#pro-flexible-scheduled-payments).
+- Found while wiring this up: the **"Balance due now"** figure in the *Scheduled payment succeeded* customer email was understated by one installment (the balance was re-derived after the booking had already been updated, subtracting the charge twice). It now shows the correct remaining balance, and WhatsApp templates receive the same formatted amount / date / balance values as the email instead of blanks.
 
 ### 3.0.1
 
