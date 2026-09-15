@@ -84,6 +84,26 @@ With the [Email Automation](/modules/email-automation) module on, the Templates 
 
 **Rules worth knowing.** An override always fires on its global template's event and cannot change it. An override is an independent copy: editing the global template afterwards doesn't touch it. Switching an override off (or deleting it) sends its trips the global template again. Duplicating an override creates a plain custom template, not another override.
 
+### The booking event flow at a glance
+
+Every stage of a booking fires **one** event; the templates (and Pro sequences, webhooks and WhatsApp messages) hang off those events. Nothing below is legacy — this is the current flow.
+
+| Stage | Event | Customer email | Admin email | Notes |
+| --- | --- | --- | --- | --- |
+| Booking submitted (checkout or manual admin booking) | `booking.created` | `booking_confirmation` ("booking received") | `admin_new_booking` | With **Require guest email verification** on, a guest's booking is created only after the verification link is clicked. |
+| Booking status becomes **Confirmed** | `booking.confirmed` | `booking_confirmed` ("you're confirmed") | — | Manually from the booking, or automatically by a payment when [Auto-Confirm](/settings#auto-confirm-modes) is `online` / `all`. With `none`, payments never confirm. |
+| Payment received that **settles** the balance | `payment.received` | `payment_received` | `admin_payment_received` | Online captures **and** admin-recorded payments (since 3.0.15). May be followed by `booking.confirmed` if Auto-Confirm allows. |
+| Payment received that **leaves a balance** (deposit, instalment) | `payment.partial_received` | `partial_payment_received` <span class="pro-pill">PRO</span> (falls back to `payment_received`) | `admin_payment_received` | The two payment events are exclusive: exactly one fires per payment, decided by the remaining balance. |
+| Balance collected by a **scheduled** charge | `scheduled.payment.succeeded` (+ `payment.received`) | `scheduled_payment_succeeded` | — | Scheduled Payments <span class="pro-pill">PRO</span>. Failed attempts fire `scheduled.payment.failed`. |
+| Booking cancelled | `booking.cancelled` | `booking_cancelled` | `admin_booking_cancelled` | |
+| Unpaid booking expired by the cron | `booking.expired` | `booking_expired_customer` | `admin_booking_expired` | |
+| Trip completed (cron after the travel date) | `booking.completed` | `booking_completed` | — | |
+| **Resend** from the booking page | *none* | the template matching the booking's **current** state | | A resend is not a lifecycle event: a confirmed/completed booking gets `booking_confirmed`, a pending one `booking_confirmation`; nothing else (sequences, webhooks) is triggered. |
+
+::: tip A two-step "request → confirmed" workflow
+If you check bookings by hand before committing to them: set **Auto-Confirm Bookings** to *Don't auto-confirm*, word `booking_confirmation` as *"we've received your request and will confirm shortly"*, and word `booking_confirmed` as the binding confirmation. Confirming the booking in the admin then sends the second email. Payments received in between only send the payment emails.
+:::
+
 ### The 25 transactional templates
 
 Every template's content is editable from the Templates tab; module-gated ones are read-only until the relevant Pro module is active.
@@ -92,13 +112,13 @@ Every template's content is editable from the Templates tab; module-gated ones a
 
 | Template key                  | Display name           | Trigger                | Notes                                          |
 | ---                           | ---                    | ---                    | ---                                            |
-| `booking_confirmation`        | Booking Confirmation   | `booking.created`      | The unified customer email — sent at checkout, manual admin bookings, and on confirmation. |
+| `booking_confirmation`        | Booking Confirmation   | `booking.created`      | **Stage 1 — "we received your booking."** Sent the moment a booking is created (checkout, manual admin booking). Word it as an acknowledgement, not a promise. |
+| `booking_confirmed`           | Booking Confirmed      | `booking.confirmed`    | **Stage 2 — "your booking is confirmed."** Sent when the booking's status becomes *Confirmed* — by you, manually, or by a payment when [Auto-Confirm](/settings#auto-confirm-modes) allows it. *Resend → Booking confirmation* on a confirmed booking resends this one. |
 | `booking_cancelled`           | Booking Cancelled      | `booking.cancelled`    | Customer-facing cancellation notice.            |
 | `booking_completed`           | Booking Completed      | `booking.completed`    | Sent when the trip-completion cron flips the booking after travel date. |
 | `booking_expired_customer`    | Booking Expired        | `booking.expired`      | Sent when a pending booking is auto-cancelled by expiry cron. |
-| `new_booking`                 | (Legacy) New Booking   | `booking.created`      | Older event-specific template kept for backwards compatibility. |
-| `booking_payment`             | (Legacy) Payment Received | `payment.received`  | Older event-specific template kept for backwards compatibility. |
-| `booking_confirmed`           | (Legacy) Booking Confirmed | `booking.confirmed` | Older event-specific template kept for backwards compatibility. |
+| `new_booking`                 | New Booking Confirmation | `booking.created`    | **Dormant leftover from an older schema — never sent.** The dispatcher skips it explicitly; `booking_confirmation` is the template that goes out. Safe to ignore or delete. |
+| `booking_payment`             | Booking payment notice | `payment.received`     | **Dormant leftover — never sent.** Payment emails use `payment_received` / `partial_payment_received`. Converted to an ordinary user template so it can be deleted. |
 
 #### Booking lifecycle (admin)
 
@@ -419,7 +439,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 **Templates listening to this event:**
 
 - `booking_confirmation` — Booking Confirmation (Customer)
-- `new_booking` — Legacy: New Booking (Customer)
+- `new_booking` — New Booking Confirmation (Customer) — dormant, never sent
 - `admin_new_booking` — Admin: New Booking (Admin)
 
 **Variables available** (33 across 4 groups):
@@ -495,7 +515,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 
 **Templates listening to this event:**
 
-- `booking_confirmed` — Legacy: Booking Confirmed (Customer)
+- `booking_confirmed` — Booking Confirmed (Customer) — the stage-2 "you're confirmed" email
 
 **Variables available** (33 across 4 groups):
 
@@ -800,7 +820,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 
 **Templates listening to this event:**
 
-- `booking_payment` — Legacy: Payment Received (Customer)
+- `booking_payment` — Booking payment notice (Customer) — dormant, never sent
 - `admin_payment_received` — Admin: Payment Received (Admin)
 - `payment_received` — Payment Received (customer) (Customer)
 
@@ -1829,7 +1849,11 @@ This section enumerates every template and the exact tags that resolve when it s
 
 ---
 
-### `new_booking` — Legacy: New Booking
+### `new_booking` — New Booking Confirmation (dormant — never sent)
+
+::: warning Not used
+A leftover row from an older schema. The `booking.created` dispatcher skips it explicitly; the email that goes out is `booking_confirmation`. You can ignore or delete it.
+:::
 
 - **Trigger event** — `booking.created`
 - **Audience** — Customer
@@ -1893,7 +1917,7 @@ This section enumerates every template and the exact tags that resolve when it s
 
 ---
 
-### `booking_confirmed` — Legacy: Booking Confirmed
+### `booking_confirmed` — Booking Confirmed
 
 - **Trigger event** — `booking.confirmed`
 - **Audience** — Customer
@@ -2152,7 +2176,11 @@ This section enumerates every template and the exact tags that resolve when it s
 
 ---
 
-### `booking_payment` — Legacy: Payment Received
+### `booking_payment` — Booking payment notice (dormant — never sent)
+
+::: warning Not used
+A leftover row from an older schema; payment emails use `payment_received` and `partial_payment_received`. It has been converted to an ordinary user template so it can be deleted.
+:::
 
 - **Trigger event** — `payment.received`
 - **Audience** — Customer

@@ -57,6 +57,21 @@ Save.
 `Balance schedule` defaults to **booking** — so existing sites behave exactly as before until you switch it to **before the tour date**. Switching the anchor only affects **new** schedules; already-scheduled charges keep their dates.
 :::
 
+## What each payment method can do
+
+| Payment method | Balance collection | How |
+| --- | --- | --- |
+| **Stripe** | **Automatic** off-session charge | The card used for the deposit is vaulted at Stripe; Yatra charges the balance on the due date (as a Stripe invoice) with no customer action. A reminder email goes out *Reminder days* before. |
+| **Razorpay** | **Automatic** off-session charge | Same as Stripe, via a Razorpay saved token. |
+| **PayPal** | **Payment link** | PayPal does not hand back a reusable customer + payment method pair in this flow, so Yatra cannot charge again by itself. The customer receives the secure *Pay your balance now* link instead. |
+| **Mollie, Paystack, Square, Authorize.Net, TBank** | **Payment link** | No vaulted method → link-based. |
+| **Bank Transfer / SEPA, Pay Later** (offline) | **Payment link / reminder** | Yatra cannot collect money itself. With **Balance schedule → before the tour date**, the daily cron creates a link-based reminder for every booking that still owes money — including deposits you recorded by hand — and emails the *Scheduled Payment Reminder* with `{{balance_payment_url}}` *Reminder days* before the balance is due. The customer pays through the link with the online gateways you offer, or transfers again and you record it under Payments. |
+
+Two practical notes:
+
+- The automatic link-based reminder for offline bookings needs the **tour-date anchor** (*balance due N days before the tour*). With the booking-date anchor, only bookings whose gateway vaulted a card get a schedule row; for everything else use **Payments → Scheduled → Outstanding → Send balance payment link** to email the link on demand.
+- You can send that link at any time from the **Outstanding** tab, without waiting for the daily window.
+
 ## Schedule relative to the tour date
 
 Set **Balance schedule → before the tour date** and **Days before tour → 14** to get the classic tour-operator model:
