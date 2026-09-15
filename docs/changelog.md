@@ -65,6 +65,10 @@ Backward-compatible feature + fix release. Safe to update — **no existing site
 - Deactivating the plugin clears its booking cron events instead of leaving them orphaned in WP-Cron; they are re-scheduled automatically when it is active again, and the expiry activation date survives.
 - Expiring a booking now also **releases its departure seat**. The sweep wrote the cancellation directly instead of going through the normal cancel path, so the seat stayed reserved — a departure could slowly "sell out" to bookings nobody ever paid for. It now unlinks the departure and decrements the booked count exactly as an admin cancellation does.
 
+**Fix — the Duration (Hours) field could not be saved**
+
+- The trip form showed *Duration (Hours)* for single-day tours, but its save request never included the field, so whatever was typed was dropped on the client and the field reloaded empty — which meant the new "8 hours" display could not actually be used. The request now carries it. Switching a trip back to multi-day clears any stored hours (the form sends `0`, not nothing) so a week-long trip can never inherit an old hour value.
+
 **Fix — Departures "Upcoming" filter hid full departures**
 
 - The **Upcoming** filter on the Departures page only showed future departures that still had a seat free — a departure that had sold out silently dropped out of Upcoming (its stored status flips from `upcoming` to `full`). **Upcoming now lists every future departure** regardless of capacity: available, partially booked, or full.
