@@ -147,8 +147,8 @@ This tab renders the **Booking Form Builder** component — a drag-and-drop buil
 - Each field has a **Required** toggle, **Label** text, **Placeholder**, and (for `select`) an **Options** repeater.
 - **Each section has its own on/off toggle.** Turning a whole section off hides every field in it (including locked ones) from the checkout — see [Turning sections on or off](#turning-sections-on-or-off) below.
 
-::: tip Custom fields per trip
-For per-trip overrides (e.g. a "Dietary requirements" question only on Food Tours), enable the Pro **Dynamic Form Field** module — it adds a **Custom fields** tab on each trip's edit screen. See [Modules](/modules#dynamic-form-field).
+::: tip Different forms for different trips
+Need a *Dietary requirements* question only on food tours, or a shorter traveller form on day trips? With the Pro **Dynamic Form Field** module each form tab gets a **Conditions** button: a condition is a full alternative version of that form (title, description, fields) used on the trips it names. See [Conditions — per-trip versions of a form](#conditions-per-trip-versions-of-a-form) below and [Modules → Dynamic Form Field](/modules/dynamic-form-field).
 :::
 
 ### Text Block (display-only content)
@@ -159,6 +159,27 @@ Use a **Text Block** field to show **read-only text between fields** — booking
 - You only fill in **Content** and a **Width** — there's no label, field ID, placeholder, or *Required* toggle.
 - **Basic HTML** is allowed in the content (bold, links, lists); plain text gets paragraph spacing automatically.
 - It can go in any section (Contact, Emergency, or Per-Traveler). Placed in the **Per-Traveler** section it repeats once per traveler — handy for a per-traveller note, but keep that in mind.
+
+### Conditions — per-trip versions of a form <span class="pro-pill">PRO</span>
+
+With the [Dynamic Form Field](/modules/dynamic-form-field) module on, the *Form Section Settings* card of every tab has a **Conditions** button. It opens a popup where each **condition** says *"on these trips, use this version of the form"*:
+
+| Part of a condition            | What it holds                                                                                                                                                  |
+| ---                            | ---                                                                                                                                                            |
+| **Use this form on**           | One picker, three groups: individual **trips**, trip **categories** (a trip in a sub-category also matches its parent categories) and **trip types** (single day / multi-day). Any match applies. At least one is required. |
+| **Form Section Settings**      | The section title and description shown to customers on those trips.                                                                                           |
+| **Form Fields**                | The complete field list for those trips, edited with the same controls as the global list: reorder, edit label / type / placeholder / width / required / *Applies to* / dropdown options, enable or disable, remove. **Add from global form** brings back a global field you removed; **+ Add Field** creates a field that exists only in this condition. |
+
+How it behaves:
+
+- **Add condition** starts as a **copy** of the global form at that moment. From then on it is independent — renaming or reordering a global field does not change the copy. **Reset to global form** re-copies it.
+- Conditions are checked **top to bottom; the first match wins** (use the ↑ ↓ arrows in a condition's header to change priority). Put a specific trip above a broad category.
+- A trip that matches no condition uses the **global form** — exactly as before, so nothing changes until you add a condition.
+- On the Contact form the five **locked** lead-traveller fields (`first_name`, `last_name`, `email`, `phone`, `country`) stay locked inside every condition: they can't be removed, disabled or made optional. A condition that somehow lacks one gets it back at checkout.
+- The section's **Enable this form section** switch is global — a condition changes what a section asks, not whether it is shown.
+- At checkout the trip's version is what is rendered, validated (a field not in the trip's version is never required) and stored. The booking detail screen and the admin booking form label fields from the trip's version too.
+- Conditions are part of the booking form configuration and are saved with **Save Settings**. The section card lists each condition (*On Trekking & Hiking → "Trekker details" · 5 fields*) with an **Edit** shortcut and shows a count on the button.
+- Disabling the module hides the button and stops the conditions applying; they stay in the saved configuration and apply again when it is re-enabled.
 
 ### Turning sections on or off
 

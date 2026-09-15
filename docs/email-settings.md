@@ -58,6 +58,32 @@ The Templates tab lists every template with these columns:
 Templates that require a Pro module (Trip Consent, Scheduled Payments, Abandoned Booking Recovery) **still appear in the list** even without the module — you can read them and review their copy, but they're view-only until the module is enabled.
 :::
 
+### Global & Override templates <span class="pro-pill">PRO</span>
+
+With the [Email Automation](/modules/email-automation) module on, the Templates tab has two sections:
+
+| Section | What it holds |
+| --- | --- |
+| **🌐 Global templates** | The list above, exactly as before — one template per event, sent to every trip unless an override applies. Editing a global template never changes its overrides. Each row shows an **Overrides** column (*none*, or *2 overrides →* which jumps to the Override section filtered to that template) and an **Add override…** row action. |
+| **🧭 Override templates** | Trip-specific versions of a global template. Each row shows which template it **overrides** (with its *priority n of m* among sibling overrides), what it **applies to** (trips, categories, trip types), the event it inherits, and its own Active switch. Row actions: *Higher / Lower priority*, Edit, Delete. |
+
+**Adding an override.** Click **Add override…** on a global row (or **+ Add override** in the Override section, which first asks which global template). The popup asks **which trips** the override is for — individual trips, whole categories (sub-categories included) and/or a trip type — suggests a name from what you picked (*Booking Confirmation — Trekking & Hiking*), and starts from a **copy of the global template** (or blank). It then opens in the editor, where the **Applies to** block sits above the template details.
+
+![Override editor — Applies to block above the template details](/screenshots/email/email-override-editor.webp)
+
+**Which template a booking gets**, per email:
+
+1. Only **active** overrides with a non-empty body are considered.
+2. The **most specific** match wins — an override that names the **trip** beats one that names its **category** (ancestor categories count), which beats one that names the **trip type**.
+3. Ties are broken by the **priority** order in the Override section.
+4. No matching override → the **global template**, exactly as before. An override is never sent *in addition* to its global template.
+
+**Checking it.** Above the list, **View as a trip** highlights, across both sections, exactly which row each event uses for that trip (*sent for Paris City Explorer · category beats trip type*, *overridden for … → name*). The same check sits in the editor's **Try it with a real trip** card — it is not saved; it only drives the answer shown there and lets **Preview** and **Send Test Email** use that trip's real data. **Email logs** show *Global name · Override: name* for sends that used an override.
+
+**What can be overridden.** Every booking-bound email — confirmation, booking confirmed, payment / partial payment, cancellation, trip reminder, trip completed, booking expired, consent request, scheduled-payment reminder / succeeded / failed, review request, abandoned-booking recovery — and the corresponding **Admin:** notices. Verification, account and enquiry emails cannot be overridden (they are not about one trip, or must keep their links). Sequences keep their own trip filter and are not affected.
+
+**Rules worth knowing.** An override always fires on its global template's event and cannot change it. An override is an independent copy: editing the global template afterwards doesn't touch it. Switching an override off (or deleting it) sends its trips the global template again. Duplicating an override creates a plain custom template, not another override.
+
 ### The 25 transactional templates
 
 Every template's content is editable from the Templates tab; module-gated ones are read-only until the relevant Pro module is active.

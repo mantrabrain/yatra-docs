@@ -21,7 +21,7 @@ This is the operator-facing release log for Yatra Free and Yatra Pro. The canoni
 
 ## Yatra Free
 
-### 3.0.15 — 7 September 2026
+### 3.0.15 — 15 September 2026
 
 Backward-compatible feature + fix release. Safe to update — **no existing site changes behaviour on upgrade.**
 
@@ -124,6 +124,46 @@ Backward-compatible feature + fix release. Safe to update — **no existing site
 **Fix — an enquiry submission containing a "subject" field returned a server error**
 
 - The enquiry writer mapped a `subject` field onto a column the enquiries table has never had, so the database rejected the whole insert. Any submission to the public `POST /enquiries` endpoint that included `subject` — a custom form, a third-party integration, a tweaked theme template — failed with a **500** that echoed the raw database error back to the visitor, and an admin update carrying the same field failed with "Failed to update enquiry." `subject` is now ignored (as it always was when reading), and a rejected insert returns the normal friendly error instead of a server error with database details. Yatra's own enquiry forms never sent the field and are unaffected.
+
+**New — booking form read per trip (groundwork for Pro form conditions)**
+
+- `yatra_get_booking_form_config( $trip_id )`, `SettingsService::getBookingFormConfig( $trip_id )` and the `yatra_booking_form_config` filter (now `($config, $tripId)`) let the checkout, the AJAX date-pricing re-render, server-side required-field validation, the booking detail screen and the admin booking form read the form **as the booked trip uses it**. Without Pro nothing changes — the same global form comes back. The Pro **Dynamic Form Field** module uses this for per-trip form versions; see [Settings → Conditions](/settings#conditions-per-trip-versions-of-a-form).
+- New endpoint `GET /yatra/v1/settings/booking-form[?trip_id=N]` (readable by anyone who can view or edit bookings) returns the form a trip uses; the booking detail and admin booking form now label fields from it.
+- The Settings → Booking Form editor gains the **Conditions** button and popup, rendered only while the Pro module is enabled. Email merge tags now cover fields that only exist inside a condition.
+
+**New — `trip_id` in booking email variables**
+
+- Every booking email's merge variables now include `trip_id` (the booked trip's id, `"0"` when none). Pro Email Automation uses it to pick a trip-specific override template; it is also usable as `{{trip_id}}`. Nothing changes for sites without overrides.
+
+**Fix — Booking Form settings were saved without sanitising**
+
+- `SettingsController::sanitize_setting()` routed `booking_form_config` through the generic array branch before its structured sanitiser could run, so the sanitiser was unreachable: an unknown field type, width or any extra key was stored verbatim. Saves now go through `sanitize_booking_form_config()`. Existing configurations round-trip unchanged (the only clean-up is stale dropdown `options` left on fields that were later changed to a non-dropdown type).
+
+**Fix — partial payments sent the "Payment Received" email instead of "Partial Payment Received" on Pro sites**
+
+- The customer payment email chooser only used the part-payment template when the free plugin's own "Partial Payment Received" toggle was on. On a Pro site that toggle is never touched — the Email → Templates switch enables the Pro template row — so every deposit or instalment went out as the full "Payment Received" email (event `payment.received`) even with the Pro "Partial Payment Received" template switched on. The chooser now also treats an active Pro "Partial Payment Received" template as enabled (via the existing `yatra_pro_email_automation_owns_transactional_type` filter, Pro ≥ 3.0.10), so a payment that leaves a balance sends `partial_payment_received` / `payment.partial_received`; a payment that settles the balance still sends "Payment Received"; switching the Pro partial template off falls back to "Payment Received" as before. Applies to gateway payments, admin-recorded payments and *Resend → Payment confirmation*. Free-only sites are unaffected (the part-payment template there depends on Pro Flexible Payments anyway). Sequences, webhooks and WhatsApp already split the two events correctly.
+
+**Fix — "Resend → Booking confirmation" on a completed booking sent the pending-wording email**
+
+- A completed booking was necessarily confirmed before it travelled, so the resend now sends the "Booking confirmed" email for `completed` as well as `confirmed`; pending / processing / on-hold bookings still get the "booking received" email.
+
+**Fix — language metadata on trip pages was always English**
+
+- Trip pages printed `og:locale="en_US"`, `<link rel="alternate" hreflang="en-US">` and `"inLanguage": "en-US"` (JSON-LD) as fixed strings, so a German site sent `<html lang="de-DE">` together with English signals to Google and social previews. All three are now derived from WordPress's own locale at render time (`get_locale()`, read through the `locale` filter, so WPML / Polylang per-page languages are honoured too), reduced to language + region: a site set to *Deutsch (Sie)* (`de_DE_formal`) gets `de_DE` / `de-DE`, not `de_DE_formal`, which Facebook and Google would reject. English sites see no change.
+
+**Fix — empty 360° tour / video modals injected into every page**
+
+- `tour-viewer.js` and `video-player.js` built their modal markup (`#yatra-tour-viewer-modal` with an empty `h3.yatra-tour-viewer-title`, and `#yatra-video-player-modal`) into `<body>` the moment the script loaded — on every front-end page, including ones with no trip content — so themes had to strip them with custom code. Both modals are now created on first use (`view()` / `play()`); the public `window.YatraTourViewer` / `window.YatraVideoPlayer` API is unchanged and `close()` before any open is a safe no-op. Also: YouTube *Shorts* URLs now embed correctly in the video player.
+
+**Fix — a manually recorded payment was not applied to its booking**
+
+- *Payments → Add New Payment* defaulted to **Pending** and offered a **Partial** status that the payments table does not have (it was stored empty, or rejected on MySQL strict mode). Only *Completed* payments count, so a deposit recorded by hand left the booking's paid amount and balance untouched and triggered nothing. The form now defaults to **Completed** (money received), the bogus *Partial* option is gone, each status explains what it does, and the API refuses unknown statuses instead of storing them silently. `POST /payments` also now answers `400` (not `201`) when the service reports a failure such as an unknown booking.
+- When a manual payment **becomes** completed — recorded as Completed, edited to Completed, or *Mark as Completed* on the list — Yatra now fires `yatra_payment_completed` with the same array payload the gateways use, so the same things happen as after an online capture: the customer/admin "payment received" emails (partial or full depending on the remaining balance), Pro Email Automation's `payment.partial_received` / `payment.received`, webhooks, WhatsApp, and Scheduled Payments retiring pending charges when the balance is settled. It fires once per transition, never on a re-save of an already completed payment. The existing `yatra_send_manual_payment_emails` filter still suppresses the emails (the event is passed `send_emails => false`); the event itself always fires.
+- The booking detail page gains a **Payments** card listing every payment recorded against the booking (amount, method, date, reference, status).
+
+**Fix — storefront date-pricing request returned HTTP 500**
+
+- `GET /trips/{id}/date-pricing` called a repository method removed in an earlier refactor (`TripRepository::countDeparturesByDate()`), a fatal error on trips with date-specific departures. It now uses the availability repository's `countAvailableDeparturesByDate()`.
 
 ### 3.0.5
 
@@ -331,7 +371,7 @@ For 2.x changelog entries, see the plugin's [GitHub releases](https://github.com
 
 ## Yatra Pro
 
-### 3.0.12 — 7 September 2026
+### 3.0.12 — 15 September 2026
 
 Pair with the matching Yatra Free release for the 3-way **Auto-Confirm mode**. Free and Pro update independently, so this Pro release is also safe on older Free versions: with Free 3.0.10–3.0.14 the gateways honour the old on/off toggle (confirm when it is on, or when the payment settles the balance in full); with Free older than 3.0.10 they keep confirming on every payment exactly as before — no fatal, no lost payment.
 
@@ -382,6 +422,25 @@ Pair with the matching Yatra Free release for the 3-way **Auto-Confirm mode**. F
 - The existing `yatra_scheduled_payment_failed` action leads with the *scheduled-payment* id, and the Webhook / WhatsApp payload builders took that first integer as the *booking* id — resolving the wrong booking. The action now also carries a context array with the real `booking_id` (existing arguments unchanged), the builders prefer an explicit `booking_id` over a positional integer, and Email Automation now listens to it too.
 - **Behaviour change:** endpoints, templates or sequences already configured for these events start firing. See [Hooks → Scheduled Payments](/hooks-filters#pro-flexible-scheduled-payments).
 - Found while wiring this up: the **"Balance due now"** figure in the *Scheduled payment succeeded* customer email was understated by one installment (the balance was re-derived after the booking had already been updated, subtracting the charge twice). It now shows the correct remaining balance, and WhatsApp templates receive the same formatted amount / date / balance values as the email instead of blanks.
+
+Requires the matching Free release for per-trip forms to take effect (an older Free plugin never passes a trip id, so every trip keeps the global form — nothing breaks).
+
+**Fix — Additional Services popup markup and script on every page**
+
+- The `#yatra-services-modal` markup and `services-popup.js` were output in the footer of every front-end page. The popup is only opened by the trip page's *Book Now* (via `window.yatraBeforeBooking`) and needs the trip data the free plugin localises there, so both are now output only on single trip pages (`yatra_is_single_trip()`; older free builds without that helper keep the previous behaviour). Other pages lose the dead markup and one script.
+
+**New — Email Automation: Global & Override email templates**
+
+- Email → Templates is split into **Global templates** (the list as before) and **Override templates**. An override is a trip-specific version of a global template — same event and merge tags, its own wording — applied only to bookings on the trips, categories (sub-categories included) or trip types it names. Most specific match wins (trip › category › trip type, then priority); no match → the global template, so nothing changes until an override is created. See [Email → Global & Override templates](/email-settings#global-override-templates).
+- Add an override from a global row's **Add override…** action (or **+ Add override**); the popup asks which trips first and starts from a copy. **View as a trip** shows exactly which template each event uses for a trip; the editor has a **Try it with a real trip** card (not saved) that also drives preview / test; Email logs show *Global · Override: name*.
+- Covers every booking-bound customer and admin email incl. reminders and scheduled-payment mails. Overrides are stored as ordinary template rows with an empty `event_key`, so an older Pro build never sends them as extra emails. Pairs with Free 3.0.16+ for `trip_id` in variables; on older Free the trip is resolved from the booking id.
+- Docs fix: the Email Automation page described sequence audience filters (destinations, customer country, trip type) that the sequence editor does not have; it now documents the real *All trips / Specific trips* filter.
+
+**New — Dynamic Form Field: per-trip versions of each booking form (Conditions)**
+
+- Each form tab in Settings → Booking Form gets a **Conditions** button. A condition is a complete alternative version of that form — its own title, description and field list, edited with the same builder controls — used on the trips it names (individual trips, categories with their sub-categories, or a trip type). Conditions are checked top to bottom, first match wins; trips matching none keep the global form. See [Modules → Dynamic Form Field](/modules/dynamic-form-field).
+- At checkout the trip's version is rendered, validated and stored; the locked lead-traveller fields are kept in every version. Disabling the module stops conditions applying; they stay in the saved configuration.
+- The resolver runs through `yatra_booking_form_config( $config, $tripId )` and reads the trip's type and categories (ancestors included) from Yatra's own tables; the trip context cache is cleared on `yatra_trip_updated`.
 
 ### 3.0.1
 

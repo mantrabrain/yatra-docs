@@ -190,7 +190,7 @@ One Yatra Pro license unlocks **seven** premium gateways. These don't appear on 
 
   <div class="doc-addon-card" id="dynamic-form-field">
     <h3 class="doc-addon-card__title">Dynamic Form Field <span class="doc-pro-pill">Pro</span></h3>
-    <p class="doc-addon-card__copy">Drag-and-drop booking-form builder. Text / select / checkbox / file / date with conditional visibility per trip.</p>
+    <p class="doc-addon-card__copy">Drag-and-drop booking-form builder — text / select / checkbox / date / country fields, per-section toggles — plus per-trip versions of each form (conditions by trip, category or trip type).</p>
     <p class="doc-addon-card__meta">Settings: <span class="screen-path">Yatra → Settings → Booking Form</span></p>
     <a class="doc-addon-card__cta" href="/modules/dynamic-form-field">Details →</a>
   </div>

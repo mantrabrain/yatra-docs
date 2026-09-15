@@ -93,7 +93,8 @@ The implementation lives in `app/Services/CalculationService.php`. Each filter r
 | `yatra_register_payment_gateways`          | action  | Register a custom gateway class                          |
 | `yatra_payment_gateway_config_saved`       | action  | After a gateway's settings save                          |
 | `yatra_before_payment_processing`          | action  | Before a payment intent is created                       |
-| `yatra_payment_completed`                  | action  | After successful capture                                 |
+| `yatra_payment_completed`                  | action  | After successful capture. Since Yatra 3.0.15 also fired when an admin-recorded payment becomes *Completed* (payload adds `payment_id`, `source => 'manual'`, `send_emails`) |
+| `yatra_send_manual_payment_emails`         | filter  | `(bool $send, int $bookingId, array $payment)` — return `false` to keep the customer/admin "payment received" emails off for admin-recorded payments; `yatra_payment_completed` still fires with `send_emails => false` |
 | `yatra_payment_failed`                     | action  | After failed capture                                     |
 | `yatra_after_payment_processing`           | action  | Final hook after payment processing succeeds             |
 | `yatra_paypal_payment_completed`           | action  | PayPal-specific success                                  |
@@ -300,6 +301,8 @@ The `$context` argument added to `yatra_deposit_percentage`, `yatra_calculate_am
 | ---                                        | ---     | ---                                                      |
 | `yatra_pro_email_automation_owns_transactional_type` | filter | Let Pro Email Automation own a specific template type so Pro's send pipeline runs instead of the free one |
 
+**Trip-specific override templates** (Pro Email Automation) need no new hook: the module resolves the override inside its existing `yatra_send_transactional_email` takeover, using the `trip_id` merge variable the free plugin now puts in every booking email's variables (`TransactionalEmailTemplateService::variablesFromBooking()`, free 3.0.16+; older free plugins are handled by looking the trip up from `booking_id`). An override is a normal `yatra_email_templates` row whose `settings` JSON carries `overrides` (the global key), `targets` (`trips` / `categories` / `trip_types`) and `priority`; its `event_key` is stored empty so older Pro builds ignore it. REST: `POST /email-templates/{id}/override`, `POST /email-templates/overrides/reorder`, `GET /email-templates/resolve?trip_id=N`; preview and test accept `trip_id`.
+
 ::: tip Looking for sequence-step or payload filters?
 Yatra's source emits sequence events through the email-template filter chain (see the **Email** section above). If you need pre-send mutation, hook into `yatra_send_transactional_email` (returns `false` to suppress) or the per-template filters like `yatra_email_template_trip_variables`.
 :::
@@ -321,6 +324,16 @@ Yatra's source emits sequence events through the email-template filter chain (se
 ::: tip Customise consent email copy
 The consent-request email is a normal Yatra template (`trip_consent_request`). Override the body via [Settings → Email → Templates](/email-settings#account-consent), or hook into `yatra_email_template_trip_variables` to rewrite the merge-tag values it receives.
 :::
+
+## Pro: Dynamic Form Field
+
+| Hook                                       | Type    | Purpose                                                  |
+| ---                                        | ---     | ---                                                      |
+| `yatra_booking_form_config`                | filter  | The merged booking-form configuration as read by checkout, validation and the admin. Args: `(array $config, ?int $tripId)`. `$tripId` (free 3.0.16+) is the trip being booked, or `null` when there is no trip context (the Settings editor). The Pro module uses it to resolve each section's per-trip **conditions** — the first condition matching the trip supplies the section's title, description and fields, and the raw `conditions` list is removed from the resolved config. Callbacks registered with one argument keep working. |
+| `yatra_save_booking_form_config`           | filter  | Runs on save, after the free sanitiser. Args: `(array $sanitized, array $original)`. Use it to persist your own per-field keys from `$original`. |
+| `yatra_dynamic_form_field_enabled`         | filter  | Module on/off as seen by the free plugin (`window.yatraAdmin.dynamicFormFieldEnabled`). |
+
+A section's conditions are stored as `conditions => [ [ 'id', 'targets' => ['trips' => [ids], 'categories' => [ids], 'trip_types' => ['single_day'|'multi_day']], 'title', 'description', 'fields' => [...] ], ... ]` and sanitised by the free plugin like the section's own fields. Read a trip's resolved config with `yatra_get_booking_form_config( $trip_id )` or `GET /yatra/v1/settings/booking-form?trip_id=N` (readable by anyone who can view bookings); the argument-less call / request returns the global config with its conditions.
 
 ## Pro: Additional Services
 

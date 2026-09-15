@@ -48,14 +48,11 @@ Open <span class="screen-path">Yatra → Email → Sequences → + Add Sequence<
 
 ### Audience filters (optional)
 
-Limit the sequence so it only runs for customers matching:
+**Applies to** — *All trips* (default) or *Specific trips*, with a multi-select of trips. Leave it on *All trips* to run the sequence for every booking matching the trigger event.
 
-- **Destinations** — multi-select
-- **Trip categories** — multi-select
-- **Customer country** — multi-select
-- **Trip type** — Single day / Multi day / Flexible
-
-Leave them all empty to apply to every customer matching the trigger event.
+::: tip Per-trip wording without a sequence
+If what you need is different **wording** of a transactional email for some trips (confirmation, reminder, payment…), use a trip-specific **override template** instead — see [Email → Global & Override templates](/email-settings#global-override-templates). Overrides target trips, categories and trip types.
+:::
 
 ### Steps
 
