@@ -93,6 +93,7 @@ The implementation lives in `app/Services/CalculationService.php`. Each filter r
 | `yatra_register_payment_gateways`          | action  | Register a custom gateway class                          |
 | `yatra_payment_gateway_config_saved`       | action  | After a gateway's settings save                          |
 | `yatra_before_payment_processing`          | action  | Before a payment intent is created                       |
+| `yatra_price_unit_label`                   | filter  | `(string $label, string $unit, ?array $priceType)` — wording shown next to a price: "per person" or "per group (1-2 pax)" (`$unit` is `per_person` / `per_group`). Return e.g. "per tour". |
 | `yatra_payment_completed`                  | action  | After successful capture. Since Yatra 3.0.15 also fired when an admin-recorded payment becomes *Completed* (payload adds `payment_id`, `source => 'manual'`, `send_emails`) |
 | `yatra_send_manual_payment_emails`         | filter  | `(bool $send, int $bookingId, array $payment)` — return `false` to keep the customer/admin "payment received" emails off for admin-recorded payments; `yatra_payment_completed` still fires with `send_emails => false` |
 | `yatra_payment_failed`                     | action  | After failed capture                                     |

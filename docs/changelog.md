@@ -21,6 +21,12 @@ This is the operator-facing release log for Yatra Free and Yatra Pro. The canoni
 
 ## Yatra Free
 
+### Unreleased — next release
+
+**Fix — "per person" shown next to a per-group price**
+
+- A traveller category priced **per group** (a flat price for 1–N people) was labelled *per person* next to the trip's headline price (sidebar), in the availability card header, and on the destination / activity trip cards — while the traveller row on the same card correctly said *per group (1-2 pax)*. Customers read a €1,100 group price as €1,100 per person. The unit now follows the category the displayed amount comes from (`TripPricingService::resolveDisplayPricing()` / `resolveCardPricing()` return `price_unit` and `price_unit_label`), so a per-group price reads *per group (1-2 pax)* everywhere; per-person and regular-priced trips render exactly as before. The card header also stops dividing a group price by the number of travellers when travellers are changed (it showed "€550 per group" for two people). New filter `yatra_price_unit_label( $label, $unit, $priceType )` for custom wording such as *per tour*.
+
 ### 3.0.15 — 15 September 2026
 
 Backward-compatible feature + fix release. Safe to update — **no existing site changes behaviour on upgrade.**
