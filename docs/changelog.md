@@ -23,9 +23,44 @@ This is the operator-facing release log for Yatra Free and Yatra Pro. The canoni
 
 ### Unreleased — next release
 
+**Change — booking-form answers in emails read like the booking page**
+
+- Merge tags for booking-form answers — the `contact_…`, `emergency_…` and `lead_traveler_…` tags and `traveler_custom_fields_html` — printed the stored value: a dropdown's internal value (*spouse*, *gluten_free*) and country codes (*DE*). They now print what the booking page shows: the option's label (*Spouse/Partner*, *Gluten Free*, translated like on the booking form) and the country name (*Germany*). `traveler_custom_fields_html` also uses each field's own label (*Dietary Requirements* instead of *Dietary*). Free-text answers are unchanged.
+
+**New — notes on excluded dates and periods**
+
+- In a recurring availability rule, each excluded date or period now has an optional note — *Easter break*, *guide on leave* — so the team can see why it's closed. Notes are admin-only (never shown to customers), plain text, up to 200 characters. Existing exclusions are unchanged and simply have no note.
+
+**Fix — admin calendars always started the week on Sunday**
+
+- The availability calendar and the admin date pickers ignored *Settings → General → Week Starts On*; the frontend already honoured it. They now start on the configured day, with translatable weekday names.
+
+**Fix — late bookings never got the trip reminder**
+
+- The daily reminder only picked bookings travelling *exactly* the configured number of days out, so a booking made or confirmed inside that window — booked 1 day before a 3-day reminder, say — never got one, and neither did a booking whose reminder day WP-Cron missed. The sweep now reminds every eligible booking travelling between today and the reminder day that hasn't had its reminder yet, once each. A late reminder states the real number of days left.
+- **Resend email → Trip reminder** now sends the same email as the automatic one (including the outstanding-balance block), and reports an error instead of "sent" when the Trip reminder email is switched off.
+
+**Change — Google Calendar settings no longer show "Sync Departures"**
+
+- The switch never created anything: departures reach the calendar through **One event per departure**, which is built from bookings. The Sync Bookings description now says so. See [Google Calendar](/modules/google-calendar).
+
 **Fix — empty `ItemList` in the archive pages' structured data**
 
 - The trip archive and the destination, activity and trip-category listings printed `CollectionPage` JSON-LD with a hardcoded empty `ItemList` (`"numberOfItems": 0`), even when the page showed cards. The list now holds the cards actually shown — each with its URL, name and position — following filters, sorting and pagination (page 2 continues from position 11). A page with no results leaves `mainEntity` out instead of printing it empty. SEO titles, meta descriptions, canonical URLs, robots directives, prev/next links and sitemaps are unchanged. New filter [`yatra_seo_collection_page_schema( $schema, $page_type, $items )`](/hooks-filters#seo-structured-data) to change or remove the item list.
+
+**New — download a booking's invoice from the admin**
+
+- The booking **Actions** menu and the booking detail page gain **Download invoice**. Yatra already generated booking invoices as PDFs (and still brands them through White Label <span class="pro-pill">PRO</span>) — only the payment invoice was reachable from the admin, so a booking with no recorded payment (bank transfer, pay later) had no route at all. Its invoice renders as a pro-forma with the gateway's payment instructions. Both invoice endpoints now also accept Yatra's `yatra_view_bookings` capability, so Team <span class="pro-pill">PRO</span> staff can use it without `manage_options`.
+
+**Fix — invoices named the payment gateway by its slug**
+
+- Invoices, the payment-received emails and the booking confirmation page showed a prettified gateway id — *Bank Transfer* — instead of the **Gateway Title** the operator set in *Settings → Payment* and the customer saw at checkout (*Bank Transfer (IBAN, 3 working days)*). A Stripe capture even emailed the customer the literal slug *stripe*. All of them now use the same title, via the new `yatra_payment_gateway_label()` helper; a payment recorded by hand keeps whatever method was typed, and a gateway that is no longer registered still falls back to the prettified id.
+
+**Fix — adding an availability date asked for the same values every time**
+
+- *Trips → Availability → Add date* required a **departure and arrival time** for every single-day trip, even though times are only meaningful for day tours that run **multiple time slots** (where the time says which slot the date overrides). They are now required only when the trip has that setting on — and the arrival time is optional throughout — matching what the booking, capacity and display layers already do with a date that has no time.
+- **Max capacity** is now pre-filled from the trip's *max travellers* on a new date instead of being left empty, so it doesn't have to be retyped for every date (still editable per date, and still stored explicitly — an empty seat count means *sold out* to the availability layer, so it is deliberately not left blank).
+- Tip: a day tour running on a regular pattern is better served by *Availability → Recurring Rules*, where the departure time and capacity are set once for every generated date.
 
 **Fix — "per person" shown next to a per-group price**
 
@@ -382,6 +417,26 @@ For 2.x changelog entries, see the plugin's [GitHub releases](https://github.com
 ## Yatra Pro
 
 ### Unreleased — next release
+
+**New — your own text on Google Calendar events**
+
+- *Google Calendar dashboard → Event text* sets the event title, the departure-event title and the booking details with variables, like an email template — the same variables as the booking emails, plus `guest_phone_digits` (the guest's number as digits with country code) for WhatsApp, Signal or Telegram links. Empty fields keep the standard text, so nothing changes until you write a template. See [Google Calendar](/modules/google-calendar).
+
+**New — time zone for Google Calendar events**
+
+- *Google Calendar dashboard → Calendar time zone* sets the time zone tour times are written in on calendar events, separately from the site — a German site selling Los Angeles tours can put events in `America/Los_Angeles`. Named zones only, so daylight saving time is handled. Left on *Site time zone (default)*, nothing changes. Run **Resync Everything** to update existing events.
+
+**Fix — Google Calendar ignored a newly chosen calendar for existing events**
+
+- After changing the Calendar ID, **Resync Everything** kept updating already-synced events on the old calendar, so nothing appeared on the new one. Resync now moves each event to the chosen calendar first (same event, no duplicate), and refuses to move anything when the new calendar can't be reached. Reconnecting the Google account no longer resets a chosen calendar back to the primary one. A **Choose a calendar** list now offers the calendars the connected account can write to.
+
+**Fix — Google Calendar events kept 7/3/1-day reminders after all reminders were removed**
+
+- Removing every reminder under **Event reminders** saved an empty list, but events were still created with reminders 7, 3 and 1 days before the tour. An empty list now means what the dashboard says: the event has no reminders of its own and only the calendar's default notifications apply. Sites that never changed the setting keep 7/3/1. Run **Resync Everything** once to remove the old reminders from existing events.
+
+**Fix — Google Calendar sync buttons gave a misleading message**
+
+- With **Sync Bookings** off, *Sync All Bookings* said "Sync not enabled" and *Resync Everything* "Booking sync is switched off", sending operators to the Sync Departures switch. Both now explain that Sync Bookings is required — and that **One event per departure** gives one event per departure instead of per booking.
 
 **Fix — GA4 server-side events ignored cookie consent, and some were counted twice**
 

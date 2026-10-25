@@ -75,10 +75,10 @@ Behind the scenes, rules are stored in `wp_yatra_new_trip_availability_rules`. T
 | Field                          | Type                | Notes                                                                                                              |
 | ---                            | ---                 | ---                                                                                                                |
 | **Departure Date**             | date                | Required. The actual day the trip runs.                                                                            |
-| **Departure Time**             | time (optional)     | Required only for day-tour trips with multiple time slots (so you can override one slot but not the others).       |
+| **Departure Time**             | time (optional)     | Only needed for day tours that run **multiple time slots** (*Trip → enable multiple time slots*): the time says which slot this date overrides. A day tour with a single departure leaves it empty. |
 | **Arrival Date / Arrival Time** | date + time         | Optional — used for multi-day trips when the end date isn't `start + duration`.                                    |
 | **Status**                     | select              | `available` / `sold_out` / `blocked` (cancelled). *Sold out* hides the date from the customer's calendar.          |
-| **Max capacity**               | number              | Seat count for this specific date. Defaults to the trip's max travelers.                                           |
+| **Max capacity**               | number              | Seat count for this specific date. Pre-filled from the trip's max travelers — change it for a date that differs. Always stored explicitly: an empty seat count means *sold out* to the booking layer, so the field can't be left blank. |
 | **Booked count**               | number (read-only)  | How many seats are already booked. Capacity − booked = seats remaining.                                            |
 | **Price override**             | currency            | Optional — bypasses the trip's regular price for this date.                                                        |
 | **Per-traveler-category prices** | repeater            | Optional — bypasses the trip's traveler-based pricing matrix for this date.                                        |
@@ -163,7 +163,7 @@ Use this for one-off overrides — block a date, change a single date's capacity
 3. Fill in:
    - **Departure date** (and time, for day tours).
    - **Status** — `available`, `sold_out`, or `blocked`.
-   - **Max capacity** — defaults to the trip max, override here.
+   - **Max capacity** — pre-filled from the trip max, override here.
    - **Price override** — optional.
    - **Per-traveler-category prices** — optional, only when the trip uses traveler-based pricing.
    - **Notes** — internal only.
