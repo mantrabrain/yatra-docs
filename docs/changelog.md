@@ -23,6 +23,10 @@ This is the operator-facing release log for Yatra Free and Yatra Pro. The canoni
 
 ### Unreleased — next release
 
+**Fix — empty `ItemList` in the archive pages' structured data**
+
+- The trip archive and the destination, activity and trip-category listings printed `CollectionPage` JSON-LD with a hardcoded empty `ItemList` (`"numberOfItems": 0`), even when the page showed cards. The list now holds the cards actually shown — each with its URL, name and position — following filters, sorting and pagination (page 2 continues from position 11). A page with no results leaves `mainEntity` out instead of printing it empty. SEO titles, meta descriptions, canonical URLs, robots directives, prev/next links and sitemaps are unchanged. New filter [`yatra_seo_collection_page_schema( $schema, $page_type, $items )`](/hooks-filters#seo-structured-data) to change or remove the item list.
+
 **Fix — "per person" shown next to a per-group price**
 
 - A traveller category priced **per group** (a flat price for 1–N people) was labelled *per person* next to the trip's headline price (sidebar), in the availability card header, and on the destination / activity trip cards — while the traveller row on the same card correctly said *per group (1-2 pax)*. Customers read a €1,100 group price as €1,100 per person. The unit now follows the category the displayed amount comes from (`TripPricingService::resolveDisplayPricing()` / `resolveCardPricing()` return `price_unit` and `price_unit_label`), so a per-group price reads *per group (1-2 pax)* everywhere; per-person and regular-priced trips render exactly as before. The card header also stops dividing a group price by the number of travellers when travellers are changed (it showed "€550 per group" for two people). New filter `yatra_price_unit_label( $label, $unit, $priceType )` for custom wording such as *per tour*.
@@ -376,6 +380,17 @@ Documentation-only release for the plugin directory listing; no code changes req
 For 2.x changelog entries, see the plugin's [GitHub releases](https://github.com/MantraBrain/yatra/releases).
 
 ## Yatra Pro
+
+### Unreleased — next release
+
+**Fix — GA4 server-side events ignored cookie consent, and some were counted twice**
+
+- With **Use Measurement Protocol** on, Yatra Pro sent server-side events whatever the visitor chose in the cookie banner. A banner can't block those, because they go from your server straight to Google. Server-side events are now sent only when the visitor has granted **statistics** consent through [WP Consent API](https://wordpress.org/plugins/wp-consent-api/), which WPConsent, Complianz, CookieYes and others support. Sites without WP Consent API behave as before. New filter [`yatra_ga4_send_server_event( $allowed, $event_name, $event_data )`](/hooks-filters#pro-google-analytics-4). WPConsent users: install WP Consent API alongside it.
+- Purchases confirmed by a payment-gateway callback, which carries no visitor cookies, now follow the consent and Google Analytics IDs saved when the booking was created. They respect the visitor's choice and land in the visitor's own session instead of a new "direct" visitor.
+- `view_item` and `add_to_cart` were sent by both the browser tag and the server and counted twice. They are now sent by the browser tag only, which also removes a request to Google (up to 15 seconds) that held up trip pages.
+- The server purchase is sent once per booking, with the same booking total and transaction ID as the browser purchase, so GA4 merges the two. A deposit and its balance used to be reported as two purchases of each payment's amount; revenue reports now show the booking total once.
+- The Google tag now loads after consent plugins have set Google Consent Mode defaults. It previously printed before them.
+- [Cookie consent](/modules/google-analytics#cookie-consent-server-side-events) · [How duplicate events are avoided](/modules/google-analytics#how-duplicate-events-are-avoided)
 
 ### 3.0.12 — 15 September 2026
 

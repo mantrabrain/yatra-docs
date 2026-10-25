@@ -218,6 +218,28 @@ Yatra registers its own pretty URLs for the booking flow, account, email verific
 Yatra doesn't currently expose a stable `*_card_html` filter for whole-card replacement. The supported customisation paths are: (1) override the card template in your child theme — copy `templates/partials/trip-card.php` into `wp-content/themes/{your-theme}/yatra/partials/trip-card.php`; or (2) hook into the listing-context filter above to mutate the variables the card template sees.
 :::
 
+## SEO & structured data
+
+Yatra prints its own meta tags, canonical URL and JSON-LD on its pages (unless an SEO plugin takes over).
+
+| Hook                                       | Type    | Purpose                                                  |
+| ---                                        | ---     | ---                                                      |
+| `yatra_seo_collection_page_schema`         | filter  | `(array $schema, string $page_type, array $items)` — the `CollectionPage` JSON-LD on the trip archive and the destination / activity / trip-category listings *(next release)*. `$schema['mainEntity']` is an `ItemList` of the cards shown on the page; `$items` is that list of `ListItem` entries. Change or `unset()` `mainEntity` to adjust only the item list — titles, meta descriptions, canonical URLs, robots and sitemaps are not affected. Returning a non-array is ignored. |
+
+How the item list is built:
+
+- It lists exactly the cards rendered on the page, after filters and sorting, each with its `url`, `name` and `position`.
+- Positions continue across pages: with 10 per page, page 2 starts at position 11.
+- When a page shows no cards, `mainEntity` is left out rather than printed as an empty list. It is also left out if your theme overrides a listing template, because Yatra then can't see which cards were rendered.
+
+```php
+// Keep the CollectionPage, drop its item list.
+add_filter( 'yatra_seo_collection_page_schema', function ( $schema ) {
+    unset( $schema['mainEntity'] );
+    return $schema;
+} );
+```
+
 ## Frontend templating & block themes (FSE)
 
 Yatra renders its own URL paths (`/trips/`, `/trip/{slug}/`, `/book/`, `/my-account/`, etc.) with a custom router rather than via real WordPress post types. The following extension points exist so themes and other plugins can integrate cleanly — particularly with Full Site Editing block themes.
@@ -343,6 +365,34 @@ A section's conditions are stored as `conditions => [ [ 'id', 'targets' => ['tri
 | `yatra_booking_additional_services`        | filter  | Mutate selected services on a booking                    |
 | `yatra_booking_save_services`              | action  | After services are persisted                             |
 | `yatra_booking_get_services`               | filter  | Modify how services are fetched for display              |
+
+## Pro: Google Analytics 4
+
+| Hook                                       | Type    | Purpose                                                  |
+| ---                                        | ---     | ---                                                      |
+| `yatra_ga4_send_server_event`              | filter  | `(bool $allowed, string $event_name, array $event_data)` — whether a server-side (Measurement Protocol) event is sent *(next release)*. Return `false` to block it. `$allowed` is Yatra's consent decision; see [Cookie consent](/modules/google-analytics#cookie-consent-server-side-events). |
+
+`$allowed` already reflects the visitor's consent. For a `purchase`, it is the choice saved **at checkout**, because the payment is often confirmed by a payment-gateway callback that carries no visitor cookies. So don't re-check consent cookies for `purchase`: in a callback request they are never present, and you would block every purchase.
+
+```php
+// Send only purchases server-side; let the browser tag handle the rest.
+add_filter( 'yatra_ga4_send_server_event', function ( $allowed, $event_name ) {
+    return $allowed && 'purchase' === $event_name;
+}, 10, 2 );
+```
+
+```php
+// A consent tool without WP Consent API support: check its cookie for
+// events sent from the visitor's own request (not purchase — see above).
+add_filter( 'yatra_ga4_send_server_event', function ( $allowed, $event_name ) {
+    if ( 'purchase' === $event_name ) {
+        return $allowed;
+    }
+    return $allowed && 'yes' === ( $_COOKIE['my_cmp_analytics'] ?? '' );
+}, 10, 2 );
+```
+
+This covers `begin_checkout` only. Without WP Consent API there is no consent choice for Yatra to save at checkout, so purchases are still sent. To cover purchases as well, use a consent tool that supports WP Consent API, or turn off **Use Measurement Protocol**.
 
 ## Practical recipes
 

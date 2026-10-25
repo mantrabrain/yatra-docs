@@ -66,7 +66,7 @@ Open <span class="screen-path">Yatra → Settings → Integration → Google Ana
 | **Track `add_to_cart`**            | `ga4_track_add_to_cart`             | Fires when the customer hits **Book Now**.                                       |
 | **Track `begin_checkout`**         | `ga4_track_begin_checkout`          | Fires when the customer reaches the payment step.                                |
 | **Track `purchase`**               | `ga4_track_purchase`                | Fires on successful payment. **Critical** for revenue reports.                   |
-| **Use Measurement Protocol**       | `ga4_use_measurement_protocol`      | Adds a server-side post on every event in addition to the browser tag. Recommended. |
+| **Use Measurement Protocol**       | `ga4_use_measurement_protocol`      | Also sends `begin_checkout` and `purchase` from the server, so purchases are recorded even when an ad blocker stops the browser tag. Respects cookie consent — see [Cookie consent](#cookie-consent-server-side-events). |
 | **Debug mode**                     | `ga4_debug_mode`                    | Sends `debug_mode=1` with every event so events show in GA4 **DebugView**.       |
 | **API secret**                     | `ga4_api_secret`                    | The Measurement Protocol secret from Step 2. Shown only when *Use Measurement Protocol* is on. |
 
@@ -89,6 +89,37 @@ DebugView is GA4's live event console.
 Don't confuse **Realtime** with **DebugView**. Realtime samples a subset of traffic and lags 30 seconds. DebugView shows *only* events tagged with `debug_mode=1` but in true real time.
 :::
 
+## Cookie consent (server-side events)
+
+The browser tag is controlled by your consent banner, but server-side events go straight from your server to Google, so a banner or script blocker can't stop them. From the next release, Yatra Pro checks consent itself before sending any server-side event:
+
+- **With [WP Consent API](https://wordpress.org/plugins/wp-consent-api/) installed**, an event is sent only when the visitor has granted **statistics** consent. Consent tools that support it include WPConsent, Complianz and CookieYes.
+- **Without WP Consent API**, server-side events are sent as before.
+- **Purchases confirmed by the payment provider** follow the choice the visitor made **at checkout**. Yatra saves that choice, plus the visitor's Google Analytics IDs, when the booking is created. A payment confirmed later by a gateway callback, which carries no visitor cookies, therefore respects that choice and stays in the visitor's own session. A visitor who declined is never sent.
+- Developers can allow or block any server-side event with the [`yatra_ga4_send_server_event`](/hooks-filters#pro-google-analytics-4) filter.
+
+Google's Measurement Protocol can't carry an analytics-consent signal, so not sending the event is the only correct behaviour when consent is missing.
+
+::: tip Using WPConsent?
+Install the free **WP Consent API** plugin next to it. WPConsent shares the visitor's choice with other plugins only through WP Consent API, so without it Yatra Pro can't see that choice on the server. Also check that **Google Consent Mode** is on in WPConsent, with Google Analytics in its services list, or that Consent Mode is enabled in Site Kit. Otherwise no Consent Mode defaults are set for the Google tag.
+:::
+
+Yatra's Google tag loads at the normal `wp_head` priority, after consent plugins have set Google Consent Mode defaults (Google requires the defaults before the tag's `config` call).
+
+## How duplicate events are avoided
+
+With **Use Measurement Protocol** on, from the next release:
+
+| Event             | Sent by                                                                         |
+| ---               | ---                                                                             |
+| Page views        | Browser tag only.                                                               |
+| `view_item`       | Browser tag only.                                                               |
+| `add_to_cart`     | Browser tag only.                                                               |
+| `begin_checkout`  | Server only.                                                                    |
+| `purchase`        | Both, as one sale. The two carry the same `transaction_id`, booking total and visitor ID, so GA4 merges them. The server one is sent once per booking: a deposit and its balance are one purchase, not two. |
+
+Keep any other GA4 snippet off. If Site Kit's own GA4 snippet were also on, every page view would be counted twice.
+
 ## What each event carries
 
 | Event             | Key parameters                                                                  |
@@ -105,7 +136,9 @@ Don't confuse **Realtime** with **DebugView**. Realtime samples a subset of traf
 
 **`purchase` events but no `value`** — your trip has no price set, or the booking total is zero. GA4 needs `value` to compute revenue.
 
-**Doubled events** — you've left an old `gtag` snippet in your theme. Remove any manual GA4 snippets and let Yatra emit them.
+**Doubled events** — another GA4 tag is running alongside Yatra's: an old `gtag` snippet in your theme, or Site Kit's own GA4 snippet. Remove manual snippets and turn off Site Kit's snippet, and let Yatra emit the events. On releases before the consent and duplicate fixes, `view_item` and `add_to_cart` were also sent twice with **Use Measurement Protocol** on; update Yatra Pro.
+
+**Server-side events not sent** — the visitor hasn't granted statistics consent (see [Cookie consent](#cookie-consent-server-side-events)). The event log shows *Not sent: no analytics consent*.
 
 **Measurement Protocol returns 4xx** — usually a wrong API secret. Regenerate it and paste fresh. Check `wp-content/uploads/yatra/ga4-debug.log` (created when [Settings → Advanced → Debug mode](/settings#_13-advanced) is on).
 
