@@ -1,6 +1,6 @@
 ---
 title: Additional Services
-description: Step-by-step setup for the Yatra Pro Additional Services module — create global or per-trip upsells (airport transfer, insurance, gear rental) with quantity controls and per-person, per-booking, or per-day pricing.
+description: Step-by-step setup for the Yatra Pro Additional Services module — create upsells for all trips or specific trips (airport transfer, insurance, gear rental) with fixed or percentage pricing, per person, per booking or per day, optionally required.
 prev:
   text: Google Calendar
   link: /modules/google-calendar
@@ -27,11 +27,11 @@ Sell **optional add-ons** alongside your trips — airport transfers, travel ins
 
 1. Open <span class="screen-path">Yatra → Modules</span>.
 2. Find **Additional Services** → toggle on.
-3. A new menu item appears: <span class="screen-path">Yatra → Additional Services</span> (under the Trips group in the sidebar).
+3. A new item appears: <span class="screen-path">Yatra → Trips → Additional Services</span>.
 
 ## Step 2 — Create a service
 
-Open <span class="screen-path">Yatra → Additional Services → + Add Service</span>.
+Open <span class="screen-path">Yatra → Trips → Additional Services</span> and add a service.
 
 ![Additional Services form — name, description, price type/per, image, attach-to-trips](/screenshots/modules/additional-service-form.webp)
 
@@ -39,11 +39,12 @@ Open <span class="screen-path">Yatra → Additional Services → + Add Service</
 
 | Field           | Notes                                                                      |
 | ---             | ---                                                                        |
-| **Name**        | Customer-facing label (e.g. *"Airport Transfer"*, *"Travel Insurance"*).   |
+| **Service Name** | Customer-facing label (e.g. *"Airport Transfer"*, *"Travel Insurance"*).   |
 | **Description** | Shown under the name in the booking flow. Plain text, ~1–2 sentences.      |
-| **Image**       | Optional. WordPress media picker. Appears as a thumbnail next to the service. |
+| **Service Icon or Image** | Optional. Appears next to the service. |
 | **Sort order**  | Lower numbers appear first. Default `0`.                                   |
-| **Status**      | `Published` / `Draft` / `Trash`.                                           |
+| **Status**      | `Publish` / `Draft` / `Trash`. Only published services are offered.        |
+| **Required Service** | If enabled, customers must select this service when booking — it is always added. |
 
 ### Pricing
 
@@ -53,40 +54,30 @@ Two enums combine to define how the service is charged:
 
 | Value         | What it does                                                              |
 | ---           | ---                                                                       |
-| `fixed`       | Flat amount in your site currency. *"$30 for the transfer"*.             |
-| `percentage`  | Percentage of the trip base price. *"+5% for insurance"*.                |
+| **Fixed Amount** (`fixed`) | Flat amount in your site currency. *"$30 for the transfer"*. Multiplied according to **Price Per**. |
+| **Percentage of Trip Price** (`percentage`) | A percentage (up to 100%) of the trip price for the whole booking, charged **once**. *"5% for insurance"*. **Price Per** is not applied — the trip price already covers every traveller. |
 
-**Price Per:**
+**Price Per** (applies to Fixed Amount services):
 
 | Value      | What it does                                                                  |
 | ---        | ---                                                                           |
-| `person`   | Multiplied by the number of travelers. *"$15 per traveler for the lunch"*.   |
-| `booking`  | Charged once per booking, regardless of group size. *"$50 booking fee"*.    |
-| `day`      | Multiplied by the trip duration in days. *"$10 per day for the bike rental"*. |
+| **Per Person** (`person`)   | Multiplied by the number of travelers. *"$15 per traveler for the lunch"*.   |
+| **Per Booking** (`booking`)  | Charged once per booking, regardless of group size. *"$50 booking fee"*.    |
+| **Per Day** (`day`)      | Multiplied by the trip duration in days. *"$10 per day for the bike rental"*. |
 
-Combine them: a `fixed` × `person` service multiplies the fixed amount by travelers; a `percentage` × `booking` charges the percentage once.
+The customer doesn't choose a quantity — it comes from the booking: the number of travelers (Per Person), the trip's days (Per Day) or 1 (Per Booking).
 
-### Quantity controls
+### Applicable To
 
-| Field                 | Notes                                                                  |
-| ---                   | ---                                                                    |
-| **Allow quantity**    | When on, the customer can pick a quantity (e.g. *2 airport transfers*). |
-| **Min quantity**      | Default 1. Useful when the service has a minimum order.                 |
-| **Max quantity**      | Per-booking cap.                                                       |
-
-### Attach to trips
-
-Two options:
-
-1. **Specific trips** — searchable multi-select picker. The service only appears on these trips.
-2. **All trips** — global toggle. Service appears on every trip's checkout.
+- **All Trips** — the service is offered on every trip's checkout.
+- **Specific Trips** — pick the trips; the service is only offered on those.
 
 ## Step 3 — Verify the service appears at checkout
 
 1. Open a trip you attached the service to in a private browser window.
 2. Click **Book Now** → reach the *Add-ons* / *Extras* step.
-3. The service appears as a tick-box (or stepper, when *Allow quantity* is on) with the calculated price.
-4. Tick / pick a quantity → the price summary updates with the line item.
+3. The service appears as a tick-box with its calculated price (a **Required Service** is always included).
+4. Tick it → the price summary updates with the line item.
 5. Complete checkout → the booking detail page (admin side) shows the service in the **Payment Summary** breakdown under *Additional Services*.
 
 ![Customer checkout — additional services with live total](/screenshots/modules/additional-services-checkout.webp)
@@ -96,8 +87,7 @@ Two options:
 Default columns:
 
 - **Service** (image + name).
-- **Price** (formatted with type/per indicator, e.g. *"$30 per booking"* or *"+5% per person"*).
-- **Used by** — number of trips this service is attached to.
+- **Price** (formatted with type/per indicator, e.g. *"$30 per booking"* or *"5%"*).
 - **Status** badge.
 - **Sort order**.
 
@@ -107,13 +97,13 @@ Bulk actions: Mark as Published / Draft / Trash / Delete permanently.
 
 ## Worked examples
 
-| You want…                                                       | Price type     | Price per     | Allow quantity |
-| ---                                                             | ---            | ---           | :-:            |
-| Flat $50 booking fee                                            | `fixed`        | `booking`     | off            |
-| $30 airport transfer per person                                 | `fixed`        | `person`      | off            |
-| Travel insurance @ 5% of trip price                             | `percentage`   | `booking`     | off            |
-| $10/day camera rental, customer picks how many days             | `fixed`        | `day`         | on (max 14)    |
-| Multiple airport transfers (one each way, customer picks 1 / 2) | `fixed`        | `booking`     | on (max 2)     |
+| You want…                                         | Price Type          | Price Per     | Charged for 3 travelers on a 5-day trip |
+| ---                                               | ---                 | ---           | --- |
+| Flat $50 booking fee                              | Fixed Amount        | Per Booking   | $50 |
+| $30 airport transfer per person                   | Fixed Amount        | Per Person    | $90 |
+| $10/day camera rental                             | Fixed Amount        | Per Day       | $50 |
+| Travel insurance at 5% of the trip price          | Percentage of Trip Price | (not applied) | 5% of the trip price, once |
+| Compulsory park fee of $20 per person             | Fixed Amount + **Required Service** | Per Person | $60, always added |
 
 ## On the booking detail page
 
@@ -121,27 +111,27 @@ The booking's **Payment Summary** sidebar lists every added service as its own l
 
 ```
 Trip Base Price ............... $499.00
-Airport Transfer × 2 .......... $60.00
+Airport Transfer × 2 .......... $60.00   (Per Person, 2 travelers)
 Insurance (5%) ................ $24.95
 Subtotal ...................... $583.95
 ```
 
-Cancelling a booking restores the seats; refunding an additional service line happens via the gateway (Yatra doesn't selectively refund a single line item — it refunds the whole booking).
+Cancelling a booking restores the seats. To refund part of a booking for a service, use **Refund** on the booking's payment — see [Manage a booking → Refund a payment](/booking-workspace#refund-a-payment).
 
 ## Troubleshooting
 
 **Service doesn't appear at checkout** — confirm the service status is *Published*, and that it's either attached to this specific trip OR set to *All trips*. *Draft* services are hidden from the public flow.
 
-**Wrong line-item total** — re-check the *Price type* + *Price per* combo. A `percentage` × `person` service multiplies the percentage by traveler count, not by the trip price alone.
+**Wrong line-item total** — re-check *Price Type* and *Price Per*. A Fixed Amount service is multiplied by travelers (Per Person) or trip days (Per Day). A Percentage of Trip Price service is charged once on the trip price; Price Per doesn't change it.
 
-**Customer sees a quantity stepper they shouldn't** — toggle *Allow quantity* off and re-save.
+**Customer can't untick a service** — it is a **Required Service**. Turn that off and save if it should be optional.
 
-**Service appears on wrong trips** — clear *Specific trips* and add only the trips you want, OR toggle *All trips* off.
+**Service appears on wrong trips** — set **Applicable To** to *Specific Trips* and pick only the trips you want.
 
 ## Useful links
 
 - [Bookings → Payment Summary](/booking-settings#_1-booking-overview) — where service line items appear on the booking detail.
-- [Hooks & filters](/hooks-filters) — `yatra_additional_services_calculate_price`, `yatra_additional_services_render_label`.
+- [Hooks & filters](/hooks-filters) — `yatra_booking_additional_services`, `yatra_booking_services_total`.
 
 ## Where to read more
 

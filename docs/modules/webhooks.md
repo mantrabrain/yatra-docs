@@ -15,7 +15,7 @@ next:
 
 If you've ever wished Yatra could *tell* your other tools when something happens — a booking gets paid, an enquiry comes in, a trip gets cancelled — that's what webhooks are for. Yatra fires a signed HTTPS POST to whatever URL you configure, the receiving system reads the JSON, does something useful with it. Stripe-style. GitHub-style. Same shape, same security guarantees.
 
-This module is **Scale-only** because it's how agencies integrate Yatra into bigger systems. The Personal and Growth tiers don't need it — Email Automation, WhatsApp, and the built-in modules cover most operators.
+This module is **Scale-only** because it's how agencies integrate Yatra into bigger systems. The Starter and Growth tiers don't need it — Email Automation, WhatsApp, and the built-in modules cover most operators.
 
 ## What you'll need
 
@@ -83,7 +83,7 @@ Click **Add endpoint** in the top-right of the Endpoints tab. The form has six c
 
 #### Trigger event
 
-A single-select dropdown listing every event Yatra can fire — bookings, payments, enquiries, trips, departures, plus the synthetic `webhook.ping`. One endpoint = one event. That's deliberate: it makes field selection unambiguous (the field paths depend on the event's payload shape) and matches how the rest of Yatra (e.g. Email Automation) wires events to actions.
+A single-select dropdown listing every event Yatra can fire — bookings, payments, scheduled payments, enquiries, trip reminders, consent and account emails, plus the synthetic `webhook.ping`. There are no departure-level events. One endpoint = one event. That's deliberate: it makes field selection unambiguous (the field paths depend on the event's payload shape) and matches how the rest of Yatra (e.g. Email Automation) wires events to actions.
 
 Pick the event. The form expands with the field selector.
 

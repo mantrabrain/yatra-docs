@@ -47,7 +47,7 @@ Open <span class="screen-path">Yatra → Settings → Payment → Scheduled Paym
 | **Days before tour**                 | `balance_due_days`                  | `14`        | Shown only when *Balance schedule = before the tour date*. The balance is collected this many days before the tour starts; booking inside this window forces full payment. |
 | **Schedule type**                    | `scheduled_payment_type`            | `single`    | `single` = one balance charge; `installments` = multiple payments. Installments apply to the **booking** anchor only — the tour anchor is always a single balance. |
 | **Days until first charge**          | `scheduled_payment_days`            | `15`        | Days after the deposit before the first attempt. Used by the **booking** anchor only. |
-| **Number of installments**           | `scheduled_payment_installments`    | `3`         | Shown only when *Schedule type = installments*.                    |
+| **Number of installments**           | `scheduled_payment_installments`    | `3`         | 2–24. Shown only when *Schedule type = installments*.              |
 | **Days between installments**        | `scheduled_payment_interval`        | `30`        | Shown only when *Schedule type = installments*.                    |
 | **Payment reminder (days before)**   | `scheduled_payment_reminder_days`   | `3`         | Yatra emails the customer this many days before each charge / balance link. |
 
@@ -57,14 +57,20 @@ Save.
 `Balance schedule` defaults to **booking** — so existing sites behave exactly as before until you switch it to **before the tour date**. Switching the anchor only affects **new** schedules; already-scheduled charges keep their dates.
 :::
 
+## The two schedule shapes
+
+| Balance schedule | What happens |
+| --- | --- |
+| **Days after the deposit** (booking anchor) | One balance charge, or **2–24 installments**, starting *Days until first charge* after the deposit and spaced *Days between installments* apart. Needs a saved Stripe card to auto-charge. |
+| **Days before the tour** (tour anchor) | One balance, due *Days before tour* before departure: auto-charged with a saved Stripe card, otherwise a payment link is emailed. Booking inside that window means paying in full. |
+
 ## What each payment method can do
 
 | Payment method | Balance collection | How |
 | --- | --- | --- |
 | **Stripe** | **Automatic** off-session charge | The card used for the deposit is vaulted at Stripe; Yatra charges the balance on the due date (as a Stripe invoice) with no customer action. A reminder email goes out *Reminder days* before. |
-| **Razorpay** | **Automatic** off-session charge | Same as Stripe, via a Razorpay saved token. |
 | **PayPal** | **Payment link** | PayPal does not hand back a reusable customer + payment method pair in this flow, so Yatra cannot charge again by itself. The customer receives the secure *Pay your balance now* link instead. |
-| **Mollie, Paystack, Square, Authorize.Net, TBank** | **Payment link** | No vaulted method → link-based. |
+| **Razorpay, Mollie, Paystack, Square, Authorize.Net, T-Bank** | **Payment link** | Not auto-charged. Only Stripe is supported for automatic charging; plan on the customer paying through the balance link. |
 | **Bank Transfer / SEPA, Pay Later** (offline) | **Payment link / reminder** | Yatra cannot collect money itself. With **Balance schedule → before the tour date**, the daily cron creates a link-based reminder for every booking that still owes money — including deposits you recorded by hand — and emails the *Scheduled Payment Reminder* with `{{balance_payment_url}}` *Reminder days* before the balance is due. The customer pays through the link with the online gateways you offer, or transfers again and you record it under Payments. |
 
 Two practical notes:
@@ -107,7 +113,7 @@ The link is available as the `{{balance_payment_url}}` merge tag, and the defaul
 2. In a private browser window, book a trip with **Stripe** (or another off-session-capable gateway). Pay the deposit / partial amount.
 3. The booking saves with status `partial` and a *Due Now* balance.
 4. Yatra schedules the balance charge based on the settings above. You'll see a row in <span class="screen-path">Yatra → Payments</span> with status **Scheduled**.
-5. (Optional) Manually trigger the first charge from the row's *Charge now* action to verify the flow without waiting.
+5. Wait for the charge date (the scheduled charge runs from WP-Cron), or test with a short **Days until first charge**.
 6. Verify in your Stripe dashboard that the second charge went through, and the booking flips to `paid`.
 
 ## How the flow looks to the customer
@@ -149,9 +155,9 @@ Booking day       — Deposit recorded; booking is `partial`
 If the charge fails (expired card, insufficient funds), Yatra:
 
 1. Marks the scheduled payment as **Failed**.
-2. Sends the **Scheduled Payment Failed** email to the customer (with a link to update their payment method).
+2. Sends the **Scheduled Payment Failed** email to the customer.
 3. Sends the **Admin: Scheduled Payment Failed** email to you.
-4. Retries on the schedule defined by your gateway's smart-retries (Stripe retries 3 times over a week by default).
+4. Does **not** try again by itself. Collect the balance another way — send a [payment link](/booking-workspace#send-a-payment-link) or use **Send balance payment link** on the Outstanding tab — or record the payment when the customer pays.
 
 ## Installment example
 
@@ -171,16 +177,12 @@ Yatra divides the remaining balance evenly across installments; the final instal
 
 Scheduled charges show in <span class="screen-path">Yatra → Payments</span> with:
 
-- **Status** = `scheduled` (pending) / `completed` (charged) / `failed` (retry expected)
+- **Status** = `pending` (scheduled) / `completed` (charged) / `failed` (not retried) / `cancelled`
 - **Charge date** = when the attempt will run
 - **Amount** = the scheduled amount
 - **Linked booking** = clickable link to the booking detail
 
-You can:
-
-- **Charge now** — skip the schedule and attempt the charge immediately.
-- **Reschedule** — change the future charge date.
-- **Cancel** — stop the scheduled charge (e.g. if the customer wires the money manually).
+The only action on a scheduled row is **Cancel payment** — stop the scheduled charge (e.g. if the customer wires the money manually). There is no *Charge now* or *Reschedule*: to change the date, cancel the row and collect the balance with a payment link. The **Outstanding** tab also has **Send balance payment link** for bookings that still owe money.
 
 ## Required email templates (already free)
 
@@ -213,7 +215,7 @@ wp cron event run yatra_sync_scheduled_payments
 - [Flexible Payments](/modules/flexible-payments) — the required companion module that creates the balance to charge.
 - [Payments → Stripe](/payment-settings#stripe-pro) — gateway setup; Stripe is the recommended gateway for off-session charges.
 - [Settings → Payment](/settings#_5-payment) — full field reference for the Scheduled Payments section.
-- [Hooks & filters](/hooks-filters) — `yatra_scheduled_payment_due`, `yatra_scheduled_payment_succeeded`, `yatra_scheduled_payment_failed`.
+- [Hooks & filters](/hooks-filters) — `yatra_scheduled_payment_success`, `yatra_scheduled_payment_failed`.
 
 ## Where to read more
 

@@ -13,8 +13,8 @@ next:
 
 Yatra ships eight core (free) shortcodes for placing trip catalogs, search, login and account UIs onto any page or post. The attribute lists below are taken directly from each shortcode class — defaults match what Yatra resolves to when you omit an attribute. Yatra Pro adds a few module-specific shortcodes too — see [Pro shortcodes](#pro-shortcodes) at the end.
 
-::: warning Yatra 3.x does not ship cart/checkout shortcodes
-Older 2.x docs sometimes mention `[yatra_cart]`, `[yatra_checkout]`, or `[yatra_mini_cart]`. **These do not exist in Yatra 3.x.** The booking flow uses Yatra's virtual `/{booking_base}/{trip-slug}/` route (default `/book/...`), not a shortcode-driven page. See [Bookings & customers → Booking session and checkout flow](/booking-settings#booking-flow-on-the-front-end).
+::: warning No checkout shortcode
+Older 2.x docs sometimes mention `[yatra_checkout]` or `[yatra_mini_cart]`. **These do not exist in Yatra 3.x.** The booking flow uses Yatra's virtual `/{booking_base}/{trip-slug}/` route (default `/book/...`), not a shortcode-driven page. See [Bookings & customers → Booking flow on the front end](/booking-settings#booking-flow-on-the-front-end). `[yatra_cart]` exists again from Yatra Pro 3.2, for the [Multi-Trip Cart](/modules/multi-trip-cart) module only — see [Pro shortcodes](#pro-shortcodes).
 :::
 
 ## Shortcode index
@@ -340,8 +340,9 @@ Unlike `[yatra_trip]`, this shortcode's `category` and `destination` attributes 
 
 | Need                                          | Best choice                  |
 | ---                                           | ---                          |
-| Editing in Gutenberg, want sidebar controls   | The matching block           |
-| Editing in classic editor or page builders    | Shortcode                    |
+| Editing in Gutenberg, want sidebar controls   | The matching block — see [Blocks and Elementor widgets](/blocks) |
+| Editing in Elementor                          | The Yatra widget (Yatra 3.2+), or the Shortcode widget for destination / activity / category grids |
+| Editing in classic editor or other page builders | Shortcode                 |
 | Inserting in a theme template / PHP           | `do_shortcode( '[yatra_trip ...]' )` or the block's render callback |
 | Need to reuse the same widget config in many places | Shortcode (centralize via Reusable Block in Gutenberg if desired) |
 
@@ -353,9 +354,8 @@ For more on the block versions and using them in Elementor / other builders, see
 
 Each shortcode runs its query through the centralized `TripListingFilterBuilder` so the same filter logic applies whether you use the block or the shortcode. To customize:
 
-- **Tweak query args:** filter `yatra_trip_listing_filters` (and the parallel `yatra_destination_listing_filters`, etc.).
-- **Modify rendered HTML:** override the matching template in your child theme (e.g. `templates/shortcodes/yatra-trip.php`).
-- **Replace card markup:** filter `yatra_trip_listing_card_html` to wrap, append, or replace the rendered card.
+- **Tweak the query:** use the shortcode / block attributes — there is no query-args filter. `yatra_trip_listing_max_per_page` caps `per_page`.
+- **Modify rendered HTML:** the shortcode templates (`templates/shortcodes/trip.php` etc.) and the trip card (`templates/trip-listing-card.php`) are loaded straight from the plugin and can't be overridden from a child theme — restyle them with CSS.
 
 See [Hooks & filters](/hooks-filters#shortcodes-and-listings) for the full list.
 
@@ -367,6 +367,8 @@ With **Yatra Pro** active, a few modules register their own shortcodes. Each onl
 
 | Shortcode | Module | What it outputs |
 | --- | --- | --- |
+| `[yatra_cart]` | [Multi-Trip Cart](/modules/multi-trip-cart) (Growth / Scale, Pro 3.2+) | The cart page: the trips and dates the customer added, with a checkout button. No attributes. Yatra creates a **Cart** page with it when the module is turned on. |
+| `[yatra_currency_switcher]` | [Currency Switcher](/modules/currency-switcher) (Growth / Scale, Pro 3.2+) | A currency selector: your store currency first, then the currencies you added. No attributes. Only registered once at least one currency is saved. |
 | `[yatra_consent_form]` | [Trip Consent](/modules/trip-consent) | Embeds a digital consent / waiver form so travellers can sign before departure. |
 | `[yatra_whatsapp_button]` | [WhatsApp Notifications](/modules/whatsapp) | A "Chat on WhatsApp" button you can drop anywhere (page builders, widgets, templates). |
 | `[yatra_pro_features]` | Yatra Pro | Renders the Pro feature/marketing grid (for landing / upsell pages). |

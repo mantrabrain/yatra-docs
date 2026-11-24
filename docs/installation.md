@@ -40,7 +40,7 @@ You have three options:
 When you activate, Yatra does a one-time setup behind the scenes:
 
 - Creates the database tables for bookings, customers, payments, departures, and enquiries.
-- Registers the trip-related custom post types and taxonomies (destinations, activities, trip categories, difficulty levels, attributes).
+- Creates the tables for trips and their classifications (destinations, activities, trip categories, difficulty levels, attributes) — Yatra stores these in its own tables, not as WordPress posts.
 - Seeds the default email templates.
 - Adds a new **Yatra** item to the WordPress admin sidebar.
 
@@ -51,7 +51,7 @@ When you activate, Yatra does a one-time setup behind the scenes:
     <span class="pro-callout__badge">PRO</span>
     <span class="pro-callout__title">Yatra Pro is the upgrade plugin</span>
   </div>
-  <p class="pro-callout__desc">Yatra Pro is a separate plugin that unlocks licensed modules — Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net, and Bank Transfer gateways; Dynamic Pricing; Flexible / Scheduled Payments; Email Automation sequences; Google Calendar sync; Additional Services upsells; Trip Consent waivers; Mailchimp / GA4 / Facebook Pixel; Abandoned Booking Recovery; Custom Landing Pages; Advanced Discount; Dynamic Form Field; and more. The free plugin must be installed and active first.</p>
+  <p class="pro-callout__desc">Yatra Pro is a separate plugin that unlocks licensed modules — Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net and T-Bank gateways; Dynamic Pricing; Flexible / Scheduled Payments; Email Automation sequences; Google Calendar sync; Additional Services upsells; Trip Consent waivers; Mailchimp / GA4 / Facebook Pixel; Abandoned Booking Recovery; Custom Landing Pages; Advanced Discount; Dynamic Form Field; and more. The free plugin must be installed and active first.</p>
   <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">View Yatra Pro plans →</a>
 </div>
 
@@ -85,7 +85,7 @@ If any of these are red, head over to [Troubleshooting](/troubleshooting).
 
 ## Multisite
 
-Yatra is **Network: true** — it can be activated across a WordPress multisite network.
+Yatra can be network-activated across a WordPress multisite network (its plugin header has no `Network: true`, so it can also be activated per site).
 
 <ol class="step-list">
   <li>Place the <code>yatra/</code> (and <code>yatra-pro/</code>) folder into <code>wp-content/plugins/</code>.</li>

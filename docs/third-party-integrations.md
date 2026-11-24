@@ -45,7 +45,7 @@ Best for: peak-season pricing, last-seat discounts, weekend surcharges, group-si
 
 ### [Additional Services](/modules/additional-services) <span class="pro-pill">PRO</span>
 
-Sell add-ons (airport transfer, travel insurance, gear rental, single-supplement upgrades) alongside trips. Per-person / per-booking / per-day pricing with optional quantity controls.
+Sell add-ons (airport transfer, travel insurance, gear rental, single-supplement upgrades) alongside trips. Fixed or percentage pricing, per person / per booking / per day, optionally required.
 
 Best for: upsell revenue, capturing genuine optional extras without polluting the trip price.
 
@@ -87,13 +87,13 @@ Best for: pre-trip welcome series, post-trip nurture, payment reminder cadences.
 
 ### [Abandoned Booking Recovery](/modules/abandoned-booking-recovery) <span class="pro-pill">PRO</span>
 
-Three-step recovery email sequence (1 hour / 1 day / 3 days) for customers who started a booking but didn't pay. Includes a personalised recovery link and recovered-revenue reporting.
+Up to three recovery emails (1 hour / 24 hours / 48 hours by default) for customers who started a booking but didn't finish. The link reopens the trip with the booking form pre-filled; recovered-revenue reporting included.
 
-Best for: capturing the 5–15% of bookings that abandon at the payment step.
+Best for: operators who see customers start a booking and not finish it.
 
 ### [Mailchimp Integration](/modules/mailchimp) <span class="pro-pill">PRO</span>
 
-Auto-sync confirmed bookings to a Mailchimp audience with tags + merge fields. Lets you run pre- and post-trip marketing campaigns from Mailchimp without exporting CSVs.
+Sync customers to a Mailchimp audience when they book, with merge fields and the tags `Trip: {name}`, `Yatra Customer`, `Booked` plus your default tags. Lets you run pre- and post-trip marketing campaigns from Mailchimp without exporting CSVs.
 
 Best for: operators already running newsletter / nurture sequences in Mailchimp.
 
@@ -105,7 +105,7 @@ Best for: paid ad campaigns, lookalike audience seeding.
 
 ### [Google Analytics 4 Enhanced](/modules/google-analytics) <span class="pro-pill">PRO</span>
 
-GA4 ecommerce events (`view_item` / `add_to_cart` / `begin_checkout` / `purchase` / `refund`) with the Measurement Protocol option for server-side tracking.
+GA4 ecommerce events (`view_item` / `add_to_cart` / `begin_checkout` / `purchase`) with the Measurement Protocol option for server-side tracking.
 
 Best for: rigorous funnel analysis and Google Ads conversion tracking.
 
@@ -135,31 +135,43 @@ Get bookings into your team's existing tools and capture the paperwork.
 
 ### [Google Calendar Integration](/modules/google-calendar) <span class="pro-pill">PRO</span>
 
-Sync every confirmed departure and booking to a Google Calendar of your choice. Multi-calendar support, per-trip colour, automatic re-sync.
+Push every confirmed booking to a Google Calendar of your choice (one-way) — one event per booking, or one per departure. Automatic re-sync.
 
 Best for: operations / dispatch teams that live in Google Calendar.
 
 ### [Trip Consent](/modules/trip-consent) <span class="pro-pill">PRO</span>
 
-Digital waivers and consent forms — liability, health, image release, COVID screening. Sent automatically after booking, signed in-browser, tracked per booking with PDF archive.
+Digital waivers and consent forms — liability, health, image release, COVID screening. Emailed once a booking is confirmed (with reminders), signed in-browser, tracked per booking; signed copies downloadable as PDF from the admin.
 
 Best for: adventure operators with insurance / liability requirements.
 
 ---
 
-## AI & messaging — Growth tier
+## Sales, AI & messaging — Growth tier
 
-These modules require a **Growth** (or Scale) Yatra Pro license. Bring-your-own-credentials integrations — no per-call markup, no proxying through Yatra.
+These modules require a **Growth** (or Scale) Yatra Pro license. AI Assistant and WhatsApp are bring-your-own-credentials integrations — no per-call markup, no proxying through Yatra.
+
+### [Multi-Trip Cart](/modules/multi-trip-cart) <span class="pro-pill">PRO</span>
+
+New in Pro 3.2 (needs Yatra 3.2). Customers click **Add to cart** beside a departure's Book Now, collect several trips and dates, and book them all in one checkout with one payment. Each trip becomes its own booking — its own seats, travellers, confirmation, receipt and refunds.
+
+Best for: operators who sell add-on day tours or multi-leg itineraries.
+
+### [Currency Switcher](/modules/currency-switcher) <span class="pro-pill">PRO</span>
+
+New in Pro 3.2 (needs Yatra 3.2). Visitors choose a currency and see trip prices converted while browsing, with your own rates or optional daily rates. Checkout, payments, emails, invoices, My Account and the admin stay in your store currency, and checkout tells the customer so.
+
+Best for: operators with international visitors who want to show familiar prices.
 
 ### [AI Assistant](/modules/ai-assistant) <span class="pro-pill">PRO</span>
 
-Bring-your-own OpenAI / Anthropic key. Inline sparkle affordances across the trip editor (title, description, itinerary), SEO fields, taxonomy descriptions, and the enquiry inbox ("Draft reply with AI"). Daily AI-written digest on the dashboard. Brand-voice configuration so generated copy stays consistent. Per-day usage + cost tab.
+Bring-your-own OpenAI / Anthropic key. Inline sparkle affordances across the trip editor (title, description, itinerary), SEO fields, taxonomy descriptions, and the enquiry inbox ("Draft reply with AI"). Daily AI-written digest on the dashboard. Brand-voice configuration so generated copy stays consistent. Per-day usage + cost tab. From Pro 3.2, an **MCP server** lets Claude Code, Claude Desktop, Cursor and other AI assistants find bookings, read manifests, check availability, add notes, confirm or cancel bookings (flagged as needing your go-ahead) and draft trips — signed in with a WordPress Application Password.
 
 Best for: tour operators publishing many trips or running a leads-heavy enquiry pipeline.
 
 ### [WhatsApp Notifications](/modules/whatsapp) <span class="pro-pill">PRO</span>
 
-Transactional WhatsApp Cloud API messages — booking confirmations, payment receipts, T-1 departure reminders, T+1 review requests. Inbound replies route into the Enquiries inbox. Public click-to-WhatsApp widget (floating button + single-trip CTA + shortcode). Customer opt-in flow. Per-message delivery log with Meta's conversation cost.
+Transactional WhatsApp Cloud API messages — booking confirmations, payment receipts, T-1 departure reminders, T+1 review requests. Inbound replies are logged, with STOP-keyword opt-out. Public click-to-WhatsApp widget (floating button + single-trip CTA + shortcode). Customer opt-in flow. Per-message delivery log. Meta bills you directly at its published rates.
 
 Best for: operators in markets where WhatsApp is the dominant channel (India, MENA, LATAM, SE Asia) — 90%+ open rate vs ~25% for email.
 
@@ -171,9 +183,9 @@ These modules require a **Scale** Yatra Pro license (Yearly or Lifetime). Built 
 
 ### [Channel Manager](/modules/channel-manager) <span class="pro-pill">PRO</span>
 
-Distribute trips to Viator, GetYourGuide & more OTAs from one dashboard. Real-time inventory + pricing sync. Signed webhook ingestion with replay protection. Lifecycle dispatch — cancel / modify / no-show flow back from the OTA into Yatra automatically. Per-channel circuit breaker so a failing OTA never drags down the rest. Anti-overbooking pessimistic locks so two channels can't sell the last seat simultaneously.
+Sell your trips on **GetYourGuide** through GetYourGuide's Supplier API (rebuilt in Pro 3.2). GetYourGuide asks your site for availability and sends reservations and bookings in real time: places come from your Yatra departures, so direct bookings and GetYourGuide share one inventory; a reservation holds places for 60 minutes; a booking becomes a confirmed Yatra booking; cancellations free the places. GetYourGuide must certify the connection from your partner account (its self-tests in the Integrator Portal) before you sell live. **Viator** is in development.
 
-Best for: operators where OTAs drive ≥30% of bookings. Saves $99–299/month vs. standalone channel-manager SaaS.
+Best for: operators who already sell, or plan to sell, on GetYourGuide.
 
 ### [White Label](/modules/white-label) <span class="pro-pill">PRO</span>
 
@@ -193,7 +205,9 @@ A single Yatra Pro license also unlocks **seven** premium payment gateways. Thes
 - [Paystack](/payment-settings#paystack-pro) — Africa: cards, bank transfer, USSD, mobile money
 - [Square](/payment-settings#square-pro) — NA / UK / AU / JP cards
 - [Authorize.Net](/payment-settings#authorize-net-pro) — US-centric merchant accounts
-- [Bank Transfer](/payment-settings#bank-transfer-pro) — manual wire-transfer flow with bank details on confirmation
+- T-Bank — Russia: bank cards, SBP, T-Pay
+
+**Bank Transfer** is free from Yatra 3.2 — see [Payments → Bank Transfer](/payment-settings#bank-transfer).
 
 ---
 
@@ -201,5 +215,5 @@ A single Yatra Pro license also unlocks **seven** premium payment gateways. Thes
 
 - [All modules](/modules) — flat catalog with one card per module + premium gateway.
 - [Per-module reference](/modules/) — every module's deep-dive setup page.
-- [Settings → Integration](/settings#_10-integration) — every field for the integration modules in one place.
+- [Settings → Integration](/settings#_11-integration) — every field for the integration modules in one place.
 - [Pricing](https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs) — pick the Yatra Pro plan that includes the modules you need.

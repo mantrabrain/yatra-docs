@@ -170,9 +170,9 @@ Module-gated by **Abandoned Booking Recovery** — listed in the catalog regardl
 
 | Template key                            | Display name                       | Trigger                          |
 | ---                                     | ---                                | ---                              |
-| `abandoned_booking_recovery_first`      | Abandoned Recovery — 1h reminder   | `booking.abandoned_recovery`     |
-| `abandoned_booking_recovery_second`     | Abandoned Recovery — 1d reminder   | `booking.abandoned_recovery`     |
-| `abandoned_booking_recovery_final`      | Abandoned Recovery — 3d final      | `booking.abandoned_recovery`     |
+| `abandoned_booking_recovery_first`      | Abandoned booking recovery (First)   | `booking.abandoned_recovery`     |
+| `abandoned_booking_recovery_second`     | Abandoned booking recovery (Second)   | `booking.abandoned_recovery`     |
+| `abandoned_booking_recovery_final`      | Abandoned booking recovery (Final)      | `booking.abandoned_recovery`     |
 
 ::: tip "Free baseline" — 17 templates fire without Pro
 Of the 25 templates in the catalog, **17** work in the free plugin out-of-the-box: every booking lifecycle email (customer + admin), payment received/reminder, enquiry triad, trip reminder, review request, and email verification. The other 8 require their corresponding Pro module to actually fire (the rows stay visible for content review).
@@ -584,7 +584,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 
 ### `booking.cancelled` — Booking Cancelled
 
-**When it fires.** Booking status flips to `cancelled`. Either the customer cancels through My Account or an operator cancels in admin; the cancellation reason is stored on the booking row and exposed to the template.
+**When it fires.** Booking status flips to `cancelled`. An operator cancels it in admin (customers can't self-cancel from My Account); the cancellation reason is stored on the booking row and exposed to the template.
 
 **Dispatcher.** `BookingService::sendStatusEmail()` (cancelled branch) → free renderer → Pro override
 
@@ -661,7 +661,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 
 ### `booking.completed` — Trip Completed
 
-**When it fires.** Booking is marked `completed` — usually by the `yatra_booking_completion_cron` after the travel date passes, or by an operator manually flipping the status.
+**When it fires.** Booking is marked `completed` — usually by the daily `yatra_booking_completion` cron after the travel date passes, or by an operator manually flipping the status.
 
 **Dispatcher.** `BookingService::sendStatusEmail()` (completed branch) and `EmailAutomationHooks::maybeSendCompletedTemplate`
 
@@ -1720,15 +1720,15 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 
 ### `booking.abandoned_recovery` — Abandoned Checkout Recovery
 
-**When it fires.** A customer started checkout but didn't complete payment. The abandoned-recovery cron sends a sequence of reminders (1h, 1d, 3d by default) each containing a resume-checkout link.
+**When it fires.** A customer started checkout but didn't complete payment. The abandoned-recovery cron sends up to three reminders (1 h, 24 h and 48 h after abandonment by default), each with a link that reopens the trip with the booking form pre-filled.
 
 **Dispatcher.** `AbandonedBookingService::sendRecoveryEmail()` → `TYPE_ABANDONED_BOOKING_RECOVERY_FIRST/SECOND/FINAL`
 
 **Templates listening to this event:**
 
-- `abandoned_booking_recovery_first` — Abandoned Recovery — 1h (Customer)
-- `abandoned_booking_recovery_second` — Abandoned Recovery — 1d (Customer)
-- `abandoned_booking_recovery_final` — Abandoned Recovery — 3d (Customer)
+- `abandoned_booking_recovery_first` — Abandoned booking recovery (First) (Customer)
+- `abandoned_booking_recovery_second` — Abandoned booking recovery (Second) (Customer)
+- `abandoned_booking_recovery_final` — Abandoned booking recovery (Final) (Customer)
 
 **Variables available** (13 across 4 groups):
 
@@ -3313,7 +3313,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 
 ---
 
-### `abandoned_booking_recovery_first` — Abandoned Recovery — 1h
+### `abandoned_booking_recovery_first` — Abandoned booking recovery (First)
 
 - **Trigger event** — `booking.abandoned_recovery`
 - **Audience** — Customer
@@ -3358,7 +3358,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 
 ---
 
-### `abandoned_booking_recovery_second` — Abandoned Recovery — 1d
+### `abandoned_booking_recovery_second` — Abandoned booking recovery (Second)
 
 - **Trigger event** — `booking.abandoned_recovery`
 - **Audience** — Customer
@@ -3403,7 +3403,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 
 ---
 
-### `abandoned_booking_recovery_final` — Abandoned Recovery — 3d
+### `abandoned_booking_recovery_final` — Abandoned booking recovery (Final)
 
 - **Trigger event** — `booking.abandoned_recovery`
 - **Audience** — Customer
@@ -3459,7 +3459,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
     <span class="pro-callout__badge">PRO</span>
     <span class="pro-callout__title">Email Automation — multi-step sequences</span>
   </div>
-  <p class="pro-callout__desc">Trigger a sequence on booking confirmed → wait 7 days → send "tips for your upcoming trip" → wait until 1 day before travel → send "weather + packing list" → wait until day after travel → send "leave a review" — all without a separate marketing tool.</p>
+  <p class="pro-callout__desc">Start a sequence on booking confirmed → send a welcome → wait 2 days → send "what to pack" → wait a week → send "meet your guides". Waits are in minutes, hours, days or weeks after the previous step — all without a separate marketing tool.</p>
   <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">Unlock sequences →</a>
 </div>
 
@@ -3471,15 +3471,12 @@ Each sequence has:
 
 | Field                     | Notes                                                                                                                                  |
 | ---                       | ---                                                                                                                                    |
-| **Name**                  | Internal label.                                                                                                                        |
-| **Trigger event**         | One of `booking.created`, `booking.confirmed`, `booking.cancelled`, `booking.completed`, `payment.received`, `payment.reminder`, etc. |
-| **Audience filters**      | Limit to customers from specific destinations / categories / countries / trip types.                                                   |
-| **Steps**                 | 1 or more steps; each has a **delay** (minutes / hours / days, relative to the trigger or to the previous step) and a **template**.   |
-| **Active toggle**         | Pause or activate the whole sequence site-wide without deleting it.                                                                    |
+| **Sequence Name**         | Internal label.                                                                                                                        |
+| **Trigger**               | One of 10 events: `booking.created`, `booking.confirmed`, `booking.cancelled`, `booking.completed`, `payment.received`, `payment.partial_received`, `enquiry.created`, `scheduled.payment.succeeded`, `scheduled.payment.failed`, `reminder.trip`. |
+| **Steps**                 | 1 or more steps; each has a **wait** (immediately, or minutes / hours / days / weeks after the previous step) and a **template**.      |
+| **Status**                | Active / Paused / Draft.                                                                                                               |
 
-### Sequence stats
-
-Per-sequence: number of customers entered, number completed, opens, clicks, unsubscribes — populated from ESP webhooks (when your transport plugin posts opens/clicks back to Yatra).
+There are no audience filters and no open, click or unsubscribe statistics. See [Email Automation](/modules/email-automation).
 
 ---
 
@@ -3487,18 +3484,9 @@ Per-sequence: number of customers entered, number completed, opens, clicks, unsu
 
 ![Email logs tab — every send, with status, recipient, template](/screenshots/email/email-logs.webp)
 
-Every email send is recorded with:
+Every email send is recorded with its **Recipient**, **Subject**, **Template**, **Sequence** (when sent by one), **Status** (sent / failed) and when it was **Sent**.
 
-- **Timestamp**
-- **Recipient**
-- **Template key**
-- **Status** — sent / failed / bounced / opened (when ESP webhooks are wired up)
-- **ESP response code** — for debugging delivery failures
-- **Subject** — final rendered subject after merge tags
-
-Filter by status, by template, or by date range. Click a row for the full payload (rendered HTML, headers, merge-tag values).
-
-Useful when a customer says *"I didn't get an email"* — the log shows whether it actually sent and the ESP response.
+Useful when a customer says *"I didn't get an email"* — the log shows whether it was sent.
 
 ---
 
@@ -3523,7 +3511,7 @@ Enable **Debug mode** under [Settings → Advanced](/settings#_13-advanced). Wit
 | Per-template ON/OFF flag            | `yatra_email_template_<slug>` (e.g. `yatra_email_template_booking`)                |
 | Per-template subject                | `yatra_email_tpl_<slug>_subject` (e.g. `yatra_email_tpl_booking_subject`)          |
 | Per-template body HTML              | `yatra_email_tpl_<slug>_body`                                                       |
-| Global delivery settings            | `yatra_email_from_name`, `yatra_email_from_email`, `yatra_email_reply_to`, `yatra_admin_email` |
+| Global delivery settings            | `yatra_from_name`, `yatra_from_email`, `yatra_admin_email`                          |
 | Sequences (Pro)                     | Database table `wp_yatra_email_sequences`                                           |
 | Email logs (Pro)                    | Database table `wp_yatra_email_logs`                                                |
 

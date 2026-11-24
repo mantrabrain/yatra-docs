@@ -92,7 +92,7 @@ Standard advice — exclude:
 
 ## Multisite
 
-Yatra is `Network: true`. Each subsite gets its own data. License activation is per-subsite (one slot each by default).
+Yatra stores its data in per-site tables, so each subsite gets its own data. License activation is per-subsite (one slot each by default).
 
 ## What's next
 

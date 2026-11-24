@@ -50,17 +50,20 @@ Field reference: [Create a trip → 1.4 Availability & Booking](/trip-creation#_
 
 **When you'd use it:** trips that run on a regular pattern ("Every Saturday and Sunday from May to September", "Daily, July through August", "First Monday of every month"). Rules generate dates automatically — you set the pattern once and Yatra fills the calendar up to the site's **booking horizon** (Settings → Booking → *Booking horizon (months)*, 12 months by default; raise it if you sell further ahead).
 
-**Form fields** (from `DepartureRecurringRuleForm.tsx`):
+**Form fields** (from `RecurringRuleForm.tsx`):
 
 | Field                | Type                                                    | Notes                                                                                                                                 |
 | ---                  | ---                                                     | ---                                                                                                                                   |
-| **Recurrence type**  | enum: `daily` / `weekly` / `monthly` / `custom_days`    | The cadence pattern.                                                                                                                  |
-| **Weekdays**         | multi-select (Sun–Sat)                                  | Shown when *Recurrence type = weekly* or `custom_days`. 0 = Sunday … 6 = Saturday.                                                    |
+| **Rule Type**        | `weekly` / `monthly` / `interval`                       | **Weekly (specific days)**, **Monthly (e.g., first Sunday)** or **Interval (every X days)**. For a daily trip, use Weekly with all seven days ticked (or Interval every 1 day). |
+| **Days of Week**     | multi-select (Sun–Sat)                                  | Shown for *Weekly*.                                                                                                                    |
+| **Week of Month / Day of Week** | select                                       | Shown for *Monthly* — e.g. *first* + *Sunday*.                                                                                         |
+| **Every X Days**     | number (default 7)                                      | Shown for *Interval*.                                                                                                                  |
 | **Start date**       | date                                                    | First date the rule produces.                                                                                                         |
 | **End date**         | date                                                    | Last date — leave blank for "indefinite".                                                                                             |
-| **Max capacity**     | number                                                  | Seats available **per generated date**. Default: same as trip max travelers.                                                          |
-| **Base price**       | number                                                  | Optional override per generated date. Falls back to the trip's pricing.                                                               |
-| **Active**           | toggle                                                  | Off = the rule stops generating new dates (existing manually-overridden rows survive).                                                |
+| **Total Capacity**   | number                                                  | Seats available **per generated date**. Default: same as trip max travelers.                                                          |
+| **Price / Sale Price** (or traveler-category pricing) | number              | Optional override per generated date. Falls back to the trip's pricing.                                                               |
+| **Status**           | Active / Inactive                                       | Inactive = the rule stops generating new dates (existing manually-overridden rows survive).                                                |
+| **Booking Cutoff (hours before)** | number                                  | Bookings for each generated date close this many hours before its departure. Empty = 24 hours. See [Booking cutoff](#booking-cutoff-per-date). |
 
 Behind the scenes, rules are stored in `wp_yatra_new_trip_availability_rules`. The resolver materialises them on-the-fly — there's no physical row in the *Availability Dates* table until somebody books or you click *Convert to manual date*.
 
@@ -83,6 +86,7 @@ Behind the scenes, rules are stored in `wp_yatra_new_trip_availability_rules`. T
 | **Price override**             | currency            | Optional — bypasses the trip's regular price for this date.                                                        |
 | **Per-traveler-category prices** | repeater            | Optional — bypasses the trip's traveler-based pricing matrix for this date.                                        |
 | **Starting / Ending location** | location pickers    | Optional — useful when a specific departure leaves from a different point.                                         |
+| **Booking Cutoff (hours before)** | number          | Default 24. Bookings for this date close this many hours before departure, and the date is no longer offered. For 20 days, enter 480. See [Booking cutoff](#booking-cutoff-per-date). |
 | **Notes**                      | textarea            | Internal-only.                                                                                                     |
 
 A Manual Availability Date wins over any rule that covers the same day. This is how you say "for *this* specific Saturday, the price is $799 instead of $499, capacity is 6 instead of 10, and there's only one departure at 9 AM."
@@ -94,7 +98,7 @@ A Manual Availability Date wins over any rule that covers the same day. This is 
 Let's take a single trip (*Sunrise Hike*) configured like this:
 
 - **Trip Builder default:** Available 2026-01-01 → 2026-12-31, max travelers 10, default time 06:00.
-- **Recurring Rule R1:** Daily, 2026-04-01 → 2026-10-31, max capacity 8, base price $89.
+- **Recurring Rule R1:** Every day (Weekly, all seven days ticked), 2026-04-01 → 2026-10-31, max capacity 8, base price $89.
 - **Recurring Rule R2:** Weekly Saturdays only, 2026-04-01 → 2026-10-31, max capacity 12, base price $119 (the "premium weekend" rule).
 - **Manual Availability Dates:**
   - 2026-06-21 (Sat) — status `sold_out`, capacity 12.
@@ -106,7 +110,7 @@ What the customer sees when picking dates:
 | Customer picks   | Layer that wins             | What the customer sees                                                                                      |
 | ---              | ---                         | ---                                                                                                         |
 | 2026-03-15 (Sun) | **Trip default**            | Bookable, $89 (trip price), 10 seats. Falls outside both recurring rules → uses the trip default.           |
-| 2026-05-10 (Sun) | **Rule R1** (daily)         | Bookable, $89, 8 seats. R1 covers this day; R2 only covers Saturdays.                                       |
+| 2026-05-10 (Sun) | **Rule R1** (every day)     | Bookable, $89, 8 seats. R1 covers this day; R2 only covers Saturdays.                                       |
 | 2026-05-09 (Sat) | **Rule R2** (Sat-only)      | Bookable, $119, 12 seats. R2 is more specific than R1, so it wins. *(Within rules, the more-specific pattern wins.)* |
 | 2026-06-21 (Sat) | **Manual Date** (sold_out)  | Date is hidden / disabled on the calendar with a "Sold out" badge.                                          |
 | 2026-07-04 (Sat) | **Manual Date** (override)  | Bookable, $149, 20 seats. Manual override beats R2 even though R2 has a Saturday rule for the same date.    |
@@ -138,12 +142,12 @@ At this point the trip is bookable on **every day** in your range. Layers 2 and 
 
 ### Step 2 — (Optional) Add Recurring Rules
 
-1. Open <span class="screen-path">Yatra → Trips → [your trip] → Availability</span> tab.
-2. Click the **Rules** sub-tab.
-3. Click **+ Add Rule**.
+1. Open <span class="screen-path">Yatra → Trips → Availability</span> and choose your trip.
+2. Click **Recurring Rules**.
+3. Click **Add Recurring Rule**.
 4. Fill in:
-   - **Recurrence type** → start with *weekly* for "every Saturday and Sunday" trips.
-   - **Weekdays** → pick the days that match.
+   - **Rule Type** → start with *Weekly (specific days)* for "every Saturday and Sunday" trips.
+   - **Days of Week** → pick the days that match.
    - **Start / End date** → bounding window. Leave End blank for "forever".
    - **Max capacity** → seats per generated date. Often differs from the trip's general cap.
    - **Base price** → optional per-rule override.
@@ -152,20 +156,21 @@ At this point the trip is bookable on **every day** in your range. Layers 2 and 
 
 ![Recurring Rule form — recurrence type, weekdays, capacity, price](/screenshots/availability/recurring-rule-form.webp)
 
-Repeat for multiple patterns ("daily May–Sep", "Saturdays only for premium weekends", etc.).
+Repeat for multiple patterns ("every day May–Sep" as Weekly with all days ticked, "Saturdays only for premium weekends", "first Sunday of the month", "every 10 days", etc.).
 
 ### Step 3 — (Optional) Add Manual Availability Dates
 
 Use this for one-off overrides — block a date, change a single date's capacity / price, mark sold-out manually.
 
-1. Same place: <span class="screen-path">Yatra → Trips → [trip] → Availability</span>, **Dates** sub-tab.
-2. Click **+ Add Date**.
+1. Same place: <span class="screen-path">Yatra → Trips → Availability</span>, **Specific Dates**.
+2. Click **Add Availability Date**.
 3. Fill in:
    - **Departure date** (and time, for day tours).
    - **Status** — `available`, `sold_out`, or `blocked`.
    - **Max capacity** — pre-filled from the trip max, override here.
    - **Price override** — optional.
    - **Per-traveler-category prices** — optional, only when the trip uses traveler-based pricing.
+   - **Booking Cutoff (hours before)** — optional, default 24.
    - **Notes** — internal only.
 4. Save.
 
@@ -179,6 +184,27 @@ On the Availability calendar, each rule-generated date has a *Convert to manual*
 
 ---
 
+## Booking cutoff per date {#booking-cutoff-per-date}
+
+Each date can stop taking bookings some time before it departs — for example, because you need to book permits or hotels 20 days ahead.
+
+To set a cutoff for one date:
+
+1. Open <span class="screen-path">Yatra → Trips → Availability</span>, choose the trip, and open the date under **Specific Dates** (or add one).
+2. In **Booking Cutoff (hours before)**, enter the number of hours. For days, multiply by 24: 2 days = 48, 20 days = 480.
+3. Save.
+
+For dates generated by a recurring rule, set the same field on the rule.
+
+How it works:
+
+- The cutoff counts back from the date's departure time (or midnight at the start of the day when the date has no time).
+- **From Yatra 3.2, once a date is inside its cutoff it is no longer offered on the trip page** — the calendar doesn't show or count it. Before 3.2 the date stayed on the page and only the checkout refused it.
+- The checkout still checks the cutoff, so a customer who kept the page open can't book a closed date.
+- A manual date uses 24 hours unless you change it (the minimum is 1 hour).
+
+---
+
 ## How it shows up to the customer
 
 ![Public booking calendar — customer side](/screenshots/availability/customer-calendar.webp)
@@ -188,6 +214,7 @@ When a customer opens the trip page and clicks **Book Now**, Yatra calls `Availa
 - **Available date** — clickable, shows "X seats left" subtitle, base price visible.
 - **Sold-out date** — disabled with a "Sold out" badge.
 - **Blocked date** — hidden completely (no chip rendered).
+- **Date inside its booking cutoff** — not offered (Yatra 3.2+). See [Booking cutoff per date](#booking-cutoff-per-date).
 - **Date with a price override** — clickable, with the override price shown in place of the regular one.
 
 After the customer picks a date, the **traveler-count step** uses *that date's* capacity number (manual override > rule capacity > trip max). And the **price summary** at the bottom uses *that date's* price (manual override > rule base price > trip price).
@@ -204,7 +231,7 @@ If a customer keeps the booking page open and an admin marks the date sold out, 
 | ---                                                         | ---                                  |
 | Make a brand-new trip bookable for the whole season         | Trip Builder default (Step 1)        |
 | Run a trip every weekend in summer                          | Recurring Rule (Step 2)              |
-| Run a trip every day in July + August                       | Recurring Rule (`daily` recurrence) |
+| Run a trip every day in July + August                       | Recurring Rule (Weekly, all seven days) |
 | Sell out a specific Saturday manually before it fills       | Manual Date with `status=sold_out`   |
 | Add 2 extra seats for a holiday surge                       | Manual Date with higher `max_capacity` |
 | Run a flash sale on a single date                           | Manual Date with `price_override`    |
@@ -229,9 +256,8 @@ If you're extending Yatra programmatically:
 
 Hooks the resolution flow fires:
 
-- `yatra_resolved_availability` (filter) — mutate the resolved object before it goes to the frontend.
-- `yatra_availability_calendar_dates` (filter) — mutate the full calendar array.
-- `yatra_availability_date_created` / `_updated` / `_deleted` (actions) — fire on manual-date CRUD.
+- `yatra_resolve_availability_object` (filter) — mutate the resolved object before it goes to the frontend.
+- `yatra_availability_specific_date_created` / `_updated` / `_deleted` (actions) — fire on manual-date CRUD (`yatra_availability_recurring_rule_*` for recurring rules).
 
 ---
 
@@ -243,7 +269,7 @@ Hooks the resolution flow fires:
 
 **The customer sees a different price than what I set** — the resolver follows priority 1 → 2 → 3. Make sure no rule with a higher-priority base price covers the date. The detail page shows which source won (`availability_date` / `recurring_rule` / `trip_default`).
 
-**Two rules with overlapping patterns conflict** — clean them up. The resolver picks the first match deterministically but the UI doesn't currently warn about overlaps. Use one rule per "shape" (one daily, one weekly with weekdays, etc.).
+**Two rules with overlapping patterns conflict** — clean them up. The resolver picks the first match deterministically but the UI doesn't currently warn about overlaps. Use one rule per "shape" (one every-day rule, one weekend rule, etc.).
 
 **Capacity doesn't decrement when I confirm a booking** — Yatra updates `booked_count` only when the booking transitions to `confirmed`. Pending bookings reserve a soft hold (configurable in [Settings → Booking](/settings#_3-booking) → *Booking Expiry Hours*).
 

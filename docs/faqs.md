@@ -44,15 +44,15 @@ You can rename any slug under <span class="screen-path">Yatra → Settings → P
 
 ### Does Yatra work with any WordPress theme?
 
-Yes — designed for broad theme compatibility. If layouts clash, briefly switch to a default theme (Twenty Twenty-Five) to isolate theme CSS. You can override any Yatra template by copying it from `wp-content/plugins/yatra/templates/` to `wp-content/themes/{theme}/yatra/`.
+Yes — designed for broad theme compatibility. If layouts clash, briefly switch to a default theme (Twenty Twenty-Five) to isolate theme CSS. You can override Yatra's page templates and single-trip partials by copying them from `wp-content/plugins/yatra/templates/` to `wp-content/themes/{theme}/yatra/` (see [Blocks & page builders](/elementor-integration#templating-override-the-universal-escape-hatch) for the exceptions).
 
 ### Does Yatra work with the block editor?
 
-Yes — Yatra ships native Gutenberg blocks for trips, destinations, activities, trip categories, search, and account. See [Blocks & page builders](/elementor-integration).
+Yes — Yatra ships 16 blocks: trip, destination, activity and category grids, Trip Search, Trip Deals, Customer Login, My Account, and eight blocks for parts of a trip (gallery, facts, booking card, itinerary, includes & excludes, FAQ, map, reviews), plus 3 block patterns. See [Blocks and Elementor widgets](/blocks).
 
 ### Does Yatra work with Elementor / Divi / Bricks / Oxygen?
 
-Yes — all of them. Use a Posts widget targeting the `trip` post type, plus a Shortcode widget for catalog or search forms.
+Yes. **Elementor** gets 13 Yatra widgets from Yatra 3.2 (see [Blocks and Elementor widgets](/blocks#elementor-widgets)). In **Divi, Bricks and Oxygen**, use the builder's Shortcode module for trip grids, search and account forms. Trips aren't WordPress posts, so Posts / Loop Grid widgets can't list them.
 
 ### Can I use WooCommerce instead?
 
@@ -60,7 +60,7 @@ The free core emphasizes native trip checkout for speed and clarity. WooCommerce
 
 ### Is Yatra multisite compatible?
 
-Yes — `Network: true`. Each subsite has its own data.
+Yes — Yatra stores its data in per-site tables, so each subsite has its own data.
 
 ## Selling trips
 
@@ -68,7 +68,7 @@ Yes — `Network: true`. Each subsite has its own data.
 
 <ol class="step-list">
   <li>Create a trip, set a price.</li>
-  <li>Connect <strong>PayPal</strong> or <strong>Pay Later</strong> (free), or <strong>Stripe / Razorpay / Mollie / Paystack / Square / Authorize.Net / Bank Transfer</strong> <span class="pro-pill">PRO</span> under <span class="screen-path">Yatra → Settings → Payment</span>.</li>
+  <li>Connect <strong>PayPal</strong>, <strong>Pay Later</strong> or <strong>Bank Transfer</strong> (free), or <strong>Stripe / Razorpay / Mollie / Paystack / Square / Authorize.Net / T-Bank</strong> <span class="pro-pill">PRO</span> under <span class="screen-path">Yatra → Settings → Payment</span>.</li>
   <li>Run a test transaction with sandbox keys.</li>
   <li>Switch to live keys.</li>
 </ol>
@@ -77,7 +77,7 @@ See [Payments](/payment-settings) for the full guide.
 
 ### What payment gateways does the free plugin support?
 
-**PayPal** (Simple email-IPN or REST modes) and **Pay Later** are fully working in the free core. Pro adds **Stripe**, **Razorpay**, **Mollie**, **Paystack**, **Square**, **Authorize.Net**, and **Bank Transfer**.
+**PayPal** (Simple email-IPN or REST modes), **Pay Later** and — from Yatra 3.2 — **Bank Transfer** are fully working in the free core. Pro adds **Stripe**, **Razorpay**, **Mollie**, **Paystack**, **Square**, **Authorize.Net** and **T-Bank**.
 
 <div class="pro-callout">
   <div class="pro-callout__head">
@@ -100,15 +100,15 @@ See [Payments](/payment-settings) for the full guide.
 
 ### Can I issue refunds?
 
-Yes. The <span class="screen-path">Yatra → Payments</span> page lets you mark a payment as **Refunded**. The actual money movement happens in the gateway dashboard. Best practice: refund first in the gateway, then mark refunded in Yatra.
+Yes. From Yatra 3.2, open the booking and click **Refund** on the payment. For **PayPal** (Advanced mode) and, with Yatra Pro 3.2, **Stripe**, Yatra can send the money back through the provider and record it in one step. For other methods, refund in the gateway dashboard or your bank, then record it with **Refund**. See [Manage a booking → Refund a payment](/booking-workspace#refund-a-payment).
 
 ### How do discounts / coupons work?
 
-The free plugin supports percentage or fixed discounts, redemption limits, optional date windows, "first-time customer only" flags, and per-trip applicability — via codes the customer types at checkout. The Pro **Advanced Discount** module adds *Group Only* (auto-applies when traveler count crosses a threshold) and *Promo + Group* (a code that also stacks group-size logic on top). See [Discounts](/booking-settings#discounts-coupons) and [Advanced Discount module](/modules/advanced-discount).
+The free plugin supports percentage or fixed discounts, a usage limit, uses per customer, "first-time customers only" (all three enforced from Yatra 3.2), optional date windows and per-trip applicability — via codes the customer types at checkout. The Pro **Advanced Discount** module adds *Group Only* (auto-applies when traveler count crosses a threshold) and *Promo + Group* (a code that also stacks group-size logic on top). See [Discounts](/booking-settings#discounts-coupons) and [Advanced Discount module](/modules/advanced-discount).
 
 ### How do I handle different currencies for different markets?
 
-The free plugin uses a single site currency. For multi-currency (showing prices in EUR for European visitors and USD for US visitors), pair Yatra with a multi-currency plugin like **Currency Switcher for WooCommerce** or use a per-market subdomain with separate Yatra installs.
+Yatra takes every booking and payment in a single store currency, and WooCommerce currency switchers don't change Yatra prices. With Yatra Pro (Growth or Scale), the [Currency Switcher](/modules/currency-switcher) <span class="pro-pill">PRO</span> lets visitors **see** trip prices in other currencies while browsing — checkout, payments, emails and invoices stay in your store currency, and checkout tells the customer so. To actually charge in several currencies, use a per-market subdomain with separate Yatra installs.
 
 ## Customers & travelers
 
@@ -123,11 +123,11 @@ The free plugin uses a single site currency. For multi-currency (showing prices 
 
 ### Do customers need an account?
 
-Configurable. With **Allow guest checkout** on (in <span class="screen-path">Settings → Customer</span>), customers can book without registering. Yatra creates a customer record on first booking.
+Configurable. With **Allow Guest Checkout** on (in <span class="screen-path">Settings → Booking</span>), customers can book without registering. Yatra creates a customer record on first booking.
 
 ### Can I collect emergency contact / passport details?
 
-Yes — the booking form includes optional emergency contact fields. For passport / visa / insurance numbers, use the Pro **Dynamic Form Field** module to add custom fields.
+Yes — the booking form includes optional emergency contact fields, and you can add traveller fields (passport, nationality, date of birth…) in [Settings → Booking Form](/settings#_4-booking-form). From Yatra 3.2 customers can complete or correct these details from My Account after booking, until the travel date. For per-trip fields, use the Pro **Dynamic Form Field** module.
 
 <div class="pro-callout">
   <div class="pro-callout__head">
@@ -138,6 +138,14 @@ Yes — the booking form includes optional emergency contact fields. For passpor
   <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">Unlock the form builder →</a>
 </div>
 
+### Can customers cancel or change a booking themselves?
+
+Not directly. From Yatra 3.2 they can **ask** from My Account: you get an email, the request shows on the booking, and nothing is cancelled or refunded until you do it. Turn it off or set a cut-off under <span class="screen-path">Settings → Booking → Changes & Cancellations</span>. See [Bookings & customers → What customers can do in My Account](/booking-settings#what-customers-can-do-in-my-account).
+
+### Can customers book several trips in one checkout?
+
+With Yatra Pro (Growth or Scale), the [Multi-Trip Cart](/modules/multi-trip-cart) <span class="pro-pill">PRO</span> module adds **Add to cart**: several trips and dates, one checkout, one payment, one booking per trip.
+
 ### Can I collect waivers and consent forms?
 
 <div class="pro-callout">
@@ -145,7 +153,7 @@ Yes — the booking form includes optional emergency contact fields. For passpor
     <span class="pro-callout__badge">PRO</span>
     <span class="pro-callout__title">Trip Consent</span>
   </div>
-  <p class="pro-callout__desc">Liability waivers and signature-required consent forms tied to trips. Each traveler signs digitally; bookings show "consent signed" status.</p>
+  <p class="pro-callout__desc">Liability waivers and signature-required consent forms tied to trips. Emailed once the booking is confirmed, with reminders; each traveler signs online and bookings show "consent signed" status.</p>
   <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">Unlock trip consent →</a>
 </div>
 
@@ -204,7 +212,7 @@ Email the wpyatra.com security contact privately. Don't post exploit steps in pu
 
 ### Can I translate Yatra?
 
-Yes — text domain is `yatra` (free) and `yatra-pro` (Pro). Loco Translate, WPML, TranslatePress, Polylang, and Weglot all work.
+Yes — text domain is `yatra` (free) and `yatra-pro` (Pro). Loco Translate translates the interface; TranslatePress and Weglot translate the rendered pages. From Yatra 3.2, **WPML and Polylang** are supported: trip pages, the booking flow and My Account work in every language, trip texts are translated on their string-translation screen, and booking emails go out in the customer's language. See [Multilingual sites](/multilingual). To rename a few texts without a translation plugin, use [Settings → Labels](/settings#labels).
 
 ## Performance
 
@@ -212,9 +220,29 @@ Yes — text domain is `yatra` (free) and `yatra-pro` (Pro). Loco Translate, WPM
 
 There are no hardcoded limits. Performance is driven by your hosting (PHP-FPM workers, MySQL configuration, page cache).
 
+### Why don't Yatra's styles load on a page?
+
+From Yatra 3.2, Yatra's CSS and JavaScript (about 850 KB) load **only where they're needed**: on Yatra's own pages (trips, listings, destinations, booking, checkout, My Account) and on pages whose content has a Yatra shortcode, block or Elementor widget. Other pages of your site are lighter.
+
+A shortcode or block placed where Yatra can't see it in advance — a widget area, a page-builder header or footer, a theme template — loads the files itself when it renders, so it still works.
+
+If something still looks unstyled (for example, your theme relied on Yatra's files being on every page), restore the old behaviour by adding this to a small plugin or your child theme's `functions.php`:
+
+```php
+add_filter( 'yatra_load_frontend_assets', '__return_true' );
+```
+
+To load them on just one more page instead, return `true` for that page only:
+
+```php
+add_filter( 'yatra_load_frontend_assets', function ( $load ) {
+    return $load || is_front_page();
+} );
+```
+
 ### Will Yatra hurt my SEO?
 
-No. Yatra outputs normal WordPress pages and URLs. Yoast / Rank Math / SEOPress all index Yatra correctly.
+No. Yatra outputs normal WordPress pages and URLs, and from 3.2 trip pages tell search engines the trip's price (a Product with an Offer) and describe the trip itself (a TouristTrip with its duration and itinerary). Yatra publishes its own sitemap (`/yatra-sitemap.xml`) and adds its URLs to the WordPress core, Yoast, Rank Math and All in One SEO sitemaps.
 
 ## Developer
 

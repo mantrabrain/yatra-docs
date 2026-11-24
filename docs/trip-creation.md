@@ -163,8 +163,8 @@ The pricing section starts with a **Pricing Type** toggle — pick one of two mo
 - A repeater of **active traveler categories**. Click **Add Pricing** → pick a category from the dropdown → fill in Original Price and Discounted Price (optional). Repeat for each category.
 - If no categories exist yet, you'll see "No active traveler categories found" with a link to create them first.
 
-::: warning Pricing is required to publish
-At least one valid price (Regular Original, or at least one row in the Traveler-Based matrix) must be set before **Publish Trip** will succeed.
+::: warning Publishing without a price
+If no price is set, **Publish Trip** asks you to confirm, because customers will see the trip as free.
 :::
 
 ### 1.4 Availability & Booking
@@ -185,7 +185,7 @@ This section merges what the source code calls `duration` and `booking`. Field g
 
 | Field                | Type   | Notes                                                       |
 | ---                  | ---    | ---                                                         |
-| **Minimum Travelers** | number | Smallest party size accepted.                              |
+| **Minimum Travelers** | number | Smallest party size accepted. The booking counter starts here, and customers can't book fewer. Set it to 1 to accept solo travelers. |
 | **Maximum Travelers** | number | Hard cap. Used to compute remaining seats per departure.   |
 
 **Departure Time (varies by trip type)**
@@ -378,7 +378,7 @@ The top-right action bar gives you three controls:
 | Archive           | `archived`       |
 
 ::: warning Phase 1 validation
-Hitting **Publish** with missing required fields (Title, Slug, Pricing) shows inline errors and jumps the form to the first failing section. The save itself is blocked until the errors are fixed.
+Hitting **Publish** without a title or URL shows an error and blocks the save. A trip with no price can still be published, because free and enquiry-only trips are valid, but Yatra asks you to confirm first.
 :::
 
 At the bottom of the section, **Previous** and **Next** buttons let you step through sections without using the sidebar.

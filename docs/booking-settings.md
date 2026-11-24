@@ -15,6 +15,8 @@ This page covers everything under the **bookings family** of admin menus:
 | <span class="screen-path">Yatra → Reviews</span>    | Trip reviews and their moderation queue                                         |
 | <span class="screen-path">Yatra → Discounts</span>  | Promo codes (free) and group-size discounts (Pro)                              |
 
+Recording payments, adjusting prices, refunds, payment links, the booking history and CSV exports are covered on their own page: **[Manage a booking](/booking-workspace)** (Yatra 3.2+).
+
 For the *configuration* side (cancellation policy, expiry, waitlist toggles), see [Settings → Booking](/settings#_3-booking). For the form builder that shapes the public checkout, see [Settings → Booking Form](/settings#_4-booking-form).
 
 ---
@@ -77,6 +79,10 @@ Tick rows, then pick from the dropdown:
 
 The available actions adapt to the current status filter — e.g. when you're already viewing "Confirmed" bookings, "Mark as Confirmed" is hidden.
 
+### Export CSV
+
+**Export CSV** above the table downloads the bookings list **with its current filters** as a spreadsheet (Yatra 3.2+). See [Manage a booking → Export to CSV](/booking-workspace#export-to-csv).
+
 ### + Add New Booking
 
 Unlike Trips (which use a modal), the **Add New Booking** button navigates to a **full-page form** at:
@@ -99,6 +105,8 @@ Clicking a booking row opens its detail page at:
 /wp-admin/admin.php?page=yatra&subpage=bookings&action=view&id=<N>
 ```
 
+Along the top: **Download invoice**, **Record payment**, **Payment link**, **Adjust price** and **Resend email**. Each completed payment has a **Refund** link. These are covered in [Manage a booking](/booking-workspace).
+
 Sections from top to bottom:
 
 ### 1. Booking Overview
@@ -109,15 +117,16 @@ The hero header with booking number, trip, booking date, travel date, and number
 
 Line-by-line itemisation:
 
-- Trip Base Price (per-traveler × travelers)
+- Trip Base Price (per-traveler × travelers, before later price adjustments)
 - Additional Services (Pro module line items, if any)
 - Discount (negative number, emerald-coloured)
+- Price adjustments made with **Adjust price**
 - Itinerary Costs (sum of per-day costs, if non-zero)
 - Taxable Amount
 - Tax (with tax-inclusive badge when applicable)
 - **Net Amount**
-- **Amount Paid**
-- **Due Now**
+- **Amount Paid** — or **Received** and **Refunded** lines when money was sent back
+- **Balance due** (Pay Later and Bank Transfer bookings no longer say "Due Now")
 
 ### 2. Customer Information
 
@@ -188,16 +197,13 @@ Fields:
 - Pending requests list (first 3, with a *+N more* link to the consent tab).
 - **Manage Consents** button.
 
-### 10. Timeline
+### 10. Customer requests
 
-A simple two-row block:
+Shown when the customer has asked to change or cancel the booking from My Account. Shows *Change requested* or *Cancellation requested*, the customer's message, and a **Mark as resolved** button. Nothing changes on the booking until you act. See [Manage a booking → Customer requests](/booking-workspace#customer-requests-change-or-cancel).
 
-| Row                 | Value                                                        |
-| ---                 | ---                                                          |
-| **Created**         | Booking creation timestamp.                                  |
-| **Last Updated**    | Most recent change. Hidden when identical to *Created*.      |
+### 11. History & notes
 
-(There's no full activity feed in this build — just the two timestamps.)
+The booking's full timeline (Yatra 3.2+): when it was made, every payment and refund, status changes, emails sent, price changes, edits, automatic cancellation, customer requests and your team's internal notes. Add a note in the box at the top — only your team sees it. See [Manage a booking → History & notes](/booking-workspace#history-notes).
 
 ---
 
@@ -208,7 +214,7 @@ A simple two-row block:
 | **Pending** | Yellow       | Customer completed checkout but payment hasn't cleared yet.      |
 | **Confirmed** | Green      | Payment succeeded **or** an admin manually confirmed the booking. |
 | **Completed** | Blue       | Travel date has passed and the trip is delivered.                |
-| **Cancelled** | Red        | Cancelled by customer (self-cancel within policy) or admin.      |
+| **Cancelled** | Red        | Cancelled by an admin, the unpaid-booking expiry sweep, or an OTA. Customers can't self-cancel — from Yatra 3.2 they can **ask** from My Account (see below). |
 
 The booking-edit form (`BookingForm.tsx`) also exposes two extra statuses that the listing doesn't filter by — **Refunded** and **Failed**.
 
@@ -219,7 +225,7 @@ The booking-edit form (`BookingForm.tsx`) also exposes two extra statuses that t
 | **Paid**     | Green        | Full balance settled.                                           |
 | **Partial**  | Orange       | Some money received (deposit or first installment).             |
 | **Pending**  | Yellow       | Awaiting payment.                                               |
-| **Refunded** | Gray         | Refund processed via gateway dashboard + marked in Yatra.       |
+| **Refunded** | Gray         | All the money received was sent back — refunds recorded with **Refund** on the booking, or payments marked refunded. |
 
 ---
 
@@ -307,7 +313,7 @@ Full-page form at `&action=create` — name, email, phone, country, address, sta
 
 ### Loyalty tiers
 
-Yatra computes a loyalty tier per customer based on lifetime spend / bookings. Tiers and their default thresholds are exposed via the filter `yatra_loyalty_tiers` — see [Hooks & filters](/hooks-filters).
+Yatra computes a loyalty tier per customer from lifetime spend: Silver from 2,000, Gold from 5,000, Platinum from 10,000 (in your store currency), Bronze below that. The thresholds are fixed — there is no filter to change them.
 
 | Tier      | Badge        |
 | ---       | ---          |
@@ -321,6 +327,34 @@ Yatra computes a loyalty tier per customer based on lifetime spend / bookings. T
 ## Guest checkout
 
 Customers don't need a WP account to book. With *Settings → Booking → Allow Guest Checkout* on, the customer record is created with `status = active` and no password — they receive a magic-link login email if they later want to log in. With *Allow Guest Checkout* off, the checkout asks the user to log in / sign up before completing payment.
+
+---
+
+## What customers can do in My Account
+
+Customers see their bookings, payments, profile and wishlist in **My Account** (the `[yatra_my_account]` shortcode or the My Account block). From Yatra 3.2 they can also:
+
+### Complete or correct traveller details
+
+Passport numbers or dates of birth often aren't at hand at checkout. Customers can fill them in later:
+
+- A booking with required traveller details still empty shows **Traveller details missing — Complete now**.
+- **Edit traveller details** opens the fields of your Booking Form's traveller section ([Settings → Booking Form](/settings#_4-booking-form)) — date of birth, nationality, passport, dietary needs, whatever you ask for. File-upload fields aren't included.
+- Each change is checked like the checkout does (a required field can't be emptied) and is recorded in the booking history.
+- Customers can also add a traveller who was booked but never entered.
+- Available while the booking is pending or confirmed, **until the travel date**.
+
+### Ask to change or cancel a booking
+
+- The booking has a **Request a change or cancellation** form. The customer picks *change* or *cancel* and writes a message.
+- You get an email (reply goes straight to the customer), the request shows on the booking with a **Mark as resolved** button, and it's recorded in the booking history.
+- **Nothing is cancelled or refunded until you do it**, so your own policy still applies.
+- One open request of each kind (change, cancel) at a time per booking.
+- Turn it off, or stop requests a number of days before travel, under <span class="screen-path">Yatra → Settings → Booking → Changes & Cancellations</span>.
+
+### Pay the remaining balance
+
+**Pay Remaining Balance** appears when there is a balance and at least one online payment method is on. It's hidden when only Pay Later or Bank Transfer are on, because they can't take a balance payment. To ask for a specific amount, send a [payment link](/booking-workspace#send-a-payment-link) instead.
 
 ---
 
@@ -434,7 +468,7 @@ A second dropdown filter: **All Ratings**, **5 Stars**, **4 Stars**, **3 Stars**
 
 Each row exposes: **Approve**, **Mark as Pending**, **Edit**, **Mark as Spam**, **Move to Trash**, **Delete permanently**.
 
-Configuration for the entire review system (auto-approve, require-booking-to-review, minimum rating, review-reminder days) lives under [Settings → Review](/settings#_7-review).
+Configuration for the entire review system (auto-approve, require-booking-to-review, minimum rating, review-reminder days) lives under [Settings → Review](/settings#_8-review).
 
 ---
 
@@ -498,11 +532,15 @@ After picking a mode you get the full form:
 | **Amount**                       | ✅       | The discount value (e.g. `15` for 15% off, or `25.00` for $25 off). |
 | **Max Discount Amount**          | —        | Caps a percentage discount at an absolute value.                  |
 | **Valid From** / **Expiry Date** | —        | Both optional; either or both can be left blank.                  |
-| **Usage Limit**                  | —        | Total uses across all customers. `0` = unlimited.                 |
-| **Usage Limit Per Customer**     | —        | Caps per-customer redemptions.                                    |
+| **Usage Limit**                  | —        | Total uses across all customers. `0` = unlimited. Counts the bookings that used the code; cancelled and failed bookings don't count. Enforced from Yatra 3.2. |
+| **Usage Limit Per Customer**     | —        | How many bookings one customer (matched by email) can make with the code. Cancelled, failed and refunded bookings don't count. Enforced from Yatra 3.2. |
 | **Min Booking Total**            | —        | Discount only applies above this amount.                          |
 | **Applicable To**                | ✅       | *All trips* or *Specific trips* → picks Trip IDs.                 |
-| **First Time Customer Only**     | —        | Restrict the code to customers with zero previous bookings.       |
+| **First Time Customer Only**     | —        | Only customers (matched by email) with no earlier booking can use the code. Cancelled and failed bookings don't count. Enforced from Yatra 3.2. |
+
+::: tip When coupon limits are checked (Yatra 3.2+)
+Before 3.2 these three limits weren't enforced — a code set to *Usage limit 1* kept giving its discount. Now **Usage Limit** is checked when the code is applied, and **Usage Limit Per Customer** and **First Time Customer Only** are checked when the customer submits the booking (that's when their email is known). The customer then sees "You have already used this coupon as many times as it allows." or "This coupon is for first-time customers only."
+:::
 
 For **Group** and **Promo + Group** modes there are extra fields:
 
@@ -526,13 +564,13 @@ A quick reminder of the order events fire so the admin behaviour above makes sen
 
 1. Customer picks a trip → clicks **Book Now**.
 2. Customer fills in: lead traveler / contact info, per-traveler fields, optional emergency contact, optional notes — all driven by your [Booking Form Builder](/settings#_4-booking-form).
-3. (Pro) Customer signs any required **Trip Consent** forms.
-4. Customer picks a payment method — Yatra runs the payment intent via the gateway (PayPal / Stripe / etc.).
-5. On success the booking moves from **Pending** → **Confirmed** and a confirmation email goes out.
+3. Customer picks a payment method — Yatra runs the payment intent via the gateway (PayPal / Stripe / etc.).
+4. On success the booking moves from **Pending** → **Confirmed** and a confirmation email goes out.
+5. (Pro) Once confirmed, any **Trip Consent** forms are emailed to the travelers (not signed at checkout).
 6. (Pro) The booking is pushed to **Google Calendar**.
 7. (Pro) If **Scheduled Payments** is on, the balance charge is queued.
 8. Travel date passes → cron flips the booking to **Completed**.
-9. (Free) After *Review Reminder Days* (default 7), an email asks for a review.
+9. (Free) After *Review Reminder Days* (default 3), an email asks for a review.
 
 ---
 

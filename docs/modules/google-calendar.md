@@ -160,7 +160,7 @@ Event times use the **Calendar time zone** if set, otherwise your site's time zo
 
 **Events show wrong timezone** — your site time zone is wrong. Set it under [Settings → General → Timezone](/settings#_1-general). Google Calendar events use the site's time zone, not the customer's.
 
-**`redirect_uri_mismatch` during OAuth** — the Authorized redirect URI in Google Cloud doesn't match what Yatra is sending. Copy the URI from <span class="screen-path">Yatra → Google Calendar</span> exactly and paste into the Cloud Console.
+**`redirect_uri_mismatch` during OAuth** — the Authorized redirect URI in Google Cloud doesn't match what Yatra is sending. Copy the URI from <span class="screen-path">Yatra → Settings → Integration → Google Calendar</span> exactly and paste into the Cloud Console.
 
 **`Google Calendar API has not been used in project ... before`** — you skipped Step 2. Open <https://console.cloud.google.com/apis/library> and enable the Calendar API.
 

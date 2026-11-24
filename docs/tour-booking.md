@@ -69,7 +69,7 @@ Clicking **+ Add New Trip** opens a small modal (not a full page). It asks for:
 | Trip Title   | ✅       | Used for the public page and the slug.                                         |
 | Trip URL     | ✅       | Auto-generated from the title. Click *Customize URL* to override. Lowercase letters, digits, hyphens only. |
 
-A live preview of the full URL renders below. Click **Create & Continue** to create the draft and jump to the Trip Builder. See [Create a trip → Step 2](/trip-creation#step-2-click-add-new-trip-modal-popup) for the full flow.
+A live preview of the full URL renders below. Click **Create & Continue** to create the draft and jump to the Trip Builder. See [Create a trip → Step 2](/trip-creation#step-2-—-click-add-new-trip-→-modal-popup) for the full flow.
 
 ---
 
@@ -92,7 +92,7 @@ The builder has a **vertical phase sidebar** with these sections (top to bottom)
 | 9 | SEO & Marketing               | 3 — Optimization | —      |
 | 10 | Advanced Settings            | 4 — Advanced  | —        |
 
-Top-right action bar stays sticky: **Preview**, **Save Draft** / **Update Draft**, **Publish Trip** / **Update Trip** (with a chevron-down dropdown for status variants: *Save as Draft*, *Save for Review*, *Mark as Approved*, *Publish*, *Suspend*, *Archive*).
+Top-right action bar stays sticky: **Preview**, **Save Draft** / **Update Draft** (not shown once a trip is published), **Publish Trip** / **Update Trip** (with a chevron-down dropdown for status variants: *Save as Draft*, *Save for Review*, *Mark as Approved*, *Publish*, *Suspend*, *Archive*).
 
 ---
 
@@ -154,7 +154,7 @@ Five sub-blocks inside one section.
 
 | Field                | Notes                                                       |
 | ---                  | ---                                                         |
-| Minimum Travelers    | Smallest party size accepted (default 1).                  |
+| Minimum Travelers    | Smallest party size accepted (default 1). Customers can't book fewer; bookings you create in the admin aren't limited. |
 | Maximum Travelers    | Hard cap (default 0 = unlimited).                          |
 
 ### Departure Time
@@ -313,7 +313,7 @@ Per-tab controls: grip handle, label (editable), content-type badge (read-only),
 The top-right action bar:
 
 - **Preview** — opens the public trip in a new tab with current unsaved state.
-- **Save Draft** / **Update Draft** — saves without changing status.
+- **Save Draft** / **Update Draft** — saves the trip as a draft. Not shown on a published trip; to take a live trip offline, choose *Save as Draft* from the dropdown.
 - **Publish Trip** / **Update Trip** — primary blue button with a chevron-down dropdown for status variants:
 
 | Dropdown action     | Resulting status |

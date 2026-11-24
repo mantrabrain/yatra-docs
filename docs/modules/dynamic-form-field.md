@@ -62,7 +62,7 @@ On the tab you want to vary, click **Conditions** in the *Form Section Settings*
 Click **Done**, then **Save Settings** on the page — conditions are part of the booking form configuration. The section card now lists the condition (*On Trekking & Hiking → "Trekker details" · 5 fields*) with an **Edit** shortcut.
 
 ::: tip Which version does a trip get?
-Conditions are checked top to bottom and the **first match wins** — reorder them with the ↑ ↓ arrows in the condition header, and put a specific trip above a broad category. A trip that matches no condition uses the global form. Full rules in [Settings → Conditions](/settings#conditions-per-trip-versions-of-a-form).
+Conditions are checked top to bottom and the **first match wins** — reorder them with the ↑ ↓ arrows in the condition header, and put a specific trip above a broad category. A trip that matches no condition uses the global form. Full rules in [Settings → Conditions](/settings#conditions-—-per-trip-versions-of-a-form-pro).
 :::
 
 A condition is a **copy**, not a link: editing the global form later does not change it. Use **Reset to global form** in the condition header to re-copy. On the Contact form the locked lead-traveller fields stay locked inside every condition.

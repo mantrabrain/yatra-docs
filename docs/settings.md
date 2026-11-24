@@ -13,13 +13,13 @@ next:
 
 ![Yatra Settings landing page — left tab list and General section open](/screenshots/settings/general.webp)
 
-The Settings screen at <span class="screen-path">Yatra → Settings</span> is one screen with **15 tabs** in a left-hand sidebar (Pricing only appears when its Pro modules are active). This page tells you what each tab is for, lists every control inside it, and points at the deeper docs ([Bookings](/booking-settings), [Payments](/payment-settings), [Email](/email-settings)) when there's a dedicated guide.
+The Settings screen at <span class="screen-path">Yatra → Settings</span> is one screen with **17 tabs** in a left-hand sidebar (Pricing only appears when its Pro modules are active). This page tells you what each tab is for, lists every control inside it, and points at the deeper docs ([Bookings](/booking-settings), [Payments](/payment-settings), [Email](/email-settings)) when there's a dedicated guide.
 
 ::: tip Where Yatra stores settings
 Each control writes to its own row in the WordPress `wp_options` table — for example, the **Default currency** dropdown writes to the `yatra_currency` option. Developers can read or override these programmatically — see the [Reading settings programmatically](#reading-settings-programmatically) section at the bottom of this page.
 :::
 
-## The 15 tabs
+## The tabs
 
 | # | Tab | What it controls | Pro-only fields? |
 | --- | --- | --- | --- |
@@ -28,16 +28,18 @@ Each control writes to its own row in the WordPress `wp_options` table — for e
 | 3 | [Booking](#_3-booking) | Checkout behaviour, expiry, cancellation, waitlist | No |
 | 4 | [Booking Form](#_4-booking-form) | Drag-and-drop builder for the checkout form | No (Pro extends per-trip) |
 | 5 | [Payment](#_5-payment) | Test mode, deposits, partial / scheduled payments | Some (deposit / scheduled = Pro) |
-| 6 | [Pricing](#_6-pricing) | Discount stacking — how Advanced Discount and Dynamic Pricing combine | Pro-conditional (visible when both modules are on) |
+| 6 | [Pricing](#_6-pricing-pro) | Discount stacking — how Advanced Discount and Dynamic Pricing combine | Pro-conditional (visible when both modules are on) |
 | 7 | [Customer](#_7-customer) | Account behaviour, registration, wishlist | Wishlist = Pro |
 | 8 | [Review](#_8-review) | Review system toggles & moderation | No |
 | 9 | [Tax](#_9-tax) | Tax rates, inclusive pricing, VAT number | No |
 | 10 | [Currency](#_10-currency) | Currency code, position, separators, decimals | No |
 | 11 | [Integration](#_11-integration) | Mailchimp, Facebook Pixel, GA4, Google Calendar, reCAPTCHA | All Pro-conditional |
-| 12 | [Permalink](#_12-permalink) | URL slugs for trips, destinations, activities, categories | No |
-| 13 | [SEO](#_13-seo) | Meta tags for the trip archive | No |
-| 14 | [Advanced](#_14-advanced) | Logging, cache, legal pages, telemetry | No |
+| 12 | [Permalink](#_11-permalink) | URL slugs for trips, destinations, activities, categories | No |
+| 13 | [SEO](#_12-seo) | Meta tags for the trip archive | No |
+| 14 | [Advanced](#_13-advanced) | Logging, cache, legal pages, telemetry | No |
 | 15 | [Search & Listing](#search-listing) | Which trip search-bar fields show; collapse listing filters on mobile (sits between Booking Form and Payment in the admin) | No |
+| 16 | [Labels](#labels) | Rename texts customers see ("Book Now" → "Reserve") — Yatra 3.2+ (sits between Review and Tax in the admin) | No (also renames Pro texts) |
+| 17 | Uninstall | **Delete all data on uninstall** — when on, removing the plugin deletes Yatra's data. This cannot be undone. | No |
 
 ## How to use this page
 
@@ -108,11 +110,21 @@ Day-to-day checkout behaviour. **For the full operator guide, see [Bookings & cu
 | Allow Waitlist                | `allow_waitlist`             | `true`           | Show the *Join waitlist* CTA when a departure is sold out.                       |
 | Booking horizon (months)      | `availability_horizon_months` | `12`            | How far ahead customers can see and book dates on the storefront (1–36). A trip whose *Available To* is earlier stops there. Developers: `yatra_availability_horizon_months` filter. |
 | Waitlist Auto-Confirm         | `waitlist_auto_confirm`      | `false`          | Auto-promote waitlisted bookings when capacity opens up.                         |
-| Cancellation Policy           | `cancellation_policy`        | `full_refund`    | One of `no_refund`, `partial_refund`, `full_refund`. Surfaces on confirmation.   |
-| Cancellation Days Before Departure | `cancellation_days`     | `7`              | Days before travel after which a customer cannot self-cancel.                    |
-| Refund Policy                 | `refund_policy`              | (empty)          | Free-text shown on the booking summary page.                                     |
 | Booking Expiry (hours)        | `booking_expiry_hours`       | `24`             | An unpaid booking left in *Pending* longer than this is cancelled by an hourly sweep, and its seat released. `0` disables it. Only bookings created **after** you update to 3.0.15 are ever expired, so an existing backlog is never cancelled retroactively. Deposit-paid, confirmed and unverified-guest bookings are never touched. Developers: `yatra_auto_expire_bookings`. |
 | Booking Reminder (days)       | `booking_reminder_days`      | `3`              | How many days before travel the pre-trip reminder is emailed, once per booking, by a daily sweep — to confirmed bookings, plus pending ones that have paid a deposit. A booking made or confirmed *inside* that window (e.g. booked 1 day before a 3-day reminder) gets it on the next daily run, as long as the trip hasn't passed *(next release; earlier versions skipped it)*. To send one by hand: open the booking → **Resend email → Trip reminder**. `0` disables it. |
+
+### Changes & Cancellations
+
+New in Yatra 3.2. Lets customers ask to change or cancel a booking from **My Account**. You get an email and the request shows on the booking; **nothing is cancelled or refunded until you do it**. See [Manage a booking → Customer requests](/booking-workspace#customer-requests-change-or-cancel).
+
+| Control | Setting key | Default | Notes |
+| --- | --- | --- | --- |
+| Let customers request a change or cancellation | `customer_requests_enabled` | `true` | Adds a **Request a change or cancellation** form to the booking in the customer's account. |
+| Accept requests until (days before travel) | `customer_request_cutoff_days` | `0` | After this, customers are asked to contact you instead. `0` = until the travel date. |
+
+::: tip Cancellation policy
+The old global *Cancellation Policy*, *Cancellation Days Before Departure* and *Refund Policy* settings were removed in 3.0.5 — they never enforced anything. Customers still can't cancel a booking themselves: from Yatra 3.2 they can only **ask** (see above). Put your cancellation terms in each trip's cancellation copy in the Trip editor; bookings are cancelled by an admin.
+:::
 
 ::: tip Where's the booking page picker?
 The booking flow lives at `/{booking_base}/{trip-slug}/` by default (configured on the [Permalink](#_11-permalink) tab). There's no "embed the booking app inside a WordPress page" toggle in this build — earlier versions of the doc mentioned `use_booking_page` and `booking_page_id`, but the source no longer exposes that setting.
@@ -132,7 +144,7 @@ The **Auto-Confirm Bookings** control (`auto_confirm_mode`) decides when a booki
 **Upgrading from the on/off toggle.** A site that had *Auto-Confirm Bookings* **on** maps to `all` — identical behaviour. A site that had it **off** maps to `online` — identical for PayPal, the synchronous gateways and every payment that settles the balance in full (3.0.14 already confirmed those). The one difference: with the toggle off, a **deposit / partial payment through Stripe, Razorpay or T-Bank** used to confirm the booking anyway (those gateways ignored the setting — the bug this release fixes); it now waits as *Pending* until the balance is paid. Choose `all` to keep deposits confirming. A pending deposit booking still holds its seat, is never expired by the unpaid-booking cleanup, has its scheduled installments processed, and receives the pre-trip reminder (with its outstanding-balance note). Brand-new installs default to `online`. Pick **Don't auto-confirm** if you want every booking to wait for manual review.
 :::
 
-Offline methods are governed separately: **bank transfer** always waits for manual verification, and **pay-later** confirmation is controlled by *Settings → Payment → Auto-confirm Pay Later bookings* (which applies under the `none` mode). Developers can override the decision per booking with the [`yatra_confirm_booking_on_payment`](/hooks-filters) filter.
+Offline methods are governed separately: **bank transfer** always waits for manual verification, and **pay-later** confirmation is controlled by *Settings → Payment → Auto-confirm Pay Later bookings* (on by default), which is honoured under both `none` and `online` from Yatra 3.2 — before 3.2 it was ignored under `online`. Pay Later bookings are never cancelled for being unpaid. Developers can override the decision per booking with the [`yatra_confirm_booking_on_payment`](/hooks-filters) filter.
 
 ## 4. Booking Form
 
@@ -148,7 +160,7 @@ This tab renders the **Booking Form Builder** component — a drag-and-drop buil
 - **Each section has its own on/off toggle.** Turning a whole section off hides every field in it (including locked ones) from the checkout — see [Turning sections on or off](#turning-sections-on-or-off) below.
 
 ::: tip Different forms for different trips
-Need a *Dietary requirements* question only on food tours, or a shorter traveller form on day trips? With the Pro **Dynamic Form Field** module each form tab gets a **Conditions** button: a condition is a full alternative version of that form (title, description, fields) used on the trips it names. See [Conditions — per-trip versions of a form](#conditions-per-trip-versions-of-a-form) below and [Modules → Dynamic Form Field](/modules/dynamic-form-field).
+Need a *Dietary requirements* question only on food tours, or a shorter traveller form on day trips? With the Pro **Dynamic Form Field** module each form tab gets a **Conditions** button: a condition is a full alternative version of that form (title, description, fields) used on the trips it names. See [Conditions — per-trip versions of a form](#conditions-—-per-trip-versions-of-a-form-pro) below and [Modules → Dynamic Form Field](/modules/dynamic-form-field).
 :::
 
 ### Text Block (display-only content)
@@ -206,7 +218,7 @@ Test-mode, payment-flow toggles, and deposit / scheduled-payment behaviour. **Fo
 | Control              | Setting key            | Default | Notes                                                                  |
 | ---                  | ---                    | ---     | ---                                                                    |
 | Test Mode            | `payment_test_mode`    | `true`  | Master test-mode switch — applied to every gateway. Turn off when you go live. |
-| Auto-Confirm Pay Later Bookings | `auto_confirm_pay_later` | `false` | Confirm "Pay Later" bookings immediately instead of leaving them in *Pending*. |
+| Auto-Confirm Pay Later Bookings | `auto_confirm_pay_later` | `true` | Confirm "Pay Later" bookings immediately instead of leaving them in *Pending*. Honoured unless Auto-Confirm is set to *Auto-confirm all* (which confirms every booking anyway). |
 
 ### Partial Payments <span class="pro-pill">PRO</span>
 
@@ -235,7 +247,7 @@ Test-mode, payment-flow toggles, and deposit / scheduled-payment behaviour. **Fo
 
 ### Gateways
 
-The list of available gateways (PayPal, Pay Later — free; Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net, Bank Transfer — Pro) is rendered as a row of cards lower on the tab. Each card has an **Enable** toggle and a **Settings** button that expands the gateway's credentials form. Full per-gateway details: [Payments](/payment-settings).
+The list of available gateways (PayPal, Pay Later and — from Yatra 3.2 — Bank Transfer are free; Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net and T-Bank are Pro) is rendered as a row of cards lower on the tab. Each card has an **Enable** toggle and a **Settings** button that expands the gateway's credentials form. Full per-gateway details: [Payments](/payment-settings).
 
 ::: warning Server-authoritative amounts (3.0.4+)
 The `POST /payment/create-intent` endpoint **ignores** any client-supplied `amount` and recomputes from the booking row when a `booking_id` is provided. See [Payments → security model](/payment-settings#payment-flow-security-model-3-0-4).
@@ -305,7 +317,28 @@ Trip-review form behaviour.
 | Auto-Approve Reviews          | `auto_approve_reviews`    | `false` | Skip moderation queue.                                      |
 | Enable Review Moderation      | `review_moderation`       | `true`  | Reviews go to a *Pending* queue (visible at <span class="screen-path">Yatra → Reviews</span>). |
 | Minimum Rating                | `min_rating`              | `1`     | Lowest star value the form accepts (1–5).                   |
-| Review Reminder Days          | `review_reminder_days`    | `7`     | Days after trip completion to email the *Leave a review* link. |
+| Review Reminder Days          | `review_reminder_days`    | `3`     | Days after trip completion to email the *Leave a review* link. |
+
+## Labels
+
+New in Yatra 3.2. Rename texts your customers see — for example "Book Now" → "Reserve" or "Travelers" → "Guests" — without a translation plugin.
+
+To rename a text:
+
+1. Open <span class="screen-path">Yatra → Settings → Labels</span>.
+2. Click one of the **Common texts** (Book Now, Check Availability, Enquire, Traveler, Travelers, Select travelers, per person, Itinerary, Overview, Trip Details, Departure, Group Departure, Complete Booking, Pay Now, Reviews, FAQ, Location), or click **Add a label**.
+3. In the left field, enter Yatra's text **exactly as it appears in English**. In the right field, enter what customers should see.
+4. Save the settings.
+
+How it works:
+
+- It applies on the **website**, the **booking pages** and in **emails**. Admin screens keep the original wording.
+- It matches the **whole text**, not part of it: "Book Now" renames the "Book Now" button but not a longer sentence that contains those words. Capital letters must match.
+- It also renames **Yatra Pro's** customer-facing texts — the Multi-Trip Cart's "Add to cart", for example.
+- It works on translated sites too: enter the English original, and your label replaces the translation.
+- Up to 200 labels.
+
+Developers: the `yatra_label_override_domains` filter controls which text domains can be renamed (default `yatra` and `yatra-pro`).
 
 ## 9. Tax
 
@@ -337,7 +370,7 @@ Display formatting for monetary values across the site.
 | Decimal Places        | `currency_decimals`    | `2`     | 0–4. Most fiat = 2; 0 for JPY / KRW.                                 |
 
 ::: tip Multi-currency switching
-Per-trip currency overrides and a customer-facing currency switcher are provided by Pro modules. The free schema stores only a single base currency.
+Yatra uses this single store currency for every booking, payment, email and invoice — there are no per-trip currency overrides. With Yatra Pro (Growth or Scale), the [Currency Switcher](/modules/currency-switcher) <span class="pro-pill">PRO</span> module lets visitors **see** trip prices converted into other currencies while browsing; checkout still charges in this store currency. Its rates are set in a **Currency switcher** card on this tab, shown only while the module is on.
 :::
 
 ## 11. Integration
@@ -348,7 +381,7 @@ Configuration for built-in third-party integrations. Most blocks **only appear w
 
 ### Google Calendar <span class="pro-pill">PRO</span>
 
-Renders conditionally when the Google Calendar module is enabled. Exposes OAuth credentials, target calendar ID, and sync direction. See [Modules → Google Calendar](/modules#google-calendar-integration).
+Renders conditionally when the Google Calendar module is enabled. Exposes OAuth credentials and the target calendar. Sync is one-way — Yatra pushes to Google; changes made in Google are not read back. See [Modules → Google Calendar](/modules#google-calendar-integration).
 
 ### Mailchimp <span class="pro-pill">PRO</span>
 
@@ -417,7 +450,7 @@ Each input shows the resulting public URL beneath it, with a **View** link so yo
 The whole permalink set passes through the `yatra_permalink_bases` filter — useful if you're enforcing localised slugs from a custom plugin. See [Hooks & filters → Front-end routing](/hooks-filters#front-end-routing-templates).
 
 ::: warning Customer account URL lives elsewhere
-The slug for the customer-account area is configured under [Customer → Customer Account Page](#_6-customer) as `customer_account_page` — **not** on this tab. Older revisions of this page listed an `account_base` here; the source doesn't expose that field.
+The slug for the customer-account area is configured under [Customer → Customer Account Page](#_7-customer) as `customer_account_page` — **not** on this tab. Older revisions of this page listed an `account_base` here; the source doesn't expose that field.
 :::
 
 ## 12. SEO

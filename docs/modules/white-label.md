@@ -24,7 +24,7 @@ The **White Label** module rebrands the entire Yatra plugin as your own product.
 | A logo (PNG / SVG / WebP, ~64×64 px) | Your design |
 | A primary brand color (hex code) | Your style guide |
 
-> **Scale tier only.** White Label is the only feature gated to Scale licenses specifically — Growth licenses see the upgrade card. Starter sees no module at all.
+> **Scale tier only.** White Label — like Team & Access, Webhooks and Channel Manager — needs a Scale license. Starter and Growth licenses see the module listed but can't enable it.
 
 ## What gets rebranded
 
@@ -33,7 +33,7 @@ The **White Label** module rebrands the entire Yatra plugin as your own product.
 | **Admin sidebar logo** | Your logo + brand name replace the Yatra logo + "Yatra" wordmark. |
 | **Plugin list (Plugins screen)** | Plugin name, description, and "Author" line replaced. |
 | **Admin emails** | "From" name + footer text use your brand. |
-| **Customer-facing PDFs** | Booking confirmation, invoice, itinerary PDFs use your logo + brand. |
+| **Customer-facing PDFs** | Invoice, voucher and itinerary PDFs print your logo and use your header colour. (Without White Label they show no logo. The business name, address and contact details on PDFs always come from <span class="screen-path">Settings → General</span>.) |
 | **Frontend booking widget** | Powered-by hidden, button colors match your brand. |
 | **Setup wizard** | Branded onboarding for sub-admins. |
 | **Sidebar menu structure** | Rename, reorder, hide, re-icon, or promote any sidebar entry. |
@@ -48,7 +48,7 @@ The **White Label** module rebrands the entire Yatra plugin as your own product.
 ## Step 1 — Enable the module
 
 1. Open <span class="screen-path">Yatra → Modules</span>.
-2. Find **White Label** → toggle on. The toggle is disabled on Starter / Growth tier — only Scale Yearly + Scale Lifetime price IDs qualify.
+2. Find **White Label** → toggle on. The toggle is disabled on Starter / Growth tier — only Scale price IDs (Yearly or Lifetime, 1 or 15 sites) qualify.
 3. A new menu entry **White Label** appears in the sidebar (under the Crown icon).
 
 ## Step 2 — Brand identity (Branding tab)
@@ -60,7 +60,7 @@ Open <span class="screen-path">Yatra → White Label → Branding</span>.
 | Field | Notes |
 | --- | --- |
 | **Plugin name** | Display name everywhere "Yatra" used to appear. e.g. *Acme Trips* or *Adventure Booking Pro*. |
-| **Company name** | Shown as the plugin author + in PDF footers. e.g. *Acme Travel Co.* |
+| **Company name** | Shown as the plugin author. e.g. *Acme Travel Co.* (PDFs use the company name from Settings → General.) |
 | **Website URL** | Where the brand name in the sidebar links to. Defaults to your WordPress home URL. |
 | **Support URL** | Where the in-admin help links go. e.g. `https://acme-trips.com/support`. Leave blank to fall through to wpyatra support. |
 | **Logo URL** | Upload via the WP Media library or paste a URL. Recommended: SVG or PNG at 64×64 px, transparent background. The sidebar renders it at 32×32 inside a colored badge. |
@@ -130,7 +130,7 @@ After saving all tabs:
 1. **Hard reload** (Cmd/Ctrl+Shift+R) the Yatra admin — branding loads as part of the initial HTML payload.
 2. Open <span class="screen-path">Plugins</span> in WordPress admin and confirm the plugin row shows your renamed name + author.
 3. Trigger a test booking email — check the From name + footer.
-4. Generate a test booking confirmation PDF — check the logo + branding.
+4. Download a test invoice or voucher PDF — check the logo and header colour.
 5. Open the live site — check the booking widget's button color matches.
 
 ## Multi-site agencies
@@ -139,8 +139,9 @@ If you manage many client sites with Scale licenses, you can ship a single small
 
 ```php
 // wp-content/mu-plugins/agency-defaults.php
-add_filter('yatra_white_label_default_settings', function ($defaults) {
-    return array_merge($defaults, [
+// WordPress core's default_option_{option} filter — applies until the option is first saved.
+add_filter('default_option_yatra_white_label_settings', function ($defaults) {
+    return array_merge((array) $defaults, [
         'plugin_name' => 'Acme Trips',
         'company_name' => 'Acme Travel Co.',
         'website_url' => 'https://acme-trips.com',
@@ -151,7 +152,7 @@ add_filter('yatra_white_label_default_settings', function ($defaults) {
 });
 ```
 
-Defaults apply until the client overrides them via the UI, so you can ship a branded install + let the client tweak from there.
+Defaults apply until the White Label settings are first saved in the UI, so you can ship a branded install + let the client tweak from there.
 
 ## REST API
 
@@ -160,7 +161,7 @@ Defaults apply until the client overrides them via the UI, so you can ship a bra
 | `/yatra/v1/white-label/settings` | GET | Read settings + meta (license tier, agency info, upgrade URL). |
 | `/yatra/v1/white-label/settings` | PUT | Save settings. Rejects non-Scale licenses with HTTP 403. |
 
-Both gated on `manage_options` + Scale-active license. The response shape is documented in [REST API reference](/api-reference#white-label).
+Both gated on `manage_options` + Scale-active license. The response shape is documented in [REST API reference](/api-reference#pro-modules-additional-routes).
 
 ## WP-CLI: `wp yatra white-label audit`
 
@@ -194,24 +195,22 @@ Doesn't catch every possible leak (it can't scan PDFs already generated, third-p
 
 | Hook | Purpose |
 | --- | --- |
-| `yatra_get_brand_name` (filter) | Override the brand name everywhere — handy for sub-site instance variations. |
-| `yatra_get_brand_icon_url` (filter) | Override the logo URL. |
-| `yatra_white_label_default_settings` (filter) | Set agency-wide defaults — see *Multi-site agencies* above. |
-| `yatra_is_agency_active` (filter) | Drives every Agency-gated feature. Returns `true` when the license is Scale Yearly or Scale Lifetime. Filter return value is cached per-request. |
+| `yatra_brand_name` (filter) | Override the brand name everywhere — handy for sub-site instance variations. |
+| `yatra_brand_icon_url` (filter) | Override the logo URL. |
+| `yatra_is_agency_active` (filter) | Drives every Agency-gated feature. Returns `true` when the license is any Scale plan (Yearly or Lifetime, 1 or 15 sites). Filter return value is cached per-request. |
 | `yatra_is_ai_eligible` (filter) | Same shape, returns `true` for Growth + Scale. Drives the AI Assistant + WhatsApp gates. |
 | `yatra_pro_agency_license_info` (filter) | Returns the agency license payload (expires, tier, customer info) for use in dashboards. |
 | `yatra_white_label_active` (filter) | Returns `true` when the module toggle is on. Use to gate code that depends on rebranding being live. |
 
 ## What "Scale tier" means
 
-EDD price IDs that qualify as Scale, in order of seniority:
+Default EDD price IDs and the tier each maps to (internal slugs `personal` / `growth` / `agency` are unchanged; only the display names are Starter / Growth / Scale):
 
-| Price ID | Tier | Source |
+| Price ID | Plan | What it unlocks |
 | --- | --- | --- |
-| 4 | **Scale Lifetime** | Default. |
-| 3 | **Scale Yearly** | Default. |
-| 2 | Growth Yearly | Unlocks AI + WhatsApp **not** White Label. |
-| 1 | Personal Yearly | No premium modules. |
+| 3, 6, 7, 8 | **Scale** (1 site Yearly / Lifetime, 15 sites Yearly / Lifetime) | Every Pro module, including White Label, Team & Access, Webhooks, Channel Manager. |
+| 2, 5 | Growth Yearly / Lifetime | Starter modules + AI Assistant + WhatsApp — **not** White Label. |
+| 1, 4 | Starter Yearly / Lifetime | The standard Pro modules; no Growth or Scale modules. |
 
 Override the defaults via the `YATRA_PRO_AGENCY_PRICE_IDS` constant or the `yatra_pro_agency_price_ids` filter — agencies running their own reseller stores can map custom EDD price IDs to Scale tier.
 
@@ -246,8 +245,8 @@ The brand-name rewrite in the admin replaces text nodes only — it walks the DO
 ## Useful links
 
 - [Settings → Advanced](/settings#_13-advanced) — Yatra-side advanced flags (debug mode, capability mapping).
-- [Hooks & filters](/hooks-filters#white-label) — full filter signatures.
-- [REST API](/api-reference#white-label) — endpoint schemas.
+- [Hooks & filters](/hooks-filters) — full filter signatures.
+- [REST API](/api-reference#pro-modules-additional-routes) — endpoint schemas.
 
 ## Where to read more
 

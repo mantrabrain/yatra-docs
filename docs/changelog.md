@@ -21,7 +21,49 @@ This is the operator-facing release log for Yatra Free and Yatra Pro. The canoni
 
 ## Yatra Free
 
-### Unreleased — next release
+### 3.2.0 — 23 November 2026
+
+Feature release. Safe to update. If you use Yatra Pro, update it to 3.2 as well — several Pro 3.2 features need Yatra 3.2 and switch on once both plugins are on 3.2. Three behaviour changes to know about: coupon limits are now enforced, Pay Later bookings are no longer auto-cancelled, and Yatra's CSS/JS no longer load on every page.
+
+**New — booking workspace** ([Manage a booking](/booking-workspace))
+
+- **Record payment** (bank transfer, cash, card terminal, cheque): the balance and payment status update, and the receipt email goes out if it is on. It refuses more than the balance due — use **Adjust price** first if the customer owes more. A payment that pays a pending booking in full confirms it, under the same Auto-Confirm setting as online payments.
+- **Adjust price**: a discount or surcharge with a reason.
+- **Refund** on each payment, recorded in the booking's ledger. For **PayPal** (Advanced mode) it can also send the money back through PayPal in one step (Stripe too, with Yatra Pro 3.2). If the provider refuses, nothing is recorded. PayPal refunds now use the payment's currency (they were always requested in US dollars).
+- **Payment link**: ask the customer to pay any part of the balance. Works once, expires after 14 days, can be cancelled or emailed straight away, no login needed. Needs an online payment method; open links can't ask for more than the balance together.
+- **History & notes**: every payment, refund, status change, email, price change, edit and automatic cancellation, plus internal notes.
+
+**New — CSV exports**: the bookings list (with its filters), the customer list, and a **departure manifest** (Departures → a departure → Download manifest). Formula-like cells are neutralised.
+
+**New — Settings → Labels**: rename customer-facing texts ("Book Now" → "Reserve") on the site, booking pages and emails, including Yatra Pro's texts. See [Settings → Labels](/settings#labels).
+
+**New — Tools → WP Travel Engine**: import WP Travel Engine trips, itineraries, FAQs, prices, images and taxonomies, with a dry-run scan, batches and resume. Bookings aren't imported. See [Import from WP Travel Engine](/import-wp-travel-engine).
+
+**New — 12 more blocks, 3 block patterns and 13 Elementor widgets** (16 blocks in total). See [Blocks and Elementor widgets](/blocks).
+
+**New — WPML and Polylang support**: trip pages, listings, booking flow and My Account in every language; trip texts, terms, customised customer emails and payment method names translated on the string-translation screen; customer emails in the booking's language. See [Multilingual sites](/multilingual).
+
+**New — Bank Transfer is free** (it was a Yatra Pro gateway). Bank details now also appear in the booking email. Existing bank details are kept.
+
+**New — My Account**: customers can complete or correct traveller details after booking (until the travel date), and can **ask** to change or cancel a booking — nothing is cancelled until you do it. Settings → Booking → Changes & Cancellations. See [What customers can do in My Account](/booking-settings#what-customers-can-do-in-my-account).
+
+**New — Booking Cutoff per departure date**: once a date is inside its cutoff it is no longer offered on the trip page. See [Availability → Booking cutoff per date](/availability#booking-cutoff-per-date).
+
+**Fix — coupon limits weren't enforced.** *Usage limit* now counts the bookings that used the code (cancelled ones don't count); *Uses per customer* and *First-time customers only* are checked when the booking is submitted.
+
+**Fix — Pay Later bookings were cancelled after 24 hours** for being unpaid. They never are now, and *Auto-confirm Pay Later bookings* (on by default) is honoured under the default Auto-Confirm mode.
+
+**Performance — assets only on Yatra pages.** Yatra's CSS and JavaScript (about 850 KB) load only on Yatra pages and pages showing a Yatra shortcode, block or widget. `add_filter('yatra_load_frontend_assets', '__return_true');` restores the old behaviour. See [FAQs](/faqs#why-don-t-yatra-s-styles-load-on-a-page).
+
+**SEO** — trip pages describe the price (Product + Offer) even before reviews, and the trip itself (TouristTrip with duration and itinerary).
+
+**Other fixes** — admin-created bookings saved in USD on non-USD stores (existing ones corrected once); My Account counts and totals; "Pay Remaining Balance" hidden when only offline methods are on; the booking calendar offering dates past their cutoff; reports missing bookings; Mollie and Paystack (Pro) payments not recorded on return; mobile layout fixes on the booking bar, confirmation page and Booking Card block; clearer customer and admin wording. Full list in the plugin's `readme.txt`.
+
+**Developers** — new hooks for prices, multi-booking checkout, emails and multilingual sites; the bookings endpoint accepts `created_from` / `created_to`. See [Hooks & filters → Yatra 3.2 additions](/hooks-filters#yatra-3-2-additions).
+
+### 3.0.16 – 3.1.3 — selected changes
+
+The notes below were written as "next release" items and shipped across 3.0.16 – 3.1.3. The complete per-version notes are in the plugin's `readme.txt`.
 
 **Change — booking-form answers in emails read like the booking page**
 
@@ -172,7 +214,7 @@ Backward-compatible feature + fix release. Safe to update — **no existing site
 
 **New — booking form read per trip (groundwork for Pro form conditions)**
 
-- `yatra_get_booking_form_config( $trip_id )`, `SettingsService::getBookingFormConfig( $trip_id )` and the `yatra_booking_form_config` filter (now `($config, $tripId)`) let the checkout, the AJAX date-pricing re-render, server-side required-field validation, the booking detail screen and the admin booking form read the form **as the booked trip uses it**. Without Pro nothing changes — the same global form comes back. The Pro **Dynamic Form Field** module uses this for per-trip form versions; see [Settings → Conditions](/settings#conditions-per-trip-versions-of-a-form).
+- `yatra_get_booking_form_config( $trip_id )`, `SettingsService::getBookingFormConfig( $trip_id )` and the `yatra_booking_form_config` filter (now `($config, $tripId)`) let the checkout, the AJAX date-pricing re-render, server-side required-field validation, the booking detail screen and the admin booking form read the form **as the booked trip uses it**. Without Pro nothing changes — the same global form comes back. The Pro **Dynamic Form Field** module uses this for per-trip form versions; see [Settings → Conditions](/settings#conditions-—-per-trip-versions-of-a-form-pro).
 - New endpoint `GET /yatra/v1/settings/booking-form[?trip_id=N]` (readable by anyone who can view or edit bookings) returns the form a trip uses; the booking detail and admin booking form now label fields from it.
 - The Settings → Booking Form editor gains the **Conditions** button and popup, rendered only while the Pro module is enabled. Email merge tags now cover fields that only exist inside a condition.
 
@@ -416,7 +458,31 @@ For 2.x changelog entries, see the plugin's [GitHub releases](https://github.com
 
 ## Yatra Pro
 
-### Unreleased — next release
+### 3.2.0 — 23 November 2026
+
+Feature release. Needs **Yatra 3.2** for Currency Switcher, Multi-Trip Cart, Stripe refunds from the booking screen and translated email templates; with an older Yatra those stay off and everything else works as before.
+
+**Changed — Bank Transfer moved to the free plugin.** With Yatra 3.2+, Yatra Pro no longer registers its own copy; your saved bank details are used as before.
+
+**New — [Multi-Trip Cart](/modules/multi-trip-cart)** (Growth and Scale): *Add to cart* beside a departure's Book Now, a Cart page (`[yatra_cart]`), one checkout and one payment for several trips, one booking per trip. Deposits work with Flexible Payments.
+
+**New — [Currency Switcher](/modules/currency-switcher)** (Growth and Scale): visitors see trip prices converted while browsing (`[yatra_currency_switcher]` or the floating switcher, `?currency=EUR` links); checkout, payments, emails, invoices, My Account and the admin stay in your store currency. Rates under Settings → Currency, optionally updated daily.
+
+**New — GetYourGuide on the Supplier API** ([Channel Manager](/modules/channel-manager#getyourguide-supplier-api), Scale): GetYourGuide asks your site for availability and sends reservations (held 60 minutes) and bookings in real time, sharing one inventory with direct bookings. The previous GetYourGuide connector was never usable. Not yet certified by GetYourGuide — run their self-tests in the Integrator Portal when connecting.
+
+**New — MCP server** ([AI Assistant](/modules/ai-assistant#connect-ai-assistants-mcp-server), Growth and Scale): connect Claude Code, Claude Desktop, Cursor and other MCP clients with a WordPress Application Password (needs HTTPS).
+
+**New — Stripe refunds from the booking screen** (with Yatra 3.2), in the payment's own currency.
+
+**New — email templates in the customer's language** with WPML / Polylang (with Yatra 3.2). Templates sent to you are not translated.
+
+**Fix — your own "Payment Received" and "Partial Payment Received" templates are now sent.** An admin template on *Partial Payment Received* replaces the standard admin "Payment received" email for a deposit (needs Yatra 3.2). See [Email Automation](/modules/email-automation).
+
+**Fix — Mollie and Paystack payments weren't recorded** (wrong webhook address; a signature check that could never pass). Now recorded from webhooks and, with Yatra 3.2, when the customer returns. Deposits are credited as deposits.
+
+### 3.0.13 – 3.1.3 — selected changes
+
+The notes below were written as "next release" items and shipped across 3.0.13 – 3.1.3. The complete per-version notes are in the plugin's `readme.txt`.
 
 **New — your own text on Google Calendar events**
 
@@ -507,7 +573,7 @@ Requires the matching Free release for per-trip forms to take effect (an older F
 
 **New — Email Automation: Global & Override email templates**
 
-- Email → Templates is split into **Global templates** (the list as before) and **Override templates**. An override is a trip-specific version of a global template — same event and merge tags, its own wording — applied only to bookings on the trips, categories (sub-categories included) or trip types it names. Most specific match wins (trip › category › trip type, then priority); no match → the global template, so nothing changes until an override is created. See [Email → Global & Override templates](/email-settings#global-override-templates).
+- Email → Templates is split into **Global templates** (the list as before) and **Override templates**. An override is a trip-specific version of a global template — same event and merge tags, its own wording — applied only to bookings on the trips, categories (sub-categories included) or trip types it names. Most specific match wins (trip › category › trip type, then priority); no match → the global template, so nothing changes until an override is created. See [Email → Global & Override templates](/email-settings#global-override-templates-pro).
 - Add an override from a global row's **Add override…** action (or **+ Add override**); the popup asks which trips first and starts from a copy. **View as a trip** shows exactly which template each event uses for a trip; the editor has a **Try it with a real trip** card (not saved) that also drives preview / test; Email logs show *Global · Override: name*.
 - Covers every booking-bound customer and admin email incl. reminders and scheduled-payment mails. Overrides are stored as ordinary template rows with an empty `event_key`, so an older Pro build never sends them as extra emails. Pairs with Free 3.0.16+ for `trip_id` in variables; on older Free the trip is resolved from the booking id.
 - Docs fix: the Email Automation page described sequence audience filters (destinations, customer country, trip type) that the sequence editor does not have; it now documents the real *All trips / Specific trips* filter.

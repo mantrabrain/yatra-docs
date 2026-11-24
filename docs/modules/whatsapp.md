@@ -13,7 +13,7 @@ next:
 
 ![Yatra → WhatsApp — Delivery / Templates / Widget / Logs tabs unlocked by this module](/screenshots/modules/whatsapp-delivery.webp)
 
-WhatsApp drives 90%+ open rates and a fraction of the spam complaints email gets — for tour operators that means customers actually **see** their booking confirmation, payment reminder, and "your trip starts tomorrow" message. The **WhatsApp Notifications** module sends transactional messages via Meta's official **WhatsApp Business Cloud API**, routes inbound replies into the Enquiries inbox, and ships a public click-to-WhatsApp widget for your site.
+WhatsApp drives 90%+ open rates and a fraction of the spam complaints email gets — for tour operators that means customers actually **see** their booking confirmation, payment reminder, and "your trip starts tomorrow" message. The **WhatsApp Notifications** module sends transactional messages via Meta's official **WhatsApp Business Cloud API**, records inbound replies in the WhatsApp message log (with STOP-keyword opt-out), and ships a public click-to-WhatsApp widget for your site.
 
 ## What you'll need
 
@@ -27,7 +27,7 @@ WhatsApp drives 90%+ open rates and a fraction of the spam complaints email gets
 | Permanent access token | Generated in Business Settings → System Users |
 | Webhook verify secret | Your app's App Secret (Settings → Basic) |
 
-> **Meta bills you directly per conversation.** Yatra never proxies messages. As of 2026, Meta charges $0.005–$0.05 per conversation depending on category + country — usually a fraction of SMS cost.
+> **Meta bills you directly.** Yatra never proxies messages and adds no markup. What each message costs depends on its category and the recipient's country — see Meta's published WhatsApp Business pricing.
 
 ## What it unlocks
 
@@ -36,8 +36,8 @@ WhatsApp drives 90%+ open rates and a fraction of the spam complaints email gets
 | **Delivery tab** | Cloud API credentials + business identifiers + sender display name + admin notification phone. |
 | **Templates tab** | All your message templates (bundled system templates + custom). Inline editor + test-send button per template. |
 | **Widget tab** | Floating "Chat on WhatsApp" button + single-trip CTA + the `[yatra_whatsapp_button]` shortcode. |
-| **Logs tab** | Per-message delivery log — who, when, template, Meta's response, conversation cost. |
-| **Inbound replies** | Customer replies route into <span class="screen-path">Yatra → Enquiries</span> alongside web enquiries. |
+| **Logs tab** | Per-message delivery log — who, when, template, Meta's response. Yatra doesn't record what Meta charged; see your Meta billing. |
+| **Inbound replies** | Customer replies are recorded in the WhatsApp message log (<span class="screen-path">Yatra → WhatsApp → Logs</span>, `inbound` direction). They are not added to Enquiries. A STOP / UNSUBSCRIBE reply opts the number out. |
 | **Event-driven sends** | Bookings, payments, departures, reviews — each Yatra event maps to a template. |
 
 ## Step 1 — Get WhatsApp Cloud API access
@@ -78,12 +78,12 @@ Click **Test connection** to verify the token works against the `/v17.0/{phone_n
 
 ## Step 4 — Configure the webhook (optional)
 
-Inbound replies route into the Enquiries inbox so you can carry the conversation through your normal CRM. To enable:
+The webhook brings in delivery statuses and inbound replies (logged under <span class="screen-path">Yatra → WhatsApp → Logs</span>; STOP replies opt the number out). To enable:
 
 1. Copy the webhook URL displayed under <span class="screen-path">Yatra → WhatsApp → Delivery → Webhook URL</span>.
 2. In <span class="screen-path">Meta for Developers → your app → WhatsApp → Configuration</span>, paste the URL and set the verify token to the **Webhook verify secret** you saved in Step 3.
 3. Subscribe to the `messages` field.
-4. Send yourself a test message from a personal WhatsApp → it should appear in <span class="screen-path">Yatra → Enquiries</span> within ~3 seconds.
+4. Send yourself a test message from a personal WhatsApp → it should appear in <span class="screen-path">Yatra → WhatsApp → Logs</span> as an `inbound` message. Inbound messages are not added to Enquiries. Replying **STOP** opts the number out.
 
 Without a webhook, you can still **send** transactional messages — you just won't receive replies back into Yatra.
 
@@ -133,7 +133,7 @@ Submit corrected templates the same way you submitted the first one — they go 
 
 ### Merge tags
 
-All Yatra merge tags from the email system are honored — full list under [Email & notifications → merge tags](/email-settings#merge-tags). Most-used in WhatsApp templates:
+All Yatra merge tags from the email system are honored — full list under [Email & notifications → merge tags](/email-settings#available-merge-tags). Most-used in WhatsApp templates:
 
 ```
 {{customer_name}}        {{trip_name}}           {{booking_id}}
@@ -184,7 +184,7 @@ Meta requires that customers **opt in** before they receive non-template message
 - The checkbox value is recorded against the customer's `opt_in` flag.
 - Sends to non-opted-in customers are skipped + logged.
 
-Opt-in state is stored in a dedicated `wp_yatra_whatsapp_opt_in` table with a unique index on the phone number, so lookups are O(1) even at scale. STOP / UNSUBSCRIBE keywords in inbound replies flip the row to opted-out; subsequent inbound replies flip it back to opted-in (which is the implicit consent for the next 24-hour conversation window).
+Opt-in state is stored in a dedicated `wp_yatra_whatsapp_opt_in` table with a unique index on the phone number, so lookups are O(1) even at scale. STOP / UNSUBSCRIBE keywords in inbound replies flip the row to opted-out; subsequent inbound replies flip it back to opted-in (treated as renewed consent).
 
 ## Step 7 — Verify it works
 
@@ -237,18 +237,13 @@ After each successful sweep, the `yatra_whatsapp_retention_swept` action fires w
 | `/yatra/v1/whatsapp/templates/{id}/versions` | GET | List the template's version snapshots, newest first. |
 | `/yatra/v1/whatsapp/templates/{id}/versions/{versionId}/restore` | POST | Restore the template from a snapshot. Captures the current state first so the restore itself can be undone. |
 
-All write endpoints require `manage_options` + Growth/Scale-active license. See [REST API reference](/api-reference#whatsapp) for the full schema.
+All write endpoints require `manage_options` + Growth/Scale-active license. See [REST API reference](/api-reference#pro-modules-additional-routes) for the full schema.
 
 ## Hooks & filters
 
 | Hook | Purpose |
 | --- | --- |
-| `yatra_whatsapp_should_send` (filter) | Last gate before the API call. Return `false` to skip the send. Useful for per-customer opt-out logic. |
-| `yatra_whatsapp_template_body` (filter) | Edit the rendered body after merge-tag substitution but before the API call. |
-| `yatra_whatsapp_provider` (filter) | Swap the WhatsApp transport — defaults to Meta Cloud API, but you can route through Twilio or 360Dialog by registering a custom provider. |
-| `yatra_whatsapp_message_sent` (action) | Fires on each successful send with the Meta `message_id` + cost data. |
-| `yatra_whatsapp_message_failed` (action) | Fires on API error — useful for alerting / fallback to SMS. |
-| `yatra_whatsapp_inbound_message` (action) | Fires when a webhook delivers an inbound reply, before it's routed to Enquiries. |
+| `yatra_whatsapp_event_definitions` (filter) | Add or change the booking events that WhatsApp templates can be attached to. |
 | `yatra_whatsapp_retention_days` (filter) | Override the 90-day default for message-log retention. Capped at 730 days. |
 | `yatra_whatsapp_retention_swept` (action) | Fires after each successful retention sweep with the row count + the window in days. |
 
@@ -264,16 +259,16 @@ All write endpoints require `manage_options` + Growth/Scale-active license. See 
 
 **Customer receives "Hi `{{customer_name}}`" with the literal merge tag** — the *Meta template name* under Yatra and the approved Meta template don't share parameter shapes. Meta-approved templates use positional placeholders (`{{1}}`, `{{2}}`); the module maps merge tags onto those positions. Re-submit your template body without literal merge-tag names.
 
-**Inbound replies don't appear in Enquiries** — webhook setup incomplete. Re-check Step 4 + look at <span class="screen-path">Yatra → WhatsApp → Logs</span> filtered by `inbound` direction. Common failure: webhook URL points at HTTP instead of HTTPS; Meta requires TLS.
+**Inbound replies don't appear in the Logs** — webhook setup incomplete. Re-check Step 4 + look at <span class="screen-path">Yatra → WhatsApp → Logs</span> filtered by `inbound` direction. Common failure: webhook URL points at HTTP instead of HTTPS; Meta requires TLS.
 
-**Conversation cost higher than expected** — Meta bills *per 24-hour conversation*, not per message. A back-and-forth thread in the same day is one conversation; the next day's reply starts a new one. Use <span class="screen-path">Yatra → WhatsApp → Logs</span> to see the conversation cost Meta charged on each send.
+**Costs higher than expected** — Meta bills you directly at its published rates, which depend on the message category and the recipient's country. Check your bill in Meta Business Manager; <span class="screen-path">Yatra → WhatsApp → Logs</span> shows what was sent, not what it cost.
 
 ## Useful links
 
 - [Email & notifications](/email-settings) — the merge-tag catalog WhatsApp templates share with email.
 - [Settings → Advanced → Debug mode](/settings#_13-advanced) — captures Meta request/response pairs.
-- [Hooks & filters](/hooks-filters#whatsapp) — full filter signatures.
-- [REST API](/api-reference#whatsapp) — endpoint schemas.
+- [Hooks & filters](/hooks-filters) — full filter signatures.
+- [REST API](/api-reference#pro-modules-additional-routes) — endpoint schemas.
 - [Meta WhatsApp Cloud API docs](https://developers.facebook.com/docs/whatsapp/cloud-api) — provider reference.
 
 ## Where to read more

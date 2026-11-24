@@ -61,11 +61,11 @@ Pick *Group Only* or *Promo + Group* and continue.
 | **Amount**                       | ✅       | The discount value (e.g. `15` for 15% off, `25.00` for $25 off). |
 | **Max Discount Amount**          | —        | Caps a percentage discount at an absolute value.                  |
 | **Valid From / Expiry Date**     | —        | Both optional.                                                    |
-| **Usage Limit**                  | —        | Total uses across all customers. `0` = unlimited.                 |
-| **Usage Limit Per Customer**     | —        | Caps per-customer redemptions.                                    |
+| **Usage Limit**                  | —        | Total uses across all customers. `0` = unlimited. Counts bookings that used the code (cancelled and failed ones don't count). Enforced from Yatra 3.2. |
+| **Usage Limit Per Customer**     | —        | Bookings one customer (matched by email) can make with the code. Checked when the booking is submitted. Enforced from Yatra 3.2. |
 | **Min Booking Total**            | —        | Discount only applies above this amount.                          |
 | **Applicable To**                | ✅       | *All trips* or *Specific trips* → pick trip IDs.                  |
-| **First Time Customer Only**     | —        | Restrict to customers with zero previous bookings.                |
+| **First Time Customer Only**     | —        | Only customers (matched by email) with no earlier booking. Checked when the booking is submitted. Enforced from Yatra 3.2. |
 
 ### Group-mode-only fields
 
@@ -186,7 +186,7 @@ The [Discount Applied](/booking-settings#_8-discount-applied-conditional) sideba
 
 **Group discount doesn't auto-apply** — make sure the discount status is *Publish*. Group discounts respect *Valid From / Expiry Date* like promo codes do. Also confirm the traveler count meets the *Group Discount Min Size*.
 
-**Customer types a code but it doesn't apply** — check status (must be *Publish*, not *Draft*), expiry, usage limits, and *Applicable To* (the trip they're booking must be in the allowed list).
+**Customer types a code but it doesn't apply** — check status (must be *Publish*, not *Draft*), expiry, usage limits, and *Applicable To* (the trip they're booking must be in the allowed list). From Yatra 3.2 the usage limit, uses per customer and first-time-only rules are enforced — before 3.2 they weren't, so a code that used to work past its limit now stops.
 
 **Discount doubled** — only one *promo code* applies per booking. If you're seeing two, one is likely a Group Discount that's stacking — that's expected.
 

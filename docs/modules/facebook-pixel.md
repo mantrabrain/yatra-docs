@@ -13,7 +13,7 @@ next:
 
 ![Yatra Settings → Integration → Facebook Pixel panel](/screenshots/modules/facebook-pixel-settings.webp)
 
-Track booking funnel events in **Meta Events Manager** — `ViewContent`, `InitiateCheckout`, `Purchase` — both **browser-side** (via the standard pixel snippet) and **server-side** (via Meta's **Conversions API**, so events still register when an ad-blocker strips the browser tag).
+Track booking funnel events in **Meta Events Manager** — `PageView`, `ViewContent`, `InitiateCheckout` and `Purchase`, and only those — both **browser-side** (via the standard pixel snippet) and **server-side** (via Meta's **Conversions API**, so events still register when an ad-blocker strips the browser tag).
 
 ## What you'll need
 
@@ -93,6 +93,8 @@ When you send the same event from browser AND server, Meta deduplicates using `e
 | `InitiateCheckout` | Same as above + `num_items` (traveler count)                                    |
 | `Purchase`         | Same + `event_id` (booking number), `value`, `currency`, `num_items`            |
 
+Yatra sends no other events — no `Lead`, `Search`, `AddToCart` or `AddPaymentInfo`. (`Lead` and `Search` appear in the module's list of event names, but nothing fires them.) `PageView` comes from the standard pixel snippet on every page.
+
 For Conversions API events Yatra also sends hashed customer email + phone (SHA-256, in line with Meta's matching requirements) so Meta can attribute the conversion to a Facebook user.
 
 ## Troubleshooting
@@ -120,5 +122,5 @@ For Conversions API events Yatra also sends hashed customer email + phone (SHA-2
 ## Where to read more
 
 - [All modules](/modules#facebook-pixel) — module catalog.
-- [Settings → Integration](/settings#_10-integration) — every field reference.
+- [Settings → Integration](/settings#_11-integration) — every field reference.
 - [Google Analytics 4](/modules/google-analytics) — the GA4 equivalent for ecommerce tracking.

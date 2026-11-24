@@ -131,6 +131,7 @@ export default defineConfig({
                 text: 'Bookings & customers',
                 link: '/booking-settings'
               },
+              { text: 'Manage a booking', link: '/booking-workspace' },
               { text: 'Payments', link: '/payment-settings' },
               { text: 'Email', link: '/email-settings' }
             ]
@@ -141,10 +142,13 @@ export default defineConfig({
               { text: 'Pro modules overview', link: '/third-party-integrations' },
               { text: 'All modules (catalog)', link: '/modules' },
               { text: 'Per-module reference', link: '/modules/' },
+              { text: 'Blocks & Elementor widgets', link: '/blocks' },
               {
                 text: 'Blocks & page builders',
                 link: '/elementor-integration'
               },
+              { text: 'Multilingual (WPML / Polylang)', link: '/multilingual' },
+              { text: 'Import from WP Travel Engine', link: '/import-wp-travel-engine' },
               {
                 text: 'WooCommerce co-existence',
                 link: '/woocommerce-integration'
@@ -211,6 +215,7 @@ export default defineConfig({
             link: '/departures'
           },
           { text: 'Bookings & customers', link: '/booking-settings' },
+          { text: 'Manage a booking (payments, refunds, links, exports)', link: '/booking-workspace' },
           { text: 'Payments', link: '/payment-settings' },
           { text: 'Email & notifications', link: '/email-settings' }
         ]
@@ -221,10 +226,13 @@ export default defineConfig({
         items: [
           { text: 'Pro modules overview', link: '/third-party-integrations' },
           { text: 'All modules (catalog)', link: '/modules' },
+          { text: 'Blocks & Elementor widgets', link: '/blocks' },
           {
             text: 'Blocks & page builders',
             link: '/elementor-integration'
           },
+          { text: 'Multilingual (WPML / Polylang)', link: '/multilingual' },
+          { text: 'Import from WP Travel Engine', link: '/import-wp-travel-engine' },
           {
             text: 'WooCommerce & co-existence',
             link: '/woocommerce-integration'
@@ -251,6 +259,8 @@ export default defineConfig({
           { text: 'Abandoned Booking Recovery', link: '/modules/abandoned-booking-recovery' },
           { text: 'Custom Landing Pages', link: '/modules/custom-landing-pages' },
           { text: 'AI Assistant', link: '/modules/ai-assistant' },
+          { text: 'Currency Switcher', link: '/modules/currency-switcher' },
+          { text: 'Multi-Trip Cart', link: '/modules/multi-trip-cart' },
           { text: 'WhatsApp Notifications', link: '/modules/whatsapp' },
           { text: 'Channel Manager', link: '/modules/channel-manager' },
           { text: 'Webhooks', link: '/modules/webhooks' },

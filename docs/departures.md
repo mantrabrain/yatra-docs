@@ -104,10 +104,10 @@ Open the Departures list and click **+ Add Departure**, or jump to a specific tr
 | **Price Override**     | —        | Currency amount. When set, overrides the trip's regular price for this date only. Useful for holiday surcharges or flash sales. |
 | **Notes**              | —        | Internal-only — never shown to customers. Useful for "Lead guide: Sarah" or "Bus contracted from XYZ rentals".  |
 
-When you save, the departure becomes part of [Availability Layer 1 (Manual Dates)](/availability#layer-1-manual-availability-dates-the-override) — it overrides any recurring rule that covers the same date.
+When you save, the departure becomes part of [Availability Layer 1 (Manual Dates)](/availability#layer-1-—-manual-availability-dates-the-override) — it overrides any recurring rule that covers the same date.
 
 ::: tip Why no Trip dropdown?
-The Add Departure form takes the trip from the URL (`?trip_id=…`). To create a departure across multiple trips, repeat the form for each one. Or set up a [Recurring Rule](/availability#layer-2-recurring-availability-rules) per trip if the schedule is regular.
+The Add Departure form takes the trip from the URL (`?trip_id=…`). To create a departure across multiple trips, repeat the form for each one. Or set up a [Recurring Rule](/availability#layer-2-—-recurring-availability-rules) per trip if the schedule is regular.
 :::
 
 ---
@@ -162,12 +162,12 @@ When a departure has to be cancelled (weather, low signup, instructor unavailabl
   <li>Open the departure → click <strong>Cancel</strong>.</li>
   <li>Confirm the cancellation in the prompt.</li>
   <li>Yatra hides the departure from the public date picker immediately and flags every booking on it as <em>affected</em>.</li>
-  <li>For each affected booking — open it, refund through the gateway dashboard, then mark <strong>Refunded</strong> in Yatra. See <a href="/payment-settings#refunds">Payments → Refunds</a>.</li>
+  <li>For each affected booking — open it and click <strong>Refund</strong> on each payment. For PayPal (Advanced mode) and, with Yatra Pro 3.2, Stripe, tick <em>Send the money back through …</em> to refund through the provider in the same step; for other methods, refund from the provider's dashboard or your bank first, then record it. See <a href="/booking-workspace#refund-a-payment">Manage a booking → Refund a payment</a>.</li>
   <li>Email the customers — Yatra doesn't auto-send a cancellation email; write yours manually (or set up the <strong>Booking Cancelled</strong> template under <a href="/email-settings#booking-lifecycle-customer">Email → Templates</a> to fire on the status change).</li>
 </ol>
 
 ::: warning Cancellation doesn't auto-refund
-Yatra never calls the gateway refund API on your behalf — refunds always start from the gateway dashboard so the operator stays in control of timing and fees. Mark refunded in Yatra only after the gateway confirms it.
+Cancelling a departure (or a booking) never refunds anyone by itself — you decide each refund. From Yatra 3.2, the booking's **Refund** button can send the money back through PayPal (Advanced mode) or, with Yatra Pro 3.2, Stripe; you choose that per refund. Other payment methods are refunded from the provider's dashboard or your bank, then recorded with **Refund**.
 :::
 
 ---
@@ -215,7 +215,7 @@ While a customer is in checkout, Yatra holds their seats with a temporary **book
 
 ## Operating tips
 
-- **Use rules, not hand-rolled departures, for regular schedules.** A "Saturdays + Sundays, May–Sep" trip with manually-created Departures becomes 40 rows to maintain. One [Recurring Rule](/availability#layer-2-recurring-availability-rules) does the same thing and is easier to edit.
+- **Use rules, not hand-rolled departures, for regular schedules.** A "Saturdays + Sundays, May–Sep" trip with manually-created Departures becomes 40 rows to maintain. One [Recurring Rule](/availability#layer-2-—-recurring-availability-rules) does the same thing and is easier to edit.
 - **Use individual Departures (or manual Availability Dates) for special cases.** A specific Saturday with a price surcharge, a custom guide, or a different start time — that's exactly what the per-departure form is for.
 - **Cap each departure separately, even on flexible trips.** A trip-wide cap protects against runaway bookings; per-departure caps protect against overbooking a small group.
 - **Move Past departures to Trash monthly.** A long Upcoming/Past list slows the date picker.

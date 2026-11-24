@@ -1,6 +1,6 @@
 ---
 title: AI Assistant
-description: Step-by-step setup for the Yatra Pro AI Assistant module — bring your own OpenAI or Anthropic key and unlock inline AI generation across the trip editor, SEO fields, enquiry inbox, and dashboard digest.
+description: Step-by-step setup for the Yatra Pro AI Assistant module — bring your own OpenAI or Anthropic key and unlock inline AI generation across the trip editor, SEO fields, enquiry inbox, and dashboard digest — plus an MCP server that lets Claude, Cursor and other AI assistants work with your trips and bookings.
 prev:
   text: Custom Landing Pages
   link: /modules/custom-landing-pages
@@ -42,6 +42,7 @@ The module surfaces six AI affordances across the admin:
 | **Enquiry inbox** — *Draft reply* | Reads the enquiry thread + linked trip + customer history; drafts a courteous reply tailored to the lead's question. |
 | **Dashboard digest** | A daily AI-written summary of bookings, revenue, top trips, and what to do next. |
 | **Brand voice settings** | A single configuration block all surfaces share so generated copy stays consistent. |
+| **MCP server** (Yatra Pro 3.2+) | Connect Claude Code, Claude Desktop, Cursor or another MCP client to your site and ask it about bookings, departures and sales. See [Connect AI assistants (MCP server)](#connect-ai-assistants-mcp-server). Doesn't need an OpenAI or Anthropic key. |
 
 ## Step 1 — Enable the module
 
@@ -51,7 +52,7 @@ The module surfaces six AI affordances across the admin:
 
 ## Step 2 — Connect your provider
 
-Open <span class="screen-path">Yatra → AI Assistant → Providers</span>.
+Open <span class="screen-path">Yatra → AI Assistant → API Keys</span>.
 
 ![Providers tab — paste an OpenAI or Anthropic key, click Test, see the masked last-4 hint](/screenshots/modules/ai-assistant-providers.webp)
 
@@ -123,6 +124,131 @@ The Yatra dashboard's "Today" widget gets an AI-written paragraph each day summa
 
 Generated once per day on first admin load — cached for 24h so you don't burn tokens on every page refresh.
 
+## Connect AI assistants (MCP server) {#connect-ai-assistants-mcp-server}
+
+<span class="pro-pill">PRO</span> **Growth** or **Scale** · needs **Yatra 3.2** and **Yatra Pro 3.2** or later · AI Assistant module on
+
+Yatra Pro runs an **MCP server** on your site. MCP (Model Context Protocol) is the standard way AI assistants such as Claude and Cursor connect to other software. Once connected, you can ask your assistant things like *"who travels on the 12 March departure?"*, *"which bookings still owe money?"* or *"draft a 7-day Mustang trek"*, and it looks the answer up on your site.
+
+The MCP server doesn't use your OpenAI or Anthropic key — the assistant you connect (and its own subscription) does the thinking. Yatra only answers its questions.
+
+### What you need
+
+| Thing | Notes |
+| --- | --- |
+| Yatra Pro **Growth** or **Scale**, AI Assistant module on | The server is only switched on while the module is enabled and the plan includes it. |
+| Your site on **HTTPS** | WordPress only allows Application Passwords over HTTPS. |
+| A WordPress **Application Password** | The assistant signs in with it. Create it on the profile of the WordPress user the assistant should act as. |
+| An MCP client | Claude Code, Claude Desktop, Cursor, VS Code or another client that connects with a URL and a header. |
+
+The server address is:
+
+```
+https://your-site.com/wp-json/yatra/v1/mcp
+```
+
+### To connect an assistant
+
+1. Open <span class="screen-path">Yatra → AI Assistant → Connect AI assistants</span>. The page shows your **Server URL**.
+2. Click **Open Application Passwords** and create an Application Password for the WordPress user the assistant should act as. A staff account with only the access it needs is the safest choice (see [Permissions](#mcp-permissions) below).
+3. Back on **Connect AI assistants**, type that user's **username** and the new **password**. The page builds the `Authorization` header for you in your browser — it isn't saved or sent anywhere.
+4. Copy the ready-made setup for your client and paste it in:
+
+**Claude Code** — run in a terminal:
+
+```bash
+claude mcp add --transport http yatra https://your-site.com/wp-json/yatra/v1/mcp --header "Authorization: Basic <your-credentials>"
+```
+
+**Claude Desktop** — add to `claude_desktop_config.json` (needs Node.js, because it uses `mcp-remote`):
+
+```json
+{
+  "mcpServers": {
+    "yatra": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://your-site.com/wp-json/yatra/v1/mcp",
+        "--header",
+        "Authorization:Basic <your-credentials>"
+      ]
+    }
+  }
+}
+```
+
+**Cursor, VS Code and other clients** — add to `mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "yatra": {
+      "url": "https://your-site.com/wp-json/yatra/v1/mcp",
+      "headers": {
+        "Authorization": "Basic <your-credentials>"
+      }
+    }
+  }
+}
+```
+
+`<your-credentials>` is the username and Application Password joined with a colon and Base64-encoded — the Connect AI assistants page fills it in for you.
+
+To disconnect an assistant, revoke its Application Password on the WordPress user's profile.
+
+::: warning Clients that only sign in with OAuth
+Clients that can only connect with OAuth — for example claude.ai web custom connectors and ChatGPT connectors — aren't supported yet. Use a client that lets you send a header, as in the examples above.
+:::
+
+### What the assistant can do
+
+The server offers 13 tools. Ten only read; three change something.
+
+**Read-only**
+
+| Tool | What it returns |
+| --- | --- |
+| `list_trips` | Trips matching a search (published, draft or any), with id, title, status, duration and price. |
+| `get_trip` | One trip in full: descriptions, duration, group size, prices, locations, itinerary day titles, FAQs, included/excluded items. |
+| `check_availability` | A trip's bookable dates between two dates, with seats left. |
+| `list_departures` | Scheduled departures across all trips, with capacity, seats booked and status. |
+| `get_departure_manifest` | Everyone travelling on a departure — one row per traveller, with the lead contact, emergency contact and payment state. |
+| `find_bookings` | Bookings by reference, name or email, status, payment status, trip, travel dates or booking dates. |
+| `get_booking` | One booking with travellers, payments (including refunds), amounts and customer requests. |
+| `get_booking_history` | A booking's timeline: creation, payments, refunds, status changes, emails sent, price changes, edits and internal notes. |
+| `list_customers` | Customers by name or email, with number of bookings and total spent. |
+| `sales_summary` | Revenue, bookings, average booking value, status counts and top trips for bookings made between two dates. |
+
+**Changes something**
+
+| Tool | What it does |
+| --- | --- |
+| `add_booking_note` | Adds an internal note to a booking. Only your team sees it; nothing is sent to the customer. |
+| `set_booking_status` | Sets a booking to *pending*, *confirmed*, *completed* or *cancelled*. The customer may get the matching email if you have it switched on. Cancelling **does not** refund money. This tool is flagged to the assistant as destructive, and the assistant is told to ask you before using it. |
+| `create_trip_draft` | Creates a new trip (title, short and full description, duration, price, maximum travellers) as a **draft**. It is never published — you review and publish it in the admin. |
+
+The assistant can't take payments, issue refunds, change prices or delete anything.
+
+Text written by customers or travellers (for example enquiry messages or booking requests) is passed to the assistant marked as untrusted, with an instruction to treat it as data and never follow requests found in it.
+
+### Permissions {#mcp-permissions}
+
+- The assistant works **as the WordPress user whose Application Password it uses**. Every tool runs through the same Yatra REST endpoints as the admin screens, so it can see and do exactly what that user can in Yatra — no more.
+- The user needs at least one Yatra staff capability (view trips, bookings, customers or departures); otherwise the server answers *"This user has no access to Yatra."*
+- The departure manifest also needs the **export bookings** capability (`yatra_export_bookings`).
+- Use the [Team & Access](/modules/team-access) module to give the assistant's user a narrow role — for example a read-only role that can view bookings but not change their status.
+- Every tool call is written to the AI Assistant's append-only [audit log](#append-only-audit-log) (task `mcp:<tool name>`, success or failure, and the trip, booking or departure id).
+- Requests sent from a web page on another domain are refused, so a website can't drive the server with a visitor's browser.
+
+### Troubleshooting the connection
+
+- **"Connect AI assistants" isn't in the AI Assistant menu** — it appears only with Yatra Pro 3.2 or later, on Growth or Scale, with the AI Assistant module on.
+- **401 — "Sign in with a WordPress Application Password"** — the header is missing or wrong, or the password was revoked. Rebuild the header on the Connect AI assistants page. Some hosts strip the `Authorization` header; ask your host to pass it through to PHP.
+- **403 — "This user has no access to Yatra"** — the WordPress user has no Yatra capabilities. Use a staff account.
+- **No Application Passwords section on the profile** — the site isn't on HTTPS, or a security plugin has turned Application Passwords off.
+
 ## Usage + cost monitoring
 
 Open <span class="screen-path">Yatra → AI Assistant → Usage</span>.
@@ -152,20 +278,17 @@ For agencies embedding AI generation into custom workflows:
 | `/yatra/v1/ai/usage` | GET | Last 30 days of usage rows. |
 | `/yatra/v1/ai/enquiry/{id}/draft-reply` | POST | Draft an AI reply for an enquiry. |
 | `/yatra/v1/ai/dashboard/digest` | GET | Today's AI digest (cached 24h). |
+| `/yatra/v1/mcp` | POST | MCP server (JSON-RPC 2.0, Streamable HTTP, JSON responses only). Signs in with an Application Password; see [Connect AI assistants](#connect-ai-assistants-mcp-server). |
 
-All write endpoints require `manage_options` capability + a Growth/Scale-active license. See [REST API reference](/api-reference#ai-assistant) for the full schema.
+All write endpoints require `manage_options` capability + a Growth/Scale-active license. See [REST API reference](/api-reference#pro-modules-additional-routes) for the full schema.
 
 ## Hooks & filters
 
 | Hook | Purpose |
 | --- | --- |
 | `yatra_ai_providers` (filter) | Add or replace AI providers. Return a map of `{ id: ProviderInstance }`. |
-| `yatra_ai_prompt` (filter) | Last-chance edit of the prompt before it's sent to the provider — useful for compliance-mandated additions. |
-| `yatra_ai_result` (filter) | Post-process the generated text (e.g. profanity filter, regex cleanup). |
-| `yatra_ai_brand_voice` (filter) | Override the brand voice payload per-request — e.g. switch tone for a "luxury collection" subset of trips. |
-| `yatra_ai_should_log_usage` (filter) | Disable per-request usage logging if you have GDPR concerns about prompt content. Returns bool. |
-| `yatra_ai_generation_completed` (action) | Fires after each successful generation with the result + usage data. |
-| `yatra_ai_generation_failed` (action) | Fires when a generation throws — useful for alerting. |
+| `yatra_ai_fallback_used` (action) | Fires when a call falls back to the secondary provider. |
+| `yatra_ai_retry` (action) | Fires on each retry of a transient provider error. |
 | `yatra_ai_pii_mode` (filter) | `soft` / `strict` / `off` — see [PII masking](#pii-masking-for-context-fields). |
 | `yatra_ai_data_residency_region` (filter) | `us` / `eu` / `global` / empty — stamped on every audit row. |
 | `yatra_ai_region_endpoints` (filter) | Per-provider region → URL map. Used by the data-residency helper to pick the endpoint. |
@@ -176,11 +299,13 @@ All write endpoints require `manage_options` capability + a Growth/Scale-active 
 | `yatra_ai_retry_attempts` (filter) | Override the default 3 retry attempts per provider. |
 | `yatra_ai_fallback_provider` (filter) | Override which provider is the fallback when the primary fails. |
 | `yatra_ai_is_transient_error` (filter) | Widen / narrow the heuristic that decides which errors are retryable vs permanent. |
+| `yatra_mcp_tools` (filter) | Add or remove MCP server tools. Each tool: `title`, `description`, `schema` (JSON Schema), `handler` (callable receiving the arguments), optional `read_only` / `destructive` flags. |
+| `yatra_mcp_tool_result` (filter) | Change a tool's result before it is returned to the assistant. Receives the result, the tool name and the arguments. |
 
 ## Privacy
 
 - Prompts are sent **directly** to your configured provider — they don't transit any Yatra-owned infrastructure.
-- The Usage tab records *token counts*, not prompt content. Prompt + response content is never persisted server-side beyond the request lifecycle. The `yatra_ai_should_log_usage` filter lets you disable even the token counts.
+- The Usage tab records *token counts*, not prompt content. Prompt + response content is not written to the usage or audit logs; some results are cached briefly in WordPress transients (the dashboard digest, enquiry-chat drafts for 24 hours, trip-wizard sessions for 2 hours).
 - Your API key is encrypted at rest with libsodium AEAD and decrypted just-in-time per request.
 
 ## PII masking for context fields
@@ -265,15 +390,9 @@ Blocked calls throw a `RuntimeException` ("This AI call was blocked by a site po
 
 Every AI call writes a row to `wp_yatra_ai_audit_log` covering: task, provider, model, prompt tokens, completion tokens, status (success / failure), prompt hash (SHA-256, not the raw prompt), context hash, error message, and a meta JSON column for region / disclosure mode / fallback markers.
 
-There's no update or delete API on the audit log — it's append-only by contract. The retention cron deletes rows older than the configured cut-off (default not auto-pruned; set via the same `yatra_ai_audit_persist_prompt` and related filters described in the source).
+There's no update or delete API on the audit log — it's append-only by contract. A daily retention cron deletes rows older than 180 days (change it with the `yatra_ai_audit_retention_days` filter).
 
-Operators who need full-text prompt retention (legal hold, debugging) can extend the persistence:
-
-```php
-add_filter('yatra_ai_audit_persist_prompt', fn() => true);
-```
-
-The default stores only the SHA-256 hash so the log proves a specific prompt was sent without persisting the contents.
+The log stores only the SHA-256 hash so it proves a specific prompt was sent without persisting the contents. There is no option to store full prompt text.
 
 ## Provider fallback + retry
 
@@ -317,8 +436,8 @@ No UI surface ships with the streaming hook yet — the chat-draft and itinerary
 ## Useful links
 
 - [Settings → Advanced → Debug mode](/settings#_13-advanced) — captures provider request/response pairs for support tickets when set to `Verbose`.
-- [Hooks & filters](/hooks-filters#ai-assistant) — full filter signatures + invocation order.
-- [REST API](/api-reference#ai-assistant) — endpoint schemas.
+- [Hooks & filters](/hooks-filters#pro-ai-assistant-mcp-server) — full filter signatures + invocation order.
+- [REST API](/api-reference#pro-modules-additional-routes) — endpoint schemas.
 
 ## Where to read more
 

@@ -300,4 +300,4 @@ No — it's a Scale-tier Pro module. The free plugin gives the standard WordPres
 
 - [White Label](/modules/white-label) — rebrand the admin, emails, and PDFs for your agency.
 - [Webhooks](/modules/webhooks) — push booking events to your other systems (Zapier, n8n, custom backends).
-- [Audit log retention filter (developer reference)](/api-reference#audit-log) — change retention period via `yatra_audit_retention_days`.
+- [Audit log retention filter (developer reference)](/api-reference#pro-modules-additional-routes) — change retention period via `yatra_audit_retention_days`.

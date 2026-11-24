@@ -70,7 +70,7 @@ Open <span class="screen-path">Yatra → Settings → Integration → Mailchimp<
 | **Audience / List**         | `mailchimp_list_id`           | Dropdown populated after the key verifies. Pick your operator audience.                                    |
 | **Sync customers on booking** | `mailchimp_sync_on_booking` | Push every confirmed-booking customer into the audience.                                                   |
 | **Double opt-in**           | `mailchimp_double_optin`      | Send a confirmation email before adding to the list. Required in EU under GDPR-strict interpretations.    |
-| **Add tags**                | `mailchimp_add_tags`          | Tag the synced contact with the trip slug (and optional extras).                                          |
+| **Add tags**                | `mailchimp_add_tags`          | Tag the synced contact. Yatra adds **`Trip: {trip name}`**, **`Yatra Customer`** and **`Booked`**, plus your default tags. There are no category or destination tags. |
 | **Default tags**            | `mailchimp_default_tags`     | Comma-separated tags applied to *every* synced contact (e.g. `yatra,booking,2026`).                       |
 | **Field mapping**           | `mailchimp_field_mapping`     | Dynamic table of `Yatra field → Mailchimp merge tag`. Defaults map `customer_first_name → FNAME`, `customer_last_name → LNAME`, `phone → PHONE`. Add rows for `booking_total → TOTAL`, `last_trip_date → LASTTRIP`, etc. — but **create the matching merge fields in Mailchimp first** under Audience → Settings → Audience fields and *|MERGE|* tags. |
 
@@ -83,16 +83,17 @@ Use **text** for everything except dates (use **date** in Mailchimp) and numbers
 1. Set Yatra's global *Test mode* to off (Mailchimp sync runs in any mode but you want a real confirmed booking).
 2. Book a trip yourself as a new test customer with an email you can check (`youraddress+yatratest@gmail.com` works on Gmail).
 3. Wait for the booking to flip to **Confirmed**.
-4. In Mailchimp → **Audience → All contacts** → search for that email. The contact should appear with the trip tag attached.
+4. In Mailchimp → **Audience → All contacts** → search for that email. The contact should appear with the `Trip: …`, `Yatra Customer` and `Booked` tags.
 5. If you turned **Double opt-in** on, check the inbox — confirm the subscription before the contact shows as `Subscribed`.
 
 ## When sync happens
 
 | Event                                | What Yatra does                                                                              |
 | ---                                  | ---                                                                                          |
-| Customer completes a booking → status `confirmed` | Adds / updates the contact in your audience, applies default + trip-slug tags.   |
-| Booking moves to `cancelled`         | Adds a `cancelled` tag (configurable). Does not remove the contact.                          |
-| Booking moves to `completed`         | Adds a `completed-2026-03-15`-style tag (the travel-date tag) so you can segment post-trip.  |
+| A booking is created (*sync on booking*, on by default) | Adds / updates the contact in your audience and applies the tags above.     |
+| A payment completes (*sync on payment*, off by default) | Same, when the payment goes through.                                       |
+
+Cancelling or completing a booking doesn't change the contact or its tags, and Yatra never removes a contact.
 
 ## Troubleshooting
 
@@ -117,5 +118,5 @@ Use **text** for everything except dates (use **date** in Mailchimp) and numbers
 ## Where to read more
 
 - [All modules](/modules#mailchimp-integration) — module catalog.
-- [Settings → Integration](/settings#_10-integration) — every field reference.
+- [Settings → Integration](/settings#_11-integration) — every field reference.
 - [Email & notifications](/email-settings) — pair Mailchimp with Yatra's transactional emails for a complete lifecycle.

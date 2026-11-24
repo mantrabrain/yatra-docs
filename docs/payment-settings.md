@@ -7,11 +7,11 @@ description: Beginner-friendly setup guides for every Yatra payment gateway — 
 
 <div class="doc-pro-callout">
   <span class="doc-pro-pill">Pro</span>
-  <span><strong>Stripe and six other gateways are Yatra Pro.</strong> The free plugin ships with PayPal &amp; Pay Later. Activate a license under <em>Yatra → License</em> to unlock the rest.</span>
+  <span><strong>Stripe and six other gateways are Yatra Pro.</strong> The free plugin ships with PayPal, Pay Later and Bank Transfer. Activate a license under <em>Yatra → License</em> to unlock the rest.</span>
   <a class="doc-pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs" target="_blank" rel="noopener">View pricing →</a>
 </div>
 
-Yatra's free plugin includes **PayPal** and **Pay Later** as fully-working gateways. The other seven — Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net, Bank Transfer — are part of **Yatra Pro**.
+Yatra's free plugin includes **PayPal**, **Pay Later** and (from Yatra 3.2) **Bank Transfer** as fully-working gateways. The other seven — Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net, T-Bank — are part of **Yatra Pro**. (Before Yatra 3.2, Bank Transfer was a Pro gateway.)
 
 ::: tip New to payment gateways?
 Each gateway below has a **Before you start → Get your keys → Paste in Yatra → Test it** flow. Follow the steps in order, paste the values into the matching field in <span class="screen-path">Yatra → Settings → Payment</span>, and you'll have a working checkout in under 10 minutes per gateway.
@@ -29,7 +29,8 @@ Each gateway below has a **Before you start → Get your keys → Paste in Yatra
 | **Paystack**         | —    | ✅  | `paystack`       | Africa-first; cards, transfers, mobile money.  |
 | **Square**           | —    | ✅  | `square`         | NA / UK / AU / JP cards.                       |
 | **Authorize.Net**    | —    | ✅  | `authorize_net`  | US-centric merchant accounts.                  |
-| **Bank Transfer**    | —    | ✅  | `bank_transfer`  | Manual settlement; bank details on confirmation. |
+| **Bank Transfer**    | ✅ (3.2+) | ✅  | `bank_transfer`  | Manual settlement; bank details on confirmation. |
+| **T-Bank**           | —    | ✅  | `tbank`          | Russia: bank cards, SBP, T-Pay.                |
 
 ## Where to configure
 
@@ -49,7 +50,7 @@ A single setting — `yatra_payment_test_mode` (default `true`) — drives test 
 
 ## Currency
 
-Configured under <span class="screen-path">Settings → Currency</span> — see [Settings → Currency](/settings#_9-currency). The currency code is global; multi-currency at checkout is a Pro module.
+Configured under <span class="screen-path">Settings → Currency</span> — see [Settings → Currency](/settings#_10-currency). The currency code is global: every booking and payment is in this store currency, and multi-currency checkout is not available (Free or Pro). With Yatra Pro Growth or Scale, the [Currency Switcher](/modules/currency-switcher) <span class="pro-pill">PRO</span> shows visitors converted prices while browsing; checkout still charges in the store currency.
 
 ---
 
@@ -100,18 +101,28 @@ On the app page you'll see:
 
 Keep the page open — you'll need both in a moment.
 
-**Step 3: Paste in Yatra.**
+**Step 3: Add the webhook in PayPal.**
+
+1. In Yatra, copy the read-only **Webhook URL** shown in the PayPal settings (Advanced mode). It is `https://your-site.com/wp-json/yatra/v1/payment/webhook/paypal`.
+2. In your PayPal app, open **Webhooks → Add Webhook**, paste the URL and subscribe to **Payment capture completed**.
+3. Save, then copy the webhook's **Webhook ID** (it starts with `WH-`).
+
+The webhook is a backup that confirms bookings even if the customer closes the browser after paying.
+
+**Step 4: Paste in Yatra.**
 
 | Yatra field          | Where it goes                                                              |
 | ---                  | ---                                                                        |
 | **Mode**             | Select **Advanced (REST)**.                                                |
 | **Client ID**        | The Client ID from the developer app page.                                 |
 | **Client Secret**    | The Secret value (click *Show* in the PayPal dashboard to reveal).         |
+| **Webhook URL**      | Read-only — the URL you added in PayPal in Step 3.                         |
+| **Webhook ID**       | The `WH-…` ID of that webhook. Yatra uses it to verify each incoming PayPal webhook with PayPal's signature-verification API. |
 
-**Step 4: Save**, then enable PayPal, click **Save Settings**.
+**Step 5: Save**, then enable PayPal, click **Save Settings**.
 
-::: tip There's no "Webhook ID" field
-Earlier doc revisions asked for a "Webhook ID" — that field does not exist in `PayPalGateway::getConfigFields()`. PayPal verification is handled internally based on Client ID / Secret.
+::: warning Fill in the Webhook ID
+Without a **Webhook ID**, Yatra can't verify incoming PayPal webhooks and ignores them. Payments still complete when the customer returns to your site, but the webhook backup doesn't work.
 :::
 
 ### Test it
@@ -143,16 +154,18 @@ Not a real payment gateway — it lets customers reserve a booking now and pay l
 | Yatra field                            | Setting ID                | Default | What to put                                                                                                |
 | ---                                    | ---                       | ---     | ---                                                                                                        |
 | **Payment deadline (days)**            | `payment_deadline_days`   | `7`     | Days after booking by which the customer must pay. Shown on the confirmation page and reminder email.      |
-| **Auto-cancel after (days)**           | `auto_cancel_days`        | `14`    | Unpaid bookings older than this are auto-cancelled by the cron. Set `0` to disable auto-cancel.            |
+| **Auto-cancel after (days)**           | `auto_cancel_days`        | `3`     | Shown in the settings, but **not used**: from Yatra 3.2, Pay Later bookings are never cancelled for being unpaid (neither by this field nor by *Booking Expiry*). |
 | **Require deposit at booking**         | `require_deposit`         | `false` | When on, the customer must pay a deposit through a real gateway before the Pay Later flow activates.       |
 | **Deposit amount**                     | `deposit_amount`          | `0`     | Currency amount required as deposit when *Require deposit* is on.                                          |
 | **Payment reminder (days before)**     | `reminder_days`           | `3`     | How many days before the deadline to email the *Payment due* reminder.                                     |
 
 ::: tip Auto-confirm
-The *Settings → Payment → Auto-confirm Pay Later bookings* checkbox (under the Global section) skips the *Pending* state — useful when you're comfortable confirming on trust.
+The *Settings → Payment → Auto-confirm Pay Later bookings* checkbox (under the Global section, **on by default**) confirms Pay Later bookings at checkout instead of leaving them *Pending*. From Yatra 3.2 it is honoured with the default *Auto-confirm online payments only* mode too (it used to be ignored there).
 :::
 
-When customers pick **Pay Later** at checkout, Yatra creates a **Pending** booking. Once you've received the money, mark the payment **Completed** in <span class="screen-path">Yatra → Payments</span>.
+When customers pick **Pay Later** at checkout, Yatra creates the booking (confirmed or pending, per the setting above). Pay Later bookings are **never cancelled automatically for being unpaid**. When the money arrives, open the booking and click **Record payment** — see [Manage a booking → Record a payment](/booking-workspace#record-a-payment).
+
+The customer's My Account doesn't offer **Pay Remaining Balance** when only offline methods (Pay Later, Bank Transfer) are on, because they can't take a balance payment online.
 
 ---
 
@@ -238,7 +251,7 @@ If Test Mode is **off** but you paste a `pk_test_` / `sk_test_` key (a very comm
   <li>Book a trip → pick Stripe at checkout.</li>
   <li>Use Stripe's test card: <code>4242 4242 4242 4242</code> · any future expiry · any 3-digit CVC.</li>
   <li>Verify the booking shows <strong>Confirmed</strong>, payment <strong>Completed</strong>, and the receipt email arrives.</li>
-  <li>Refund from the Stripe dashboard to make sure the webhook flips the payment to <strong>Refunded</strong> in Yatra.</li>
+  <li>Refund from the Stripe dashboard, then record the refund on the payment in Yatra. The <code>charge.refunded</code> webhook is received and fires <code>yatra_stripe_charge_refunded</code>, but it does not change the payment status on its own.</li>
 </ol>
 
 ::: warning Webhook secret is required (3.0.4+)
@@ -515,26 +528,36 @@ Sandbox URL: `https://sandbox.authorize.net`. The global *Test mode* flag flips 
 
 <a id="bank-transfer"></a>
 
-## Bank Transfer <span class="pro-pill">PRO</span>
+## Bank Transfer
 
-No external account, no credentials — you just publish your bank details on the booking confirmation page. The booking is **Pending** until you mark it paid in <span class="screen-path">Yatra → Payments</span>.
+**Free from Yatra 3.2.** Before 3.2 it was a Yatra Pro gateway. Sites that already used it with Yatra Pro keep their bank details — nothing to set up again. (With Yatra 3.2 or later, Yatra Pro no longer adds its own copy; with an older free plugin, Yatra Pro still provides it.)
+
+No external account and no credentials. The customer picks **Bank Transfer** at checkout and sees your bank details, with the booking reference to use as the **Payment Reference**:
+
+- on the booking confirmation page, with the payment deadline;
+- on the invoice;
+- in the booking email (new in 3.2 — the email used to say the details would be sent "separately").
 
 ![Yatra → Settings → Payment → Bank Transfer panel](/screenshots/gateways/bank-transfer-settings.webp)
 
-| Yatra field               | Setting ID          | Notes                                                              |
-| ---                       | ---                 | ---                                                                |
-| **Bank name**             | `bank_name`         | Displayed on the booking confirmation page.                        |
-| **Account holder name**   | `account_name`      | Displayed on the booking confirmation page.                        |
-| **Account number**        | `account_number`    | Displayed on the booking confirmation page.                        |
-| **Routing / SWIFT code**  | `routing_code`      | IBAN, SWIFT, ABA — whichever your bank requires. Free-text.        |
-| **Customer instructions** | `instructions`      | Free-text shown to the customer beneath the bank details.          |
+To set it up, open <span class="screen-path">Yatra → Settings → Payment</span>, enable **Bank Transfer** and fill in its settings:
+
+| Yatra field                 | Setting ID          | Notes                                                              |
+| ---                         | ---                 | ---                                                                |
+| **Bank Name**               | `bank_name`         | Shown to the customer.                                             |
+| **Account Name**            | `account_name`      | The account holder.                                                |
+| **Account Number**          | `account_number`    | Or IBAN.                                                           |
+| **Routing/SWIFT Code**      | `routing_code`      | IBAN, SWIFT, ABA — whichever your bank requires. Free text.        |
+| **Additional Instructions** | `instructions`      | Free text shown to the customer with the bank details.             |
+
+A Bank Transfer booking stays **Pending** until you confirm the money arrived. When it does, open the booking and click **Record payment** (choose *Bank transfer*) — see [Manage a booking → Record a payment](/booking-workspace#record-a-payment). The gateway's title, description and instructions can be translated with WPML or Polylang — see [Multilingual sites](/multilingual).
 
 <div class="pro-callout">
   <div class="pro-callout__head">
     <span class="pro-callout__badge">PRO</span>
     <span class="pro-callout__title">Seven premium gateways — one license</span>
   </div>
-  <p class="pro-callout__desc">Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net, and Bank Transfer all unlock with a single Yatra Pro license.</p>
+  <p class="pro-callout__desc">Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net and T-Bank all unlock with a single Yatra Pro license.</p>
   <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">Compare Yatra Pro plans →</a>
 </div>
 
@@ -596,6 +619,14 @@ An outstanding balance itself is **not** a scheduled payment: it is stored on th
 
 ---
 
+## Payment links (free)
+
+From Yatra 3.2 you can ask a customer to pay any part of a booking's balance with a **payment link** — open the booking and click **Payment link**. The link opens Yatra's balance checkout for exactly that amount, works once, expires after 14 days, can be cancelled, and can be emailed to the customer straight away. It needs at least one online payment method (PayPal, or a Pro card gateway); Pay Later and Bank Transfer can't pay a link.
+
+This is separate from the Pro **Scheduled Payments** balance links above. Full steps: [Manage a booking → Send a payment link](/booking-workspace#send-a-payment-link).
+
+---
+
 ## The Payments admin
 
 ![Payments admin — full payment ledger with status / method / sort](/screenshots/payments/payments-list.webp)
@@ -640,23 +671,17 @@ Click **Save Payment**. The booking's **Due Now** updates instantly.
 
 ## Refunds
 
-| Gateway              | Recommended refund flow                                              |
-| ---                  | ---                                                                  |
-| **PayPal / Stripe**  | Refund in the gateway dashboard first, then mark refunded in Yatra. |
-| **Razorpay / Mollie / Paystack / Square / Authorize.Net** | Same — gateway dashboard first, then mark refunded. |
-| **Pay Later / Bank Transfer** | Refund manually via your bank, then mark refunded.            |
+From Yatra 3.2, refund a payment from the **booking** screen: open the booking, find the payment, and click **Refund**. The refund is added to the booking's ledger next to the original payment.
 
-To mark refunded:
+| Payment made with | What **Refund** does |
+| --- | --- |
+| **PayPal** (Advanced / API mode) | Can send the money back through PayPal and record it in one step (tick *Send the money back through PayPal*), or just record a refund you made yourself. If PayPal refuses, its reason is shown and nothing is recorded. |
+| **Stripe** <span class="pro-pill">PRO</span> | Same, through Stripe — with Yatra Pro 3.2 or later. Refunds in the payment's own currency. |
+| **PayPal** (Simple mode), **Razorpay / Mollie / Paystack / Square / Authorize.Net / T-Bank**, **Pay Later / Bank Transfer** | Records the refund only. Send the money from the provider's dashboard or your bank first. |
 
-- **Single payment** — open <span class="screen-path">Payments</span>, click the row → Edit → set **Status** to **Refunded**.
-- **Bulk** — tick rows in the Payments list → bulk action **Mark as Refunded**.
+Full steps: [Manage a booking → Refund a payment](/booking-workspace#refund-a-payment).
 
-When you mark refunded:
-
-- The payment status changes to **Refunded**.
-- The booking's payment status updates accordingly.
-- An invoice download is still available (now marked refunded).
-- The `yatra_payment_refunded` action fires for downstream automations.
+You can still mark a payment as refunded in <span class="screen-path">Yatra → Payments</span> (row → Edit → **Status: Refunded**, or the bulk action **Mark as Refunded**). That changes the payment's status only; it doesn't add a refund line to the booking's ledger or send any money.
 
 ## Test mode workflow
 

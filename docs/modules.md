@@ -21,7 +21,7 @@ This is the **flat catalog** — every Yatra Pro module on a single page, plus t
 
 Each card carries:
 
-- **Name** + **category badge** (Marketing, Payments, Sales, Bookings, Operations, Integrations).
+- **Name** + **category badge** (Marketing, Payments, Sales, Bookings, Operations, Integrations, Productivity, Communications, Distribution, Branding, Team).
 - **One-paragraph description** of what the module unlocks.
 - **Tags** — a short list of keywords used by the search box at the top.
 - **Enable toggle** — flips state immediately and writes to `wp_options.yatra_modules`.
@@ -33,7 +33,7 @@ Disabling a module hides its UI but **keeps your data** so re-enabling later res
 
 ## Premium payment gateways
 
-One Yatra Pro license unlocks **seven** premium gateways. These don't appear on the Modules screen — they're enabled under <span class="screen-path">Yatra → Settings → Payment</span> (one toggle per gateway, plus the credentials form).
+One Yatra Pro license unlocks **seven** premium gateways. (**Bank Transfer** moved to the free plugin in Yatra 3.2 — see [Payments → Bank Transfer](/payment-settings#bank-transfer).) These don't appear on the Modules screen — they're enabled under <span class="screen-path">Yatra → Settings → Payment</span> (one toggle per gateway, plus the credentials form).
 
 <div class="doc-addon-grid">
 
@@ -73,10 +73,10 @@ One Yatra Pro license unlocks **seven** premium gateways. These don't appear on 
     <a class="doc-addon-card__cta" href="/payment-settings#authorize-net">Setup guide →</a>
   </div>
 
-  <div class="doc-addon-card" id="bank-transfer">
-    <h3 class="doc-addon-card__title">Bank Transfer <span class="doc-pro-pill">Pro</span></h3>
-    <p class="doc-addon-card__copy">Manual / wire-transfer flow. Yatra creates a <em>Pending payment</em> booking and shows your bank details to the customer.</p>
-    <a class="doc-addon-card__cta" href="/payment-settings#bank-transfer">Setup guide →</a>
+  <div class="doc-addon-card" id="tbank">
+    <h3 class="doc-addon-card__title">T-Bank <span class="doc-pro-pill">Pro</span></h3>
+    <p class="doc-addon-card__copy">Russia: bank cards, SBP and T-Pay.</p>
+    <a class="doc-addon-card__cta" href="/payment-settings">Setup guide →</a>
   </div>
 
 </div>
@@ -161,14 +161,14 @@ One Yatra Pro license unlocks **seven** premium gateways. These don't appear on 
 
   <div class="doc-addon-card" id="facebook-pixel">
     <h3 class="doc-addon-card__title">Facebook Pixel <span class="doc-pro-pill">Pro</span></h3>
-    <p class="doc-addon-card__copy">Browser + server-side Conversions API tracking. Granular event toggles and a reports tab for pixel performance.</p>
+    <p class="doc-addon-card__copy">Browser + server-side Conversions API tracking of PageView, ViewContent, InitiateCheckout and Purchase, with per-event toggles.</p>
     <p class="doc-addon-card__meta">Settings: <span class="screen-path">Yatra → Facebook Pixel</span></p>
     <a class="doc-addon-card__cta" href="/modules/facebook-pixel">Details →</a>
   </div>
 
   <div class="doc-addon-card" id="google-analytics-4-enhanced">
     <h3 class="doc-addon-card__title">Google Analytics 4 Enhanced <span class="doc-pro-pill">Pro</span></h3>
-    <p class="doc-addon-card__copy">GA4 ecommerce events for view_item / begin_checkout / purchase / refund. Server-side tracking via Measurement Protocol.</p>
+    <p class="doc-addon-card__copy">GA4 ecommerce events for view_item / add_to_cart / begin_checkout / purchase. Server-side tracking via Measurement Protocol.</p>
     <p class="doc-addon-card__meta">Settings: <span class="screen-path">Yatra → Google Analytics</span></p>
     <a class="doc-addon-card__cta" href="/modules/google-analytics">Details →</a>
   </div>
@@ -176,7 +176,7 @@ One Yatra Pro license unlocks **seven** premium gateways. These don't appear on 
   <div class="doc-addon-card" id="custom-landing-pages">
     <h3 class="doc-addon-card__title">Custom Landing Pages <span class="doc-pro-pill">Pro</span></h3>
     <p class="doc-addon-card__copy">Point destinations, activities, and trip categories at any WordPress page. Use your page builder + Yatra shortcodes; catalog links use the page URL when the module is on.</p>
-    <p class="doc-addon-card__meta">Settings: <span class="screen-path">Yatra → Settings</span> (per-taxonomy)</p>
+    <p class="doc-addon-card__meta">Settings: <strong>Landing page</strong> field on each Destination / Activity / Category form</p>
     <a class="doc-addon-card__cta" href="/modules/custom-landing-pages">Details →</a>
   </div>
 
@@ -197,15 +197,15 @@ One Yatra Pro license unlocks **seven** premium gateways. These don't appear on 
 
   <div class="doc-addon-card" id="trip-consent">
     <h3 class="doc-addon-card__title">Trip Consent <span class="doc-pro-pill">Pro</span></h3>
-    <p class="doc-addon-card__copy">Digital waivers, COVID forms, image-release consents — signed per traveler at checkout. Bookings show a <em>consent signed</em> status.</p>
-    <p class="doc-addon-card__meta">Adds menu: <span class="screen-path">Yatra → Trip Consent</span></p>
+    <p class="doc-addon-card__copy">Digital waivers, COVID forms, image-release consents — emailed once a booking is confirmed (with reminders) and signed online, not at checkout. Bookings show a <em>consent signed</em> status.</p>
+    <p class="doc-addon-card__meta">Adds menu: <span class="screen-path">Yatra → Trips → Trip Consent</span></p>
     <a class="doc-addon-card__cta" href="/modules/trip-consent">Details →</a>
   </div>
 
   <div class="doc-addon-card" id="google-calendar-integration">
     <h3 class="doc-addon-card__title">Google Calendar Integration <span class="doc-pro-pill">Pro</span></h3>
-    <p class="doc-addon-card__copy">Push every confirmed booking and departure to Google Calendar. Multi-calendar selection, per-trip color, automatic re-sync.</p>
-    <p class="doc-addon-card__meta">Adds menu: <span class="screen-path">Yatra → Google Calendar</span></p>
+    <p class="doc-addon-card__copy">Push confirmed bookings to Google Calendar (one-way) — one event per booking, or one per departure. All bookings go to the one calendar you pick; automatic re-sync.</p>
+    <p class="doc-addon-card__meta">Setup: <span class="screen-path">Yatra → Settings → Integration → Google Calendar</span> (one calendar; no per-trip colours)</p>
     <a class="doc-addon-card__cta" href="/modules/google-calendar">Details →</a>
   </div>
 
@@ -215,20 +215,34 @@ One Yatra Pro license unlocks **seven** premium gateways. These don't appear on 
 
 ## Growth + Scale modules
 
-Modules unlocked by the **Growth** tier (and above). These are bring-your-own-credentials integrations — no per-call markup, no proxying.
+Modules unlocked by the **Growth** and **Scale** plans. AI Assistant and WhatsApp are bring-your-own-credentials integrations — no per-call markup, no proxying.
 
 <div class="doc-addon-grid">
 
   <div class="doc-addon-card" id="ai-assistant">
     <h3 class="doc-addon-card__title">AI Assistant <span class="doc-pro-pill">Pro</span></h3>
-    <p class="doc-addon-card__copy">Bring-your-own OpenAI / Anthropic key. Inline sparkle affordances across the trip editor, SEO fields, taxonomy descriptions, and the enquiry inbox. Daily AI digest on the dashboard.</p>
+    <p class="doc-addon-card__copy">Bring-your-own OpenAI / Anthropic key. Inline sparkle affordances across the trip editor, SEO fields, taxonomy descriptions, and the enquiry inbox. Daily AI digest on the dashboard. From Pro 3.2, an <strong>MCP server</strong> lets Claude, Cursor and other AI assistants work with your bookings and trips.</p>
     <p class="doc-addon-card__meta">Adds menu: <span class="screen-path">Yatra → AI Assistant</span></p>
     <a class="doc-addon-card__cta" href="/modules/ai-assistant">Details →</a>
   </div>
 
+  <div class="doc-addon-card" id="multi-trip-cart">
+    <h3 class="doc-addon-card__title">Multi-Trip Cart <span class="doc-pro-pill">Pro</span></h3>
+    <p class="doc-addon-card__copy">New in Pro 3.2. Customers add several trips and dates to a cart and book them in one checkout with one payment. Each trip becomes its own booking. Needs Yatra 3.2+.</p>
+    <p class="doc-addon-card__meta">Adds: <strong>Add to cart</strong> on departures, a <strong>Cart</strong> page (<code>[yatra_cart]</code>)</p>
+    <a class="doc-addon-card__cta" href="/modules/multi-trip-cart">Details →</a>
+  </div>
+
+  <div class="doc-addon-card" id="currency-switcher">
+    <h3 class="doc-addon-card__title">Currency Switcher <span class="doc-pro-pill">Pro</span></h3>
+    <p class="doc-addon-card__copy">New in Pro 3.2. Visitors see trip prices in the currency they choose while browsing; checkout, payments, emails and the admin stay in your store currency. Optional daily rates. Needs Yatra 3.2+.</p>
+    <p class="doc-addon-card__meta">Adds: a <strong>Currency switcher</strong> card in <span class="screen-path">Yatra → Settings → Currency</span>, <code>[yatra_currency_switcher]</code></p>
+    <a class="doc-addon-card__cta" href="/modules/currency-switcher">Details →</a>
+  </div>
+
   <div class="doc-addon-card" id="whatsapp-notifications">
     <h3 class="doc-addon-card__title">WhatsApp Notifications <span class="doc-pro-pill">Pro</span></h3>
-    <p class="doc-addon-card__copy">Transactional WhatsApp messages via Meta's Cloud API — booking confirmations, payment receipts, T-1 reminders, review requests. Inbound replies route into Enquiries. Public click-to-WhatsApp widget.</p>
+    <p class="doc-addon-card__copy">Transactional WhatsApp messages via Meta's Cloud API — booking confirmations, payment receipts, T-1 reminders, review requests. Inbound replies are logged (STOP opts out). Public click-to-WhatsApp widget.</p>
     <p class="doc-addon-card__meta">Adds menu: <span class="screen-path">Yatra → WhatsApp</span></p>
     <a class="doc-addon-card__cta" href="/modules/whatsapp">Details →</a>
   </div>
@@ -245,7 +259,7 @@ Modules gated to the **Scale** tier (Yearly or Lifetime). Built for resellers an
 
   <div class="doc-addon-card" id="channel-manager">
     <h3 class="doc-addon-card__title">Channel Manager <span class="doc-pro-pill">Scale</span></h3>
-    <p class="doc-addon-card__copy">Distribute trips to Viator, GetYourGuide & more OTAs from one dashboard. Real-time inventory + pricing sync. Signed webhook ingestion. Lifecycle dispatch (cancel/modify/no-show). Circuit breaker per channel. Anti-overbooking locks.</p>
+    <p class="doc-addon-card__copy">Sell your trips on <strong>GetYourGuide</strong> through its Supplier API (rebuilt in Pro 3.2): GetYourGuide checks availability on your site and sends reservations and bookings in real time, sharing one inventory with direct bookings. GetYourGuide must certify the connection from your partner account before you go live. Viator is in development.</p>
     <p class="doc-addon-card__meta">Adds menu: <span class="screen-path">Yatra → Channel Manager</span></p>
     <a class="doc-addon-card__cta" href="/modules/channel-manager">Details →</a>
   </div>
@@ -259,14 +273,14 @@ Modules gated to the **Scale** tier (Yearly or Lifetime). Built for resellers an
 
   <div class="doc-addon-card" id="webhooks">
     <h3 class="doc-addon-card__title">Webhooks <span class="doc-pro-pill">Scale</span></h3>
-    <p class="doc-addon-card__copy">Signed outbound HTTPS webhooks for booking, payment and departure events — send them to any CRM, Zapier / Make, Slack or custom receiver. HMAC signatures, retries and a delivery log.</p>
+    <p class="doc-addon-card__copy">Signed outbound HTTPS webhooks for booking, payment, enquiry and reminder events — send them to any CRM, Zapier / Make, Slack or custom receiver. HMAC signatures, retries and a delivery log.</p>
     <p class="doc-addon-card__meta">Adds menu: <span class="screen-path">Yatra → Webhooks</span></p>
     <a class="doc-addon-card__cta" href="/modules/webhooks">Details →</a>
   </div>
 
   <div class="doc-addon-card" id="team-access">
     <h3 class="doc-addon-card__title">Team &amp; Access <span class="doc-pro-pill">Scale</span></h3>
-    <p class="doc-addon-card__copy">Role-based access control for staff — granular capabilities, an audit log, optional two-factor authentication and email invitations to add team members.</p>
+    <p class="doc-addon-card__copy">Role-based access control for staff — granular capabilities, an audit log and email invitations to add team members.</p>
     <p class="doc-addon-card__meta">Adds menu: <span class="screen-path">Yatra → Team</span></p>
     <a class="doc-addon-card__cta" href="/modules/team-access">Details →</a>
   </div>
@@ -289,6 +303,8 @@ Modules gated to the **Scale** tier (Yearly or Lifetime). Built for resellers an
 
 ## The full module list at a glance
 
+22 modules: 14 on every Pro plan (Starter, Growth, Scale), 4 on Growth and Scale, 4 on Scale only.
+
 | Module | Tier | Category | Settings page after enable |
 | --- | --- | --- | --- |
 | Google Calendar Integration | Starter + | Integrations | `yatra-google-calendar` |
@@ -305,12 +321,14 @@ Modules gated to the **Scale** tier (Yearly or Lifetime). Built for resellers an
 | Dynamic Pricing | Starter + | Sales | `dynamic-pricing` |
 | Custom Landing Pages | Starter + | Marketing | `yatra-settings` |
 | Abandoned Booking Recovery | Starter + | Marketing | `abandoned-recovery` |
-| **AI Assistant** | **Growth +** | AI / Content | `ai-assistant` |
-| **WhatsApp Notifications** | **Growth +** | Messaging | `whatsapp` |
+| **AI Assistant** | **Growth +** | Productivity | `ai-assistant` |
+| **Currency Switcher** | **Growth +** | Sales | Settings → Currency |
+| **Multi-Trip Cart** | **Growth +** | Sales | (no settings — creates a Cart page) |
+| **WhatsApp Notifications** | **Growth +** | Communications | `whatsapp` |
 | **Channel Manager** | **Scale** | Distribution | `channel-manager` |
 | **White Label** | **Scale** | Branding | `white-label` |
 | **Webhooks** | **Scale** | Integrations | `webhooks` |
-| **Team & Access** | **Scale** | Administration | `team` |
+| **Team & Access** | **Scale** | Team | `team` |
 
 ## Where to read more
 

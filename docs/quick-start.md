@@ -26,10 +26,12 @@ After you activate Yatra for the first time, you'll see a notice prompting you t
 
 <ol class="step-list">
   <li><strong>Welcome</strong> — overview of what's about to happen.</li>
-  <li><strong>Pages</strong> — Yatra creates the pages it needs (Booking, My Account, Search). You can keep the defaults or pick existing pages.</li>
-  <li><strong>Currency</strong> — pick your currency (USD, EUR, INR, NPR, etc.), symbol position, and decimal options.</li>
-  <li><strong>Payment</strong> — toggle the gateways you have ready. PayPal and Pay Later in free, plus Pro gateways if your license is active.</li>
-  <li><strong>Done</strong> — you'll see a quick recap and a link to <strong>Add your first trip</strong>.</li>
+  <li><strong>Business</strong> — your business name, public contact email and phone, used on receipts and emails.</li>
+  <li><strong>Bookings</strong> — allow guest bookings, and send booking confirmation emails.</li>
+  <li><strong>Email &amp; payments</strong> — the "from" name and email on outgoing mail, and whether gateways stay in test mode.</li>
+  <li><strong>Currency</strong> — your currency, symbol position, separators and decimal places.</li>
+  <li><strong>Theme</strong> — optionally use the Resa theme, built for travel sites.</li>
+  <li><strong>Done</strong> — go to your dashboard, or import sample data.</li>
 </ol>
 
 <div class="ui-tip"><strong>Want to re-run the wizard later?</strong> Visit <code>/wp-admin/admin.php?page=yatra-setup</code>. It's non-destructive — already saved settings stay in place.</div>
@@ -60,17 +62,17 @@ If you only sell as enquiries, skip to Step 4. Otherwise:
 <ol class="step-list">
   <li>Open <span class="screen-path">Yatra → Settings → Payment</span>.</li>
   <li>Tick <strong>PayPal</strong> (always free).</li>
-  <li>Paste your PayPal email (Simple mode), or Client ID + Client Secret (REST mode — there's no separate "Webhook ID" field; PayPal verification uses the same credentials).</li>
+  <li>Paste your PayPal email (Simple mode), or Client ID + Client Secret (Advanced/REST mode — also add the Webhook URL in your PayPal app and paste its **Webhook ID**; see [Payments → PayPal](/payment-settings#mode-b-—-advanced-rest)).</li>
   <li>Tick <strong>Test mode</strong> for now.</li>
   <li>Click <strong>Save</strong>.</li>
 </ol>
 
-You can also enable **Pay Later** (free) — useful for travel agents who confirm trips on a deposit + balance flow without an online card.
+You can also enable **Pay Later** and **Bank Transfer** (both free; Bank Transfer from Yatra 3.2) — useful when customers pay on arrival or by wire. When the money arrives, open the booking and click **Record payment**.
 
 <div class="pro-callout">
   <div class="pro-callout__head">
     <span class="pro-callout__badge">PRO</span>
-    <span class="pro-callout__title">Need Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net, or Bank Transfer?</span>
+    <span class="pro-callout__title">Need Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net, or T-Bank?</span>
   </div>
   <p class="pro-callout__desc">These gateways are part of <strong>Yatra Pro</strong>. You'll see them listed in <span class="screen-path">Settings → Payment</span> with a <strong>PRO</strong> badge — enabling them requires an active Pro license.</p>
   <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">Compare Yatra Pro plans →</a>

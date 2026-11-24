@@ -34,9 +34,9 @@ By default, the destination archive (`/destination/nepal/`) renders a basic cata
 
 Build a normal WordPress page in your page builder of choice. Useful blocks / shortcodes to drop in:
 
-- **`[yatra_trips destination="nepal" limit="9"]`** — render a filtered trip grid.
+- **`[yatra_trip destination="12" per_page="9"]`** — render a filtered trip grid (`destination` takes destination IDs).
 - **`[yatra_search]`** — drop the trip search box.
-- **`[yatra_destination_card slug="nepal"]`** — render the destination's own card content.
+- **`[yatra_destination destination="12"]`** — render the destination's own card.
 
 See [Shortcodes](/shortcodes) for the full list.
 
@@ -54,7 +54,7 @@ Publish the page. Note its URL (e.g. `/discover-nepal/`).
 ## Step 4 — Verify
 
 1. Open `/destination/nepal/` in a private browser window.
-2. Yatra now 301-redirects (or renders, depending on settings) to your custom page at `/discover-nepal/`.
+2. Yatra now 301-redirects to your custom page at `/discover-nepal/` (only page 1 of the archive is redirected; the page must be published).
 3. Catalog links elsewhere on the site (the trip list, the destination card on the trip page, etc.) also point at the new URL.
 
 If you visit the original `/destination/nepal/` URL directly, the redirect is in place — you won't see the default archive any more for that destination.
@@ -78,10 +78,10 @@ You don't have to override *every* destination / activity / category. Leave the 
 
 | Use case                                                          | Setup                                                                                                                  |
 | ---                                                               | ---                                                                                                                    |
-| Marketing-driven destination landing                              | Page with hero, value props, testimonials, embedded `[yatra_trips destination="nepal"]` block.                         |
+| Marketing-driven destination landing                              | Page with hero, value props, testimonials, embedded `[yatra_trip destination="12"]` shortcode.                         |
 | Partner co-brand page (white-label deal)                          | Page with partner's logo + curated trip grid + custom CTA. Restrict via WP role-based plugin if you need access control. |
-| Paid-traffic / Google Ads landing                                 | Single trip campaign page with `[yatra_trip_book id="123"]` directly above the fold.                                  |
-| SEO-optimised "Best of Nepal" content piece                       | Long-form article + `[yatra_trips destination="nepal" featured="featured"]` further down the page.                    |
+| Paid-traffic / Google Ads landing                                 | Single trip campaign page with a **Book now** button linking to the trip directly above the fold.                      |
+| SEO-optimised "Best of Nepal" content piece                       | Long-form article + `[yatra_trip destination="12" featured_priority="featured"]` further down the page.                    |
 
 ## Troubleshooting
 
@@ -91,13 +91,13 @@ You don't have to override *every* destination / activity / category. Leave the 
 
 **Trip cards still link to `/destination/...`** — Yatra caches taxonomy link rendering for performance. Re-save the destination, OR run a permalink flush (`Settings → Permalinks → Save`).
 
-**Page content is missing trip listings** — make sure the `[yatra_trips ...]` shortcode is rendered (not displayed as plain text). Some block themes break shortcode rendering inside Group blocks; use a Shortcode block directly.
+**Page content is missing trip listings** — make sure the `[yatra_trip ...]` shortcode is rendered (not displayed as plain text). Some block themes break shortcode rendering inside Group blocks; use a Shortcode block directly.
 
 ## Useful links
 
 - [Settings → Permalink](/settings#_11-permalink) — change the base slugs for destinations / activities / categories.
 - [Shortcodes](/shortcodes) — the full list of `[yatra_*]` shortcodes you can drop into your custom page.
-- [Hooks & filters](/hooks-filters) — `yatra_custom_landing_page_url`, `yatra_landing_page_redirect_args`.
+- [Hooks & filters](/hooks-filters) — `yatra_destination_permalink`, `yatra_activity_permalink`, `yatra_category_permalink`.
 
 ## Where to read more
 

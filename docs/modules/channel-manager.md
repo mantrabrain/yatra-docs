@@ -1,6 +1,6 @@
 ---
 title: Channel Manager
-description: Sell your trips on Viator, GetYourGuide, and other Online Travel Agencies from one dashboard. Automatic inventory sync, secure booking ingestion, and built-in safety checks to reduce overbooking.
+description: Connect Yatra to GetYourGuide through its Supplier API (GetYourGuide asks your site for availability and sends bookings in real time), with one shared inventory. Viator connector in development.
 prev:
   text: WhatsApp Notifications
   link: /modules/whatsapp
@@ -11,13 +11,19 @@ next:
 
 # Channel Manager <span class="pro-pill">PRO</span>
 
-![Channels tab — Viator + GetYourGuide listed with green health badges, Live mode, last-sync timestamps](/screenshots/modules/channel-manager-channels.webp)
+![Channels tab — connected channels with health badges, mode and last-sync timestamps](/screenshots/modules/channel-manager-channels.webp)
 
-**Online Travel Agencies** — usually called **OTAs** — are big booking marketplaces like **Viator** (owned by Tripadvisor) and **GetYourGuide**. For most tour operators they bring in 30–60% of bookings. Managing them by hand means logging into a separate dashboard for each one, updating availability and prices in every place, and copy-pasting bookings back into your own system. It's slow, error-prone, and when two channels sell the last seat at the same moment you can end up overbooked.
+<span class="pro-pill">PRO</span> **Scale** plan · Yatra Pro
 
-The **Channel Manager** module connects your Yatra site directly to each OTA. When a booking lands on Viator, it flows straight into your Yatra bookings list. When you change a price or add availability in Yatra, it pushes out to every connected channel. You manage one calendar, not three.
+**Online Travel Agencies** — usually called **OTAs** — are big booking marketplaces like **GetYourGuide** and **Viator** (owned by Tripadvisor). Managing them by hand means logging into a separate dashboard for each one, updating availability and prices in every place, and copy-pasting bookings back into your own system. It's slow, error-prone, and when two channels sell the last seat at the same moment you can end up overbooked.
 
-Standalone "channel manager" tools (separate paid products that do this same job) typically cost **$99–299 per month**. Yatra includes it in the Scale plan at no extra cost.
+The **Channel Manager** module connects your Yatra site to the OTA so both sell from **one inventory** — your Yatra departures. A booking made on the OTA lands in your Yatra bookings list and takes its places; a booking made on your own site (or a date you block) changes what the OTA can sell.
+
+::: warning Connection status — read before you go live
+- **GetYourGuide** (Yatra Pro 3.2+) is built on GetYourGuide's **Supplier API**: GetYourGuide calls your site for availability, reservations and bookings. It has **not yet been certified by GetYourGuide**. GetYourGuide has to approve the connection from **your** connectivity-partner account: run its self-tests in the GetYourGuide Integrator Portal and get GetYourGuide's go-ahead before you sell live. See [GetYourGuide (Supplier API)](#getyourguide-supplier-api).
+- **Viator** is **in development**. The Viator connector in the code is an early version that has not been tested against a Viator account — don't rely on it for live sales yet.
+- Trip content (titles, descriptions, photos) is never sent. You create the product on the OTA and link it to a Yatra trip by ID.
+:::
 
 ## What you'll need
 
@@ -26,10 +32,10 @@ Standalone "channel manager" tools (separate paid products that do this same job
 | Yatra Pro license — **Scale** tier (Yearly or Lifetime) | <span class="screen-path">Yatra → License</span> |
 | Channel Manager module enabled | <span class="screen-path">Yatra → Modules → Channel Manager</span> |
 | Partner-program approval from each OTA | See *Supported channels* below |
-| Per-channel API key + webhook signing secret | Issued by the OTA's partner portal |
-| Public, HTTPS-accessible WordPress site | Webhooks need to reach you from the public internet |
+| OTA credentials | GetYourGuide: the API username and password shown in GetYourGuide's Integrator Portal. Viator: API key + webhook signing secret. |
+| Public, HTTPS-accessible WordPress site | The OTA has to reach your site from the public internet |
 
-> **Bring-your-own credentials, no proxying.** All API calls go direct from your WordPress to the OTA. Yatra adds zero markup and never sees your customer data in transit.
+> **Bring-your-own credentials, no proxying.** All calls go directly between your WordPress and the OTA. Yatra adds no markup and doesn't route your customer data through its own servers.
 
 ## What it unlocks
 
@@ -39,7 +45,8 @@ Standalone "channel manager" tools (separate paid products that do this same job
 | **Trip mappings tab** | Link each Yatra trip to its counterpart product on each OTA. Per-mapping price offset override + sync toggles + bulk operations. |
 | **Bookings inbox** | Every booking received from a connected OTA arrives here, two-phase staged then promoted into the normal Yatra booking list. |
 | **Sync activity log** | Every push, pull, and webhook from the last 90 days. Audit trail with HTTP status, duration, and full error context. |
-| **Webhook receiver** | Public endpoint that accepts signed booking deliveries from each OTA. Always-on regardless of module toggle state — never drops inbound bookings. |
+| **GetYourGuide Supplier API** | Endpoints on your site that GetYourGuide calls for availability, reservations, bookings and cancellations. Protected by a username and password Yatra generates per channel. See [GetYourGuide (Supplier API)](#getyourguide-supplier-api). |
+| **Webhook receiver** (Viator) | Public endpoint that accepts signed booking deliveries. Always-on regardless of module toggle state. |
 | **Hourly safety-net cron** | If a webhook misses, the cron pulls bookings for the last 24h and reconciles. |
 | **Reconciliation report** | A single read-only snapshot across every channel — stale mappings, pending booking promotions, sync success/fail counts, breaker states. Suitable for a dashboard refresh button and for external monitoring polling. Details below. |
 | **Latency report** | Per-channel and per-provider average / p50 / p95 / p99 sync durations across 24h and 7d windows. Helps spot a slow OTA before customers do. |
@@ -47,10 +54,14 @@ Standalone "channel manager" tools (separate paid products that do this same job
 
 ## How it works
 
+::: tip GetYourGuide works differently
+GetYourGuide doesn't use the push / pull / webhook loops below. It **asks your site** in real time, and Yatra only tells GetYourGuide when places change. See [GetYourGuide (Supplier API)](#getyourguide-supplier-api). The loops below describe the Viator connector.
+:::
+
 Three things happen in the background so your Yatra site and your OTAs stay in sync:
 
-1. **Push (immediate).** When something changes in Yatra — a new booking, a price update, a departure added — Yatra sends that change to every connected OTA within about 30 seconds. If you make a lot of changes at once (a bulk price update, for example), Yatra waits a moment and groups them into one push instead of hammering the OTA with one request per change.
-2. **Pull (every hour).** A background job runs hourly to double-check: it pulls the last day's bookings from each OTA (in case a real-time notification was missed), re-sends inventory for every active mapping, and cleans up old activity logs (older than 90 days). This is your safety net.
+1. **Push (about 30 seconds after a change).** When a booking is created, cancelled or deleted, or an availability row or departure is saved, Yatra re-sends that trip's capacity and prices to every connected OTA about 30 seconds later. A price change made only on the trip itself goes out with the hourly job below. If you make a lot of changes at once, Yatra waits a moment and groups them into one push instead of hammering the OTA with one request per change.
+2. **Pull (every hour).** A background job runs hourly to double-check: it pulls the last day's bookings from each OTA (in case a webhook notification was missed), re-sends inventory for every active mapping, and cleans up old activity logs (older than 90 days). This is your safety net.
 3. **Webhooks (inbound).** Each OTA notifies your site the moment a booking is made. Yatra checks the notification is genuine (using the secret signing key the OTA gave you, plus a timestamp check so old replays can't be re-used), saves it as a *staged* booking, and confirms back to the OTA right away so it doesn't time out. A few seconds later Yatra promotes the staged booking into your normal booking list — the same one your direct-website bookings live in.
 
 A few safety mechanisms sit behind those three loops:
@@ -61,29 +72,30 @@ A few safety mechanisms sit behind those three loops:
 
 ## Supported channels
 
-| Channel | Capabilities | Status |
+| Channel | How it connects | Status |
 | --- | --- | --- |
-| **Viator** (Tripadvisor parent) | Push trip content + inventory + pricing · Pull bookings · Signed webhook · Real-time inventory | Built-in adapter |
-| **GetYourGuide** | Push trip content + inventory + pricing · Pull bookings · Signed webhook · Real-time inventory | Built-in adapter |
-| Any other OTA with a public API | Same capability set, implemented per request | By request |
+| **GetYourGuide** | Supplier API: GetYourGuide calls your site for availability, reservations, bookings and cancellations; Yatra notifies GetYourGuide when places change. | Available in Yatra Pro 3.2. **Not yet certified by GetYourGuide** — certify from your partner account before going live. |
+| **Viator** (Tripadvisor) | Push inventory + pricing · Pull bookings · Signed webhook | **In development** — not tested against a Viator account. |
 
-Adding a new OTA is a single `ProviderInterface` implementation; existing Viator and GetYourGuide adapters serve as the templates. If you need a channel that isn't shipped, file [an issue](/support) describing the OTA + the API they expose and we'll scope the work with you.
+Other OTAs (Klook, Tripadvisor Experiences and so on) are not supported. Developers can add a connector with the `yatra_channel_manager_channel_types` filter and a class implementing `ProviderInterface`. If you need another channel, [contact support](/support) with the OTA and the API it offers.
 
 ## Step 1 — Apply for OTA partner access
 
 Each OTA has its own approval flow. Typical lead time: 1–2 weeks for response, 2–4 weeks for full activation. Start this before you start the technical setup.
 
-- **Viator**: [viator.com/supplier](https://www.viator.com/supplier/) — Tour operator → Apply → review takes ~1 week.
-- **GetYourGuide**: [supplier.getyourguide.com](https://supplier.getyourguide.com/) — Become a supplier → city- and category-fit review.
-
-Once approved, the OTA gives you a partner portal with API key + webhook signing secret generation.
+- **GetYourGuide**: you need a GetYourGuide supplier account ([getyourguide.supply](https://getyourguide.supply/)) and to sign up as a connectivity partner in the [GetYourGuide Integrator Portal](https://integrator.getyourguide.com/documentation/overview). That's where you enter Yatra's connection details and run the self-tests.
+- **Viator**: [supplier.viator.com/sign-up-info](https://supplier.viator.com/sign-up-info) — apply as a supplier; API access is requested from the Viator Management Center once approved. (The Viator connector is still in development.)
 
 ## Step 2 — Enable the module
 
 1. Open <span class="screen-path">Yatra → Modules</span>.
-2. Find **Channel Manager** → toggle on. (Starter / Growth tier shows an *Upgrade to Scale* CTA instead.)
+2. Find **Channel Manager** → toggle on. (Starter / Growth plans show an *Upgrade to Scale* prompt instead.)
 3. A new menu entry **Channel Manager** appears in the sidebar.
 4. Database tables are created automatically on toggle-on — no separate install step.
+
+::: tip Connecting GetYourGuide?
+Steps 3 and 7 apply to both channels. For GetYourGuide, skip Steps 4–6 and 8 and follow [GetYourGuide (Supplier API)](#getyourguide-supplier-api) instead.
+:::
 
 ## Step 3 — Add your first channel
 
@@ -113,9 +125,9 @@ Open <span class="screen-path">Yatra → Channel Manager → Channels → + Add 
 | Toggle | Notes |
 | --- | --- |
 | **Enabled** | When off, this channel won't push inventory or pricing, and incoming bookings won't be ingested. Logs still record any attempts so you can audit them. |
-| **Sandbox / test mode** | Routes API calls to the OTA's sandbox environment. **Always start in sandbox until a test booking has flowed through end-to-end.** Switch off only after you've verified the connection in production. |
+| **Sandbox / test mode** | Routes Yatra's calls to the OTA's sandbox environment. **Always start in sandbox until a test booking has flowed through end-to-end.** Switch off only after you've verified the connection in production. For GetYourGuide it only affects Yatra's own calls (availability updates); GetYourGuide's calls to your site are answered whenever the channel is **Enabled**. |
 
-## Step 4 — Save credentials
+## Step 4 — Save credentials (Viator)
 
 After creating the channel, the form gains a **Credentials** card.
 
@@ -128,7 +140,7 @@ After creating the channel, the form gains a **Credentials** card.
 
 After saving, click **Test connection** — the module hits the OTA's lightest auth probe endpoint and confirms the credential works.
 
-## Step 5 — Register the webhook URL on the OTA
+## Step 5 — Register the webhook URL on the OTA (Viator)
 
 The form gains an **Inbound webhook URL** card showing the public URL the OTA should POST to (e.g. `https://yoursite.com/wp-json/yatra/v1/channel-manager/webhook/1`).
 
@@ -142,7 +154,7 @@ Click **Test webhook** in Yatra to verify the round-trip. The button signs a syn
 The webhook URL must be reachable from the public internet. If your WordPress is behind a firewall, VPN, or staging-environment IP allowlist, the OTA's webhook deliveries time out and you'll only get bookings on the next hourly cron tick.
 :::
 
-## Step 6 — Flip the channel live
+## Step 6 — Flip the channel live (Viator)
 
 Once Test connection + Test webhook both pass:
 
@@ -151,7 +163,7 @@ Once Test connection + Test webhook both pass:
 3. Toggle **Enabled** on.
 4. Save.
 
-The channel is now live. The first push runs immediately + every subsequent trip/availability/booking change triggers an event-driven push within seconds.
+The channel is now live. The first push runs on the next hourly job (or use **Sync selected** on the Trip mappings tab to push now); after that, every availability, departure or booking change triggers an event-driven push about 30 seconds later.
 
 ## Step 7 — Map your trips
 
@@ -163,11 +175,11 @@ Open <span class="screen-path">Yatra → Channel Manager → Trip mappings → +
 | --- | --- |
 | **Channel** | Which channel this mapping pushes to. |
 | **Trip ID** | Numeric ID of the Yatra trip. Find it in the URL when editing the trip (`?id=42`). |
-| **Channel product ID** | The product's ID on the channel side. For Viator this is a product code (e.g. `12345P1`); for GetYourGuide it's the offer/option ID. Copy it from the channel's partner portal. |
+| **Channel product ID** | The product's ID on the channel side. For Viator this is a product code (e.g. `12345P1`). For GetYourGuide it's a product ID **you choose** (for example `trip-12`) and enter for the matching tour option in GetYourGuide — see [GetYourGuide (Supplier API)](#getyourguide-supplier-api). |
 | **Public listing URL (optional)** | Link to the channel's public listing for this product. Shown as a quick-jump link in the mappings table. |
 | **Per-mapping price offset (%)** | Overrides the channel's default offset for this trip only. 0 inherits the channel default. |
 | **Sync inventory** | Push seat availability to this channel. |
-| **Sync pricing** | Push prices to this channel. Turn off when the OTA manages pricing on its side. |
+| **Sync pricing** | Push prices to this channel. Turn off when the OTA manages pricing on its side. (Not used by GetYourGuide — use *Send prices with availability* on the mapping instead.) |
 
 One Yatra trip can map to many channels (each with its own price offset); one channel holds one mapping per Yatra trip.
 
@@ -184,7 +196,7 @@ The mappings table supports **multi-select**. Tick mappings and the bulk action 
 
 Capped at 200 mappings per bulk request server-side so a runaway client can't blow the PHP timeout.
 
-## Step 8 — Watch the Bookings inbox
+## Step 8 — Watch the Bookings inbox (Viator)
 
 Open <span class="screen-path">Yatra → Channel Manager → Bookings inbox</span>.
 
@@ -192,7 +204,7 @@ Open <span class="screen-path">Yatra → Channel Manager → Bookings inbox</spa
 
 When an OTA delivers a webhook:
 
-1. Body is signed (`X-Viator-Signature` / `X-GYG-Signature`). Receiver verifies HMAC + checks the timestamp is within ±5 minutes (replay protection).
+1. Body is signed (`X-Viator-Signature`). Receiver verifies HMAC + checks the timestamp is within ±5 minutes (replay protection).
 2. Booking is **staged** — single row INSERT into the staging table. Response is sent back to the OTA inside its timeout budget.
 3. ~5 seconds later, a scheduled cron event **promotes** the staged row into a real Yatra booking. Uses a `SELECT ... FOR UPDATE` lock on the availability row to prevent two channels selling the last seat simultaneously.
 
@@ -227,9 +239,74 @@ Subsequent webhooks for the same external booking ID are handled by status:
 | Inbound external status | Yatra action |
 | --- | --- |
 | `confirmed` / `pending` | Create-or-update the Yatra booking. |
-| `cancelled` / `rejected` / `refunded` | Cancel the linked Yatra booking + fire `yatra_booking_cancelled` so refund automations and inventory restoration trigger as if the customer cancelled direct. |
+| `cancelled` / `rejected` / `refunded` | Cancel the linked Yatra booking + fire `yatra_booking_cancelled` so your own refund automations (if any) and inventory restoration trigger as if an admin had cancelled it. |
 | `amended` / `modified` / `updated` | Patch the Yatra booking — `travel_date`, `travelers_count`, `total_amount`, contact details — and fire `yatra_booking_modified`. |
 | `no_show` | Mark the booking no-show (falls back to cancelled if your config doesn't include that status). |
+
+## GetYourGuide (Supplier API) {#getyourguide-supplier-api}
+
+<span class="pro-pill">PRO</span> **Scale** · Yatra Pro 3.2 or later · Channel Manager module on
+
+GetYourGuide connects to booking systems the opposite way to most OTAs: **GetYourGuide calls your site**. When a customer looks at your product on GetYourGuide, GetYourGuide asks Yatra which dates and how many places are free. When they check out, GetYourGuide asks Yatra to hold the places, then to book them. Yatra only calls GetYourGuide to tell it when places change on your side.
+
+::: warning Not yet certified by GetYourGuide
+This connection follows GetYourGuide's Supplier API, but it has **not been certified by GetYourGuide**. GetYourGuide certifies each connection from the operator's own connectivity-partner account: run all of GetYourGuide's self-tests in the Integrator Portal (availability, reserve, book, cancel) and wait for GetYourGuide's approval before you sell live. Until then, use GetYourGuide's testing configuration.
+:::
+
+### What happens
+
+| On GetYourGuide | In Yatra |
+| --- | --- |
+| A customer looks at dates | Yatra answers with the places left on that trip's departures — the same places your own website sells — minus the channel's **inventory buffer**. A date inside its booking cutoff isn't offered (24 hours when the date has no cutoff of its own). |
+| The customer starts checkout (**reserve**) | Yatra holds the places for **60 minutes**. You see an **On hold** booking named *GetYourGuide &lt;GetYourGuide reference&gt;*. No email is sent. |
+| The checkout is abandoned (**cancel reservation**) or the hold runs out | The hold is deleted and the places are free again. Holds nobody booked are cleaned up automatically (on GetYourGuide's next request, the hourly sync, or when you open the admin). |
+| The customer pays (**book**) | The hold becomes a **confirmed, paid** Yatra booking with the lead traveller's name, email and phone, any comment and hotel, and the add-ons chosen. The lead traveller is added to the departure manifest. The booking's internal note records the GetYourGuide reference, what the customer paid on GetYourGuide and your **expected payout** after GetYourGuide's commission (from the channel's *Commission (%)*). |
+| The customer cancels (**cancel booking**) | The Yatra booking is cancelled and its places are freed. |
+
+GetYourGuide sends the customer its own confirmation, so Yatra doesn't send its customer confirmation email. Your **New booking** email to the team, Email Automation, webhooks and other new-booking actions run as for any booking. GetYourGuide collects the payment; Yatra doesn't charge anything.
+
+**Cancellation rules.** Yatra refuses GetYourGuide's cancellation when the booking is already cancelled, when you have marked it **Completed** (the trip took place), or when the trip has already started. For products open all day (opening hours), the booking can be cancelled until the end of that day. Whether the customer gets a refund is decided on GetYourGuide under the cancellation policy you set there.
+
+**Places changed in Yatra.** When places change on your side — a direct booking, a cancellation, a blocked date — Yatra tells GetYourGuide within about 30 seconds (and checks again every hour). Following GetYourGuide's rules, it only reports what GetYourGuide asks to hear about: a departure selling out (or being blocked), a departure coming back on sale, and changes to departures in the next 60 days that have fewer than 7 places left. Changes GetYourGuide caused itself aren't sent back.
+
+**Also supported**
+
+- **Group products** — a trip priced per group sells as GetYourGuide **GROUP** tickets (one price per group, within the group's minimum and maximum size).
+- **Add-ons** — your [Additional Services](/modules/additional-services) for the trip are offered to GetYourGuide as add-ons; chosen ones are listed on the booking and added to its total.
+- **Booking changes** — when GetYourGuide changes a booking on a departure that is full, the places the booking already holds are counted, so the change can go through.
+- **Redemption** — when you set a GetYourGuide booking to **Completed**, Yatra tells GetYourGuide it was redeemed (switch on *Redemption* under Manage Features in the Integrator Portal to use this).
+- **Product list** — GetYourGuide can read the list of products you have mapped (the product ID and trip title).
+
+### To connect GetYourGuide
+
+1. **Add the channel.** Open <span class="screen-path">Yatra → Channel Manager → Channels → Add channel</span>, pick **GetYourGuide**, set the **Currency** to the one your product uses on GetYourGuide, and fill in **Commission (%)** if you want the expected payout noted on each booking. Save.
+2. **Copy Yatra's connection details.** The channel now shows a **Connect GetYourGuide to this site** card with the **API base URL** (`https://your-site.com/wp-json/yatra/v1/gyg`), a **Username** and a **Password**. Click **Show password** to see it. Yatra creates these for you; **Create new password** replaces the password (GetYourGuide can't reach your site until you enter the new one in the Integrator Portal).
+3. **Enter them in GetYourGuide.** In the GetYourGuide Integrator Portal, enter the API base URL, username and password as your testing configuration (later as production).
+4. **Paste GetYourGuide's credentials into Yatra.** On the same Integrator Portal page, GetYourGuide shows a username and password for **its** API. Paste them into the channel's **Credentials** card in Yatra (*GetYourGuide API username* and *GetYourGuide API password*) and click **Test connection**.
+5. **Map each trip.** Under **Trip mappings → Add mapping**, pick the GetYourGuide channel and the trip, and enter a **Channel product ID** you choose (for example `trip-12`). Enter the same product ID for the matching tour option in GetYourGuide. Then click **Edit** on the mapping to set the GetYourGuide product settings (below).
+6. **Switch the channel on.** Turn **Enabled** on. GetYourGuide's requests are only answered while the channel is enabled — keep **Sandbox / test mode** on while you test.
+7. **Run GetYourGuide's self-tests** in the Integrator Portal (availability, reserve, book, cancel) and check **Sync activity** in Yatra for each request.
+8. **Get certified, then go live.** Once GetYourGuide has approved the connection, enter the same details as your production configuration, and turn **Sandbox / test mode** off.
+
+### GetYourGuide product settings (on each mapping)
+
+Open the mapping with **Edit**. The **GetYourGuide product** card must match how the tour option is set up on GetYourGuide. Places always come from the trip's departures.
+
+| Setting | What it does |
+| --- | --- |
+| **Product type** | *Time point (start times)* — fixed start times. *Time period (opening hours)* — open during opening hours, one entry per day. *Automatic* (default) — departures with a start time are time points, the rest whole days. |
+| **Start time for departures without one** | For time-point products, the time GetYourGuide shows for departures that have no start time. |
+| **Opening hours** | For time-period products, `HH:MM – HH:MM` (00:00 – 23:59 = all day). |
+| **Ticket categories** | For trips with one price per person: which GetYourGuide categories (Adult, Child, Youth, Infant, Senior, Student, EU citizen, Military) are sold at that price. Trips priced per traveller category use their own categories. Default: Adult. |
+| **Send prices with availability (Price over API)** | Off (default): GetYourGuide uses the prices set up there. On: GetYourGuide gets this trip's prices with each availability answer, after the channel's price offset — also switch on *Price over API* in GetYourGuide. |
+
+The mapping's **Per-mapping price offset** and the channel's **Inventory buffer** apply as for other channels. **Sync pricing** isn't used for GetYourGuide.
+
+### Where to see GetYourGuide activity
+
+- **Bookings** — GetYourGuide holds and bookings are ordinary Yatra bookings (payment method *getyourguide*). They don't go through the Bookings inbox.
+- **Sync activity** — every reservation, booking, cancellation, availability update, redemption and GetYourGuide notification is logged here.
+- If GetYourGuide deactivates a product (for example after failed requests), its notification is logged in Sync activity with the reason.
 
 ## Inbound webhook IP allowlist (optional)
 
@@ -359,9 +436,16 @@ The Channel Manager is designed for unattended operation — operators **never h
 | `/yatra/v1/channel-manager/logs` | GET | Sync log with filters. |
 | `/yatra/v1/channel-manager/reconciliation` | GET | Reconciliation snapshot across every channel. |
 | `/yatra/v1/channel-manager/latency` | GET | Per-channel + per-provider + global latency percentiles. |
-| `/yatra/v1/channel-manager/webhook/{channel_id}` | POST | Public webhook receiver — **always available** even when the module is disabled, gated by signature + (optional) IP allowlist + rate limit. |
+| `/yatra/v1/channel-manager/webhook/{channel_id}` | POST | Public webhook receiver (Viator) — **always available** even when the module is disabled, gated by signature + (optional) IP allowlist + rate limit. |
+| `/yatra/v1/channel-manager/channels/{id}/gyg-credentials` | POST | Show (`reveal`) or replace (`rotate`) the username and password GetYourGuide uses to call your site. |
+| `/yatra/v1/gyg/1/get-availabilities` | GET | GetYourGuide Supplier API: availability. |
+| `/yatra/v1/gyg/1/reserve` · `/1/cancel-reservation` · `/1/book` · `/1/cancel-booking` | POST | GetYourGuide Supplier API: holds, bookings and cancellations. |
+| `/yatra/v1/gyg/1/notify` | POST | GetYourGuide notifications (logged in Sync activity). |
+| `/yatra/v1/gyg/1/suppliers/{supplierId}/products` · `/1/products/{productId}` · `/1/products/{productId}/pricing-categories` · `/1/products/{productId}/addons` | GET | GetYourGuide Supplier API: product list, details, pricing categories and add-ons. |
 
-All write endpoints require `manage_options` + Scale-active license + module enabled. See [REST API reference](/api-reference#channel-manager) for the full schema.
+The `/yatra/v1/gyg/…` endpoints use HTTP Basic auth with the credentials Yatra generated for the channel (not a WordPress login), always answer HTTP 200 in GetYourGuide's format, and only answer while the Channel Manager module is on, the plan is Scale and the GetYourGuide channel is enabled.
+
+The admin endpoints require `manage_options` + Scale-active license + module enabled. See [REST API reference](/api-reference#pro-modules-additional-routes) for the full schema.
 
 ## Hooks & filters
 
@@ -370,8 +454,6 @@ All write endpoints require `manage_options` + Scale-active license + module ena
 | `yatra_channel_manager_channel_types` (filter) | Add or replace supported OTA adapters. Return an array of channel type definitions; each must reference a class implementing `ProviderInterface`. |
 | `yatra_booking_cancelled` (action) | Fires when a channel webhook cancels a Yatra booking. Listen here for refund automation. |
 | `yatra_booking_modified` (action) | Fires when a channel webhook modifies a Yatra booking. |
-| `yatra_channel_manager_should_push` (filter) | Last gate before pushing inventory or pricing to a channel — return `false` to skip. |
-| `yatra_channel_manager_normalize_booking` (filter) | Edit a normalized booking payload after the adapter returns it, before staging. |
 | `yatra_module_active` (action, slug=`channel_manager`) | Fires the moment the module is toggled on — installs the database schema. |
 | `yatra_module_deactive` (action, slug=`channel_manager`) | Fires when toggled off — unschedules the sync cron. **Does not** drop data tables. |
 | `yatra_channel_manager_webhook_rate_limit` (filter) | Override the 100-per-minute inbound webhook rate limit. Set to `0` to disable rate limiting (not recommended). |
@@ -379,12 +461,14 @@ All write endpoints require `manage_options` + Scale-active license + module ena
 | `yatra_trusted_proxy_cidrs` (filter) | Tell the IP allowlist which proxies are trusted to forward `X-Forwarded-For`. |
 | `yatra_cm_inventory_stale_seconds` (filter) | Override the 24-hour staleness threshold used in the Reconciliation report. |
 | `yatra_cm_latency_max_samples` (filter) | Override the 5,000-sample cap for percentile calculation in the Latency report. |
+| `yatra_gyg_notify_url` (filter) | Change the GetYourGuide `notify-availability-update` URL (for example a different sandbox path). Receives the URL and the channel. |
+| `yatra_gyg_redeem_url` (filter) | Change the GetYourGuide `redeem-booking` URL. Receives the URL and the channel. |
 
 ## Privacy
 
 - Customer data flows directly between your WordPress and the OTA. No proxying through Yatra-owned infrastructure.
 - Credentials are encrypted at rest with libsodium AEAD; decrypted just-in-time per request.
-- Webhook bodies are logged (capped at 16 KB) for forensic review when signature verification fails. The `yatra_channel_manager_should_log_body` filter lets you disable that on GDPR grounds.
+- Webhook bodies are logged (capped at 16 KB) for forensic review when signature verification fails.
 - Sync logs purge after 90 days automatically.
 
 ## Overbooking: what the module prevents, and what it can't {#overbooking-what-the-module-prevents-and-what-it-can-t}
@@ -393,8 +477,8 @@ This is the most-asked question by operators, so it deserves an honest answer. T
 
 **What the module prevents reliably:**
 
-- Two channels (e.g. Viator and your direct site) trying to confirm the last seat at the *exact same instant* — Yatra's last-seat lock holds the row briefly during booking promotion so only one wins.
-- Inventory drifting between channels because of manual updates — Yatra pushes the new seat count to every connected OTA within ~30 seconds of any change.
+- Two channels (e.g. GetYourGuide and your direct site) trying to confirm the last seat at the *exact same instant* — Yatra's last-seat lock briefly locks the date while it records an OTA booking (or a GetYourGuide hold) so only one wins.
+- Inventory drifting between channels because of manual updates — Yatra pushes the new seat count to every connected OTA within ~30 seconds of any booking, availability or departure change.
 - A booking that arrived on an OTA being missed if a webhook is dropped — the hourly safety-net pull re-fetches the last 24 hours of bookings on every channel.
 
 **What can still cause an overbooking, even with the module on:**
@@ -411,7 +495,15 @@ This is the most-asked question by operators, so it deserves an honest answer. T
 
 ## Troubleshooting
 
-**"Channel Manager" doesn't appear in the sidebar** — verify (1) your license is Scale on the License page, (2) the module is toggled on under Modules. Starter / Growth tier shows the upgrade card under <span class="screen-path">Yatra → Channel Manager</span> but no sidebar menu.
+**"Channel Manager" doesn't appear in the sidebar** — verify (1) your license is Scale on the License page, (2) the module is toggled on under Modules. Starter / Growth plans show the upgrade card under <span class="screen-path">Yatra → Channel Manager</span> but no sidebar menu.
+
+**GetYourGuide self-tests fail with `AUTHORIZATION_FAILURE`** — the username or password in the Integrator Portal doesn't match the **Connect GetYourGuide to this site** card, or the channel isn't **Enabled**. Some hosts strip the `Authorization` header before it reaches WordPress; ask your host to pass it through.
+
+**GetYourGuide sees no availability** — check that the trip is mapped, the mapping is active, the Channel product ID matches GetYourGuide exactly, the trip has departures with free places in the requested range, and the dates are outside their booking cutoff. The inventory buffer is subtracted from every departure.
+
+**GetYourGuide Test connection fails** — paste the username and password GetYourGuide shows for **its** API (not the ones Yatra generated) into the Credentials card.
+
+**"On hold" GetYourGuide bookings** — these are 60-minute holds while a customer checks out on GetYourGuide. They turn into confirmed bookings or are removed automatically; don't edit them.
 
 **"Failed to create channel: Table doesn't exist"** — this was a bug fixed in module v1.0.1. The schema is now created synchronously on module toggle-on. If you're seeing it, refresh the admin page once — the safety-net hook will install the tables.
 
@@ -432,10 +524,10 @@ This is the most-asked question by operators, so it deserves an honest answer. T
 ## Useful links
 
 - [Settings → Advanced → Debug mode](/settings#_13-advanced) — captures provider request/response pairs for support tickets.
-- [Hooks & filters](/hooks-filters#channel-manager) — full filter signatures + invocation order.
-- [REST API](/api-reference#channel-manager) — endpoint schemas.
-- [Viator partner docs](https://docs.viator.com/partner-api/technical/)
-- [GetYourGuide supplier docs](https://supply.getyourguide.support/hc/en-us/sections/360010014700-Technical-documentation)
+- [Hooks & filters](/hooks-filters#pro-channel-manager-getyourguide) — full filter signatures + invocation order.
+- [REST API](/api-reference#pro-modules-additional-routes) — endpoint schemas.
+- [GetYourGuide Integrator Portal documentation](https://integrator.getyourguide.com/documentation/overview)
+- [Viator supplier API docs](https://docs.viator.com/supplier-api/technical/)
 
 ## Where to read more
 

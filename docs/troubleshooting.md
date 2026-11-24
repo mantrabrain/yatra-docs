@@ -210,9 +210,9 @@ The legacy `featured="1"` attribute is also accepted as an alias for `featured_p
 <ol class="step-list">
   <li>Confirm the <strong>Dynamic Pricing</strong> module is enabled under <span class="screen-path">Yatra → Modules</span>.</li>
   <li>Open the rule. Confirm <strong>Status</strong> is <em>Active</em>.</li>
-  <li>Confirm the rule's conditions match the trip / dates being booked. Check the <strong>Scope</strong> field: <em>All trips</em>, <em>Specific trips</em>, <em>By category</em>, or <em>By destination</em>. If you're scoped to specific trips, make sure the booking's trip is in the list.</li>
+  <li>Confirm the rule's conditions match the trip / dates being booked. Check <strong>Apply Pricing On</strong>: <em>All Trips</em> or <em>Specific Trips</em>. If it's set to specific trips, make sure the booking's trip is in the list.</li>
   <li>For Early Bird / Last Minute rules, double-check the <em>days before departure</em> number against your test booking's travel date.</li>
-  <li>If two rules both match, check the <em>Priority</em> field and the <em>Stack with other rules</em> toggle — a higher-priority rule with Stack = off shortcircuits everything below it.</li>
+  <li>If two rules both match, check the global <em>Rule Priority Mode</em> in the Dynamic Pricing <strong>Settings</strong> tab (largest adjustment only / all matching rules / best price for the customer) and the <em>Maximum Price Increase / Decrease</em> caps. A rule's <em>Priority</em> only breaks ties.</li>
   <li>Clear any object cache (Redis, Memcached) — pricing is cached briefly.</li>
 </ol>
 

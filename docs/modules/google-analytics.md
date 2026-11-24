@@ -13,7 +13,7 @@ next:
 
 ![Yatra Settings → Integration → Google Analytics panel](/screenshots/modules/google-analytics-settings.webp)
 
-Track every interaction on your trip pages and checkout — `view_item`, `add_to_cart`, `begin_checkout`, `purchase`, `refund` — as **GA4 ecommerce events**. Send them browser-side via gtag.js and (optionally) server-side via the **Measurement Protocol** for accurate purchase tracking even when ad-blockers strip the browser tag.
+Track every interaction on your trip pages and checkout — `view_item`, `add_to_cart`, `begin_checkout` and `purchase` — as **GA4 ecommerce events**. Send them browser-side via gtag.js and (optionally) server-side via the **Measurement Protocol** for accurate purchase tracking even when ad-blockers strip the browser tag.
 
 ## What you'll need
 
@@ -71,7 +71,7 @@ Open <span class="screen-path">Yatra → Settings → Integration → Google Ana
 | **API secret**                     | `ga4_api_secret`                    | The Measurement Protocol secret from Step 2. Shown only when *Use Measurement Protocol* is on. |
 
 ::: tip Currency and amounts
-GA4 events include `currency` and `value` automatically — defaults to your site currency from [Settings → Currency](/settings#_9-currency). Yatra always uses the booking's actual currency, not the visitor's locale.
+GA4 events include `currency` and `value` automatically — defaults to your site currency from [Settings → Currency](/settings#_10-currency). Yatra always uses the booking's actual currency, not the visitor's locale.
 :::
 
 ## Step 5 — Verify in DebugView
@@ -94,8 +94,8 @@ Don't confuse **Realtime** with **DebugView**. Realtime samples a subset of traf
 The browser tag is controlled by your consent banner, but server-side events go straight from your server to Google, so a banner or script blocker can't stop them. From the next release, Yatra Pro checks consent itself before sending any server-side event:
 
 - **With [WP Consent API](https://wordpress.org/plugins/wp-consent-api/) installed**, an event is sent only when the visitor has granted **statistics** consent. Consent tools that support it include WPConsent, Complianz and CookieYes.
-- **Without WP Consent API**, server-side events are sent as before.
-- **Purchases confirmed by the payment provider** follow the choice the visitor made **at checkout**. Yatra saves that choice, plus the visitor's Google Analytics IDs, when the booking is created. A payment confirmed later by a gateway callback, which carries no visitor cookies, therefore respects that choice and stays in the visitor's own session. A visitor who declined is never sent.
+- **Without WP Consent API**, server-side events are sent as before — unless you turn on **Only send when consent can be verified** (Settings → Integration → Google Analytics, under Measurement Protocol), which then sends nothing server-side.
+- **The choice is recorded at checkout** — when the booking is stored, before any e-mail verification — together with the visitor's Google Analytics ID. A purchase confirmed later by a payment-gateway callback, which carries no visitor cookies, follows that checkout choice and stays in the visitor's own session. A later **refusal** stops it when it is made in the booking's own browser or recorded as an explicit *deny* by the consent tool — a device that simply hasn't answered the banner yet doesn't change the checkout choice. A later **grant** only counts in the booking's own browser. Bookings created by staff in the dashboard never record the staff member's own consent or Google Analytics ID.
 - Developers can allow or block any server-side event with the [`yatra_ga4_send_server_event`](/hooks-filters#pro-google-analytics-4) filter.
 
 Google's Measurement Protocol can't carry an analytics-consent signal, so not sending the event is the only correct behaviour when consent is missing.
@@ -116,11 +116,16 @@ With **Use Measurement Protocol** on, from the next release:
 | `view_item`       | Browser tag only.                                                               |
 | `add_to_cart`     | Browser tag only.                                                               |
 | `begin_checkout`  | Server only.                                                                    |
-| `purchase`        | Both, as one sale. The two carry the same `transaction_id`, booking total and visitor ID, so GA4 merges them. The server one is sent once per booking: a deposit and its balance are one purchase, not two. |
+| `purchase`        | Both, as one sale. The two carry the same `transaction_id`, booking total and visitor ID, so GA4 merges them. The server one is sent once per booking — a deposit and its balance are one purchase — and only with a real visitor ID. The browser one is sent once per browser, not again on each visit to the confirmation page. Item price is per traveller, so price × quantity equals the booking total. |
+
+**Delivery of the server purchase.** It is only sent with the visitor's real Google Analytics ID — never an invented one. A request that fails, times out or crashes is retried up to three times (after 5 minutes, 30 minutes and 2 hours) with the same transaction and visitor ID — if an earlier attempt did reach Google, GA4 drops the repeat as a duplicate. A purchase held back for consent is never retried, and two requests at once (a gateway return and its webhook) cannot both send. Note that Google's Measurement Protocol only confirms it *received* a request, not that GA4 processed it; use **Debug mode** (validation endpoint) to check the payload, which is never counted as sent.
 
 Keep any other GA4 snippet off. If Site Kit's own GA4 snippet were also on, every page view would be counted twice.
 
 ## What each event carries
+
+These four are the only events Yatra sends. There is **no `refund`** and **no `add_payment_info`** event (`generate_lead` and `search` appear in the module's list of event names, but nothing fires them). Refunds you make are not reported to GA4.
+
 
 | Event             | Key parameters                                                                  |
 | ---               | ---                                                                             |
@@ -128,7 +133,6 @@ Keep any other GA4 snippet off. If Site Kit's own GA4 snippet were also on, ever
 | `add_to_cart`     | Same as above + `quantity` (number of travelers)                                |
 | `begin_checkout`  | Same + `value` (running total)                                                  |
 | `purchase`        | Same + `transaction_id` (booking number), `tax`, `value`, full `items` array    |
-| `refund`          | `transaction_id` of the refunded booking + amount                               |
 
 ## Troubleshooting
 
@@ -155,5 +159,5 @@ Keep any other GA4 snippet off. If Site Kit's own GA4 snippet were also on, ever
 ## Where to read more
 
 - [All modules](/modules#google-analytics-4-enhanced) — module catalog.
-- [Settings → Integration](/settings#_10-integration) — every field reference.
+- [Settings → Integration](/settings#_11-integration) — every field reference.
 - [Facebook Pixel](/modules/facebook-pixel) — pair browser + server tracking with Meta as well.

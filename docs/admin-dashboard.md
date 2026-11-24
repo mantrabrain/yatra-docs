@@ -35,10 +35,10 @@ After you install Yatra, open **WordPress admin → Yatra**. You’ll see a mode
 | **Itinerary → Item Types** | Reusable item-type taxonomy (Meal, Activity, Transfer…) | [Trips & catalog](/tour-booking) |
 | **Itinerary → Items** | Reusable itinerary items you can drop into trip days | [Trips & catalog](/tour-booking) |
 | **Itinerary → Itinerary** | The global itinerary library | [Trips & catalog](/tour-booking) |
-| **Departures** | Operator view of every scheduled run | [Departures](/departures) |
+| **Departures** | Operator view of every scheduled run; **Download manifest** per departure | [Departures](/departures) |
 | **Discounts** | Promo codes and group discounts | [Bookings & customers → Discounts](/booking-settings#discounts-coupons) |
 | **Payments** | Payment ledger, manual payment entry, refund flagging | [Payments](/payment-settings) |
-| **Bookings** | The bookings list and detail page | [Bookings & customers](/booking-settings) |
+| **Bookings** | The bookings list and detail page — record payments, adjust prices, refunds, payment links, history, CSV export | [Bookings & customers](/booking-settings) · [Manage a booking](/booking-workspace) |
 | **Customers** | Customer profiles, loyalty tiers, total spend | [Bookings & customers → Customers](/booking-settings#customers) |
 | **Travelers** | Manifest-style roster of every traveler across all bookings | [Departures → Travelers roster](/departures#the-travelers-roster) |
 | **Enquiries** | Pre-sale enquiry inbox with respond modal | [Bookings & customers → Enquiries](/booking-settings#enquiries) |
@@ -48,14 +48,15 @@ After you install Yatra, open **WordPress admin → Yatra**. You’ll see a mode
 | **Abandoned Recovery** **Pro** | Auto-email cart-abandoners with recovery links | [Abandoned Booking Recovery module](/modules/abandoned-booking-recovery) |
 | **Dynamic Pricing** **Pro** | Rule engine for season / demand / last-minute pricing | [Dynamic Pricing module](/modules/dynamic-pricing) |
 | **Modules** | Turn Pro features on or off | [All modules](/modules) |
-| **License** | Activate Yatra Pro license | [Installation → Step 2](/installation#step-2-install-yatra-pro) |
-| **Settings** | The 13-tab settings hub | [Settings overview](/settings) |
+| **License** | Activate Yatra Pro license | [Installation → Step 2](/installation#step-2-—-install-yatra-pro) |
+| **Settings** | The settings hub (General … Labels … Uninstall) | [Settings overview](/settings) |
+| **Tools** (button at the top of the screen) | Export/Import, Jobs, System Status, Logs, Migration, and **WP Travel Engine** import | [Import from WP Travel Engine](/import-wp-travel-engine) |
 
 WordPress may also show **Upgrade to Pro** under the Yatra menu when you’re on the free plugin—it opens [wpyatra.com pricing](https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs) in a new tab.
 
 ## What your customers see (front of the site)
 
-Visitors use your **theme** and Yatra’s templates: trip pages, search, **My account**, checkout, cart, and shortcodes/blocks. Those are covered in [Shortcodes](/shortcodes) and [Blocks & page builders](/elementor-integration).
+Visitors use your **theme** and Yatra’s templates: trip pages, search, **My account**, checkout and shortcodes/blocks (and, with the Pro Multi-Trip Cart, a cart). Those are covered in [Shortcodes](/shortcodes), [Blocks and Elementor widgets](/blocks) and [Bookings & customers → What customers can do in My Account](/booking-settings#what-customers-can-do-in-my-account).
 
 ## Next step
 

@@ -28,7 +28,7 @@ next:
       <span class="yatra-hero__chip" role="listitem">WordPress 6.0+</span>
       <span class="yatra-hero__chip" role="listitem">PHP 7.4+</span>
       <span class="yatra-hero__chip yatra-hero__chip--free" role="listitem"><strong>Free</strong> PayPal · Pay Later</span>
-      <span class="yatra-hero__chip yatra-hero__chip--prolane" role="listitem"><span class="doc-pro-pill">Pro</span> Stripe · Razorpay · Mollie · Paystack · Square · Authorize.Net · Bank Transfer<a class="doc-pro-upgrade-link" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs" target="_blank" rel="noopener">Compare plans →</a></span>
+      <span class="yatra-hero__chip yatra-hero__chip--prolane" role="listitem"><span class="doc-pro-pill">Pro</span> Stripe · Razorpay · Mollie · Paystack · Square · Authorize.Net · T-Bank<a class="doc-pro-upgrade-link" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs" target="_blank" rel="noopener">Compare plans →</a></span>
     </div>
   </div>
 </div>
@@ -84,7 +84,7 @@ next:
   <span class="doc-card-badge-pro"><span class="doc-pro-pill">Pro extra</span></span>
   <span class="yatra-card__icon">💳</span>
   <h3>Payments</h3>
-  <p><strong>Free:</strong> PayPal &amp; Pay Later.<br /><strong>Pro:</strong> Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net, bank transfer.</p>
+  <p><strong>Free:</strong> PayPal, Pay Later &amp; Bank Transfer.<br /><strong>Pro:</strong> Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net, T-Bank.</p>
   <span class="yatra-card__cta">Configure gateways →</span>
 </a>
 
@@ -106,7 +106,7 @@ next:
 <a class="yatra-card" href="/elementor-integration">
   <span class="yatra-card__icon">🧱</span>
   <h3>Blocks &amp; page builders</h3>
-  <p>The Trip / Activity / Destination / Trip categories blocks and how shortcodes work in Elementor and other builders.</p>
+  <p>16 blocks, 3 block patterns and 13 Elementor widgets, plus how shortcodes work in other builders.</p>
   <span class="yatra-card__cta">Place catalog widgets →</span>
 </a>
 
@@ -179,8 +179,13 @@ next:
 | Coupons &amp; basic discounts                     | ✅   | ✅  |
 | Booking lifecycle, traveler accounts              | ✅   | ✅  |
 | Reviews &amp; reporting                           | ✅   | ✅  |
-| **PayPal** &amp; **Pay Later** gateways           | ✅   | ✅  |
-| Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net, Bank Transfer | — | ✅ |
+| **PayPal**, **Pay Later** &amp; **Bank Transfer** gateways | ✅   | ✅  |
+| Record payments, adjust prices, refunds, payment links, booking history | ✅ | ✅ |
+| CSV exports &amp; departure manifest              | ✅   | ✅  |
+| Blocks &amp; Elementor widgets                    | ✅   | ✅  |
+| WPML / Polylang, Settings → Labels                | ✅   | ✅  |
+| Import from WP Travel Engine                      | ✅   | ✅  |
+| Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net, T-Bank | — | ✅ |
 | Deposits / partial payments (Flexible Payments)   | —    | ✅  |
 | Dynamic Pricing rules engine                      | —    | ✅  |
 | Email Automation (sequences, logs)                | —    | ✅  |
@@ -192,6 +197,8 @@ next:
 | Abandoned Booking Recovery                        | —    | ✅  |
 | Saved trips / wishlist (when enabled)             | —    | ✅  |
 | Custom Landing Pages for taxonomies               | —    | ✅  |
+| Multi-Trip Cart · Currency Switcher · AI Assistant (with MCP server) · WhatsApp | — | Growth / Scale |
+| Channel Manager (GetYourGuide) · Webhooks · White Label · Team &amp; Access | — | Scale |
 
 > Modules need a paid plan. Purchase on [wpyatra.com/pricing](https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs) — WordPress adds **Upgrade to Pro** under the Yatra menu when you’re still on free.
 

@@ -1,6 +1,6 @@
 ---
 title: Abandoned Booking Recovery
-description: Step-by-step setup for the Yatra Pro Abandoned Booking Recovery module — three-step automated email sequence with personalised recovery links and recovered-revenue reporting.
+description: Step-by-step setup for the Yatra Pro Abandoned Booking Recovery module — three reminder emails (1 h / 24 h / 48 h by default) with recovery links that reopen the trip with the booking form pre-filled and recovered-revenue reporting.
 prev:
   text: Scheduled Payments
   link: /modules/scheduled-payments
@@ -34,31 +34,31 @@ When a customer starts a booking but doesn't pay, Yatra tracks the session and (
 
 Open <span class="screen-path">Yatra → Abandoned Recovery → Settings</span>.
 
-![Abandoned Recovery settings — enable, send delays, discount codes](/screenshots/modules/abandoned-recovery-settings.webp)
+![Abandoned Recovery settings — tracking and email delays](/screenshots/modules/abandoned-recovery-settings.webp)
 
 | Setting                          | Default     | Notes                                                                                                                  |
 | ---                              | ---         | ---                                                                                                                    |
-| **Enable recovery emails**       | off         | Master toggle.                                                                                                         |
-| **First email — send after**     | `1 hour`    | Delay after abandonment for the first reminder.                                                                        |
-| **Second email — send after**    | `1 day`     | Delay after abandonment for the second reminder.                                                                       |
-| **Final email — send after**     | `3 days`    | Delay after abandonment for the final reminder.                                                                        |
-| **Discount code (optional)**     | (empty)     | A promo code to attach to one of the reminder emails for an extra incentive. Created on the [Discounts](/booking-settings#discounts-coupons) page.  |
-| **Discount applies to**          | Final only  | Which of the three emails carries the discount.                                                                        |
-| **Auto-expire after (days)**     | `7`         | Stop sending reminders after this many days; mark the abandoned record as *Expired*.                                  |
-| **Track in reports**             | on          | Tag recovered bookings so they show in the Recovery Stats card.                                                       |
+| **Enable Tracking**              | on          | Track when customers abandon the booking process.                                                                      |
+| **First Email Delay (hours)**    | `1`         | Hours after abandonment before the first reminder.                                                                     |
+| **Second Email Delay (hours)**   | `24`        | Hours after abandonment before the second reminder.                                                                    |
+| **Final Email Delay (hours)**    | `48`        | Hours after abandonment before the final reminder.                                                                     |
+
+There are no discount fields — the reminders don't attach a coupon. If you want to offer one, write the code into the email template yourself (create it under [Discounts](/booking-settings#discounts-coupons)).
+
+An abandoned record **expires after 30 days** if it isn't recovered (developers: `yatra_abandoned_booking_expiration_days` filter).
 
 ## Step 3 — Customise the three email templates
 
 The module ships with three default templates — open <span class="screen-path">Yatra → Email → Templates</span> and look for:
 
-- **Abandoned Recovery — 1h reminder** (`abandoned_booking_recovery_first`)
-- **Abandoned Recovery — 1d reminder** (`abandoned_booking_recovery_second`)
-- **Abandoned Recovery — 3d final** (`abandoned_booking_recovery_final`)
+- **Abandoned booking recovery (First)** (`abandoned_booking_recovery_first`, 1 h by default)
+- **Abandoned booking recovery (Second)** (`abandoned_booking_recovery_second`, 24 h by default)
+- **Abandoned booking recovery (Final)** (`abandoned_booking_recovery_final`, 48 h by default)
 
 Each is editable like any other template — subject, body HTML, sender override. They support all the standard merge tags plus a special `{{recovery_link}}` tag that resolves to the customer's saved-checkout URL.
 
 ::: tip Recovery link details
-The `{{recovery_link}}` URL contains a short-lived token that rehydrates the customer's prior cart state — selected trip, traveler counts, picked date, custom-field answers. They land back on the payment step, not the start.
+The `{{recovery_link}}` URL opens the **trip page** with a token; the customer's booking form is then **pre-filled** with what they entered before (contact details and form answers), so they don't start again from an empty form.
 :::
 
 ## Step 4 — Verify with a test abandonment
@@ -68,8 +68,8 @@ The `{{recovery_link}}` URL contains a short-lived token that rehydrates the cus
 3. Close the browser tab **without paying**.
 4. In the admin, open <span class="screen-path">Yatra → Abandoned Recovery</span>.
 5. Your test session should appear with status **Abandoned**.
-6. Wait for the first-email delay (or manually trigger via the *Send first email now* action on the row).
-7. Email arrives → click the recovery link → land back in the payment step → complete payment.
+6. Wait for the first-email delay (or use **Send Recovery Email** on the row).
+7. Email arrives → click the recovery link → the trip page opens and the booking form is pre-filled → complete the booking.
 8. The row flips to **Recovered**. Reporting updates.
 
 ## The Abandoned Recovery admin
@@ -84,7 +84,7 @@ The `{{recovery_link}}` URL contains a short-lived token that rehydrates the cus
 | **Abandoned** | Open carts that haven't received any recovery emails yet.                |
 | **Contacted** | At least one recovery email has been sent.                              |
 | **Recovered** | Customer came back and completed the booking.                           |
-| **Expired**  | Past the `auto_expire_after` window with no recovery.                    |
+| **Expired**  | 30 days passed with no recovery.                                         |
 
 ### Default columns
 
@@ -118,32 +118,30 @@ Customer adds trip + clicks Continue → Yatra creates abandoned_booking row
                                        ↓
                           1 hour later: First email
                                        ↓
-                          1 day later: Second email
+                          24 hours later: Second email
                                        ↓
-                          3 days later: Final email (with discount code)
+                          48 hours later: Final email
                                        ↓
-                       7 days later: Auto-expire if not recovered
+                       30 days later: Expires if not recovered
 ```
 
 If at any point the customer pays — via the recovery link OR directly — Yatra cancels the remaining emails and flips the row to **Recovered**.
 
 ## Troubleshooting
 
-**No abandoned rows showing up** — confirm the module is enabled AND the recovery settings have **Enable recovery emails** turned on. Yatra only starts tracking sessions after the toggle is on.
+**No abandoned rows showing up** — confirm the module is enabled AND **Enable Tracking** is on. Yatra only starts tracking sessions after that.
 
 **Emails not sending** — first test ordinary booking emails work. The recovery system uses the same SMTP path; if booking confirmations don't arrive, recovery emails won't either. See [Email & notifications](/email-settings).
 
-**Recovery links land on the trip page, not the payment step** — the saved session expired. Sessions are valid for the `auto_expire_after` window. Increase it if your traffic profile needs longer.
+**Recovery link opens an empty form** — the abandoned record has expired (after 30 days) or was already recovered.
 
-**Discount code in the email shows the literal `{{discount_code}}`** — the `Discount code` field in Step 2 is empty. Add a code and pick which email carries it.
-
-**Recovered count looks too high / low** — make sure *Track in reports* is on. Bookings completed without going through the recovery link aren't counted as recovered.
+**Recovered count looks too high / low** — bookings completed without going through the recovery link aren't counted as recovered.
 
 ## Useful links
 
 - [Email & notifications](/email-settings) — customise the three template bodies.
-- [Discounts](/booking-settings#discounts-coupons) — create the discount code attached to the final email.
-- [Hooks & filters](/hooks-filters) — `yatra_abandoned_booking_recovered`, `yatra_abandoned_email_sent`.
+- [Discounts](/booking-settings#discounts-coupons) — create a code if you want to mention one in a reminder.
+- [Hooks & filters](/hooks-filters) — `yatra_abandoned_recovery_min_gap_hours`, `yatra_abandoned_booking_expiration_days`.
 
 ## Where to read more
 
