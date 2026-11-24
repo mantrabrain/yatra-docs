@@ -68,7 +68,8 @@ Open <span class="screen-path">Yatra → Settings → Integration → Mailchimp<
 | ---                         | ---                           | ---                                                                                                        |
 | **Mailchimp API Key**       | `mailchimp_api_key`           | The key from Step 1 (`xxxxxxxx-usN`). Click **Verify** — Yatra hits Mailchimp's `/ping` endpoint and confirms it works. |
 | **Audience / List**         | `mailchimp_list_id`           | Dropdown populated after the key verifies. Pick your operator audience.                                    |
-| **Sync customers on booking** | `mailchimp_sync_on_booking` | Push every confirmed-booking customer into the audience.                                                   |
+| **Sync customers on booking** | `mailchimp_sync_on_booking` | Add the customer to the audience when they book — only if they ticked **Subscribe to our newsletter** at checkout (since 3.2). |
+| **Also add customers who didn't tick the newsletter box** | `mailchimp_subscribe_without_optin` | Off by default. Turn on only if you have another lawful basis (e.g. under GDPR) to email every customer. Developers can decide per booking with the `yatra_mailchimp_should_subscribe` filter. |
 | **Double opt-in**           | `mailchimp_double_optin`      | Send a confirmation email before adding to the list. Required in EU under GDPR-strict interpretations.    |
 | **Add tags**                | `mailchimp_add_tags`          | Tag the synced contact. Yatra adds **`Trip: {trip name}`**, **`Yatra Customer`** and **`Booked`**, plus your default tags. There are no category or destination tags. |
 | **Default tags**            | `mailchimp_default_tags`     | Comma-separated tags applied to *every* synced contact (e.g. `yatra,booking,2026`).                       |

@@ -474,6 +474,14 @@ Feature release. Needs **Yatra 3.2** for Currency Switcher, Multi-Trip Cart, Str
 
 **New — Stripe refunds from the booking screen** (with Yatra 3.2), in the payment's own currency.
 
+**Fixed — [Mailchimp](/modules/mailchimp) respects the newsletter checkbox.** Only customers who tick *Subscribe to our newsletter* are added; a new setting adds everyone if you have another lawful basis.
+
+**Fixed — [Abandoned Booking Recovery](/modules/abandoned-booking-recovery)** stops reminding customers who have booked the trip by any route.
+
+**Fixed — [Scheduled Payments](/modules/scheduled-payments) are retried** after a failed charge (24 hours later, up to the attempt limit), as the failure email says.
+
+**Fixed — [Facebook Pixel](/modules/facebook-pixel)**: the browser and Conversions API Purchase events share an event ID, so Meta counts each sale once.
+
 **New — email templates in the customer's language** with WPML / Polylang (with Yatra 3.2). Templates sent to you are not translated.
 
 **Fix — your own "Payment Received" and "Partial Payment Received" templates are now sent.** An admin template on *Partial Payment Received* replaces the standard admin "Payment received" email for a deposit (needs Yatra 3.2). See [Email Automation](/modules/email-automation).

@@ -154,10 +154,9 @@ Booking day       — Deposit recorded; booking is `partial`
 
 If the charge fails (expired card, insufficient funds), Yatra:
 
-1. Marks the scheduled payment as **Failed**.
-2. Sends the **Scheduled Payment Failed** email to the customer.
-3. Sends the **Admin: Scheduled Payment Failed** email to you.
-4. Does **not** try again by itself. Collect the balance another way — send a [payment link](/booking-workspace#send-a-payment-link) or use **Send balance payment link** on the Outstanding tab — or record the payment when the customer pays.
+1. **Tries again later while attempts are left.** The payment goes back to **Pending** with a new date 24 hours later (filter: `yatra_scheduled_payment_retry_delay_hours`), up to the payment's attempt limit — 3 for balance charges. The customer gets the **Scheduled Payment Failed** email saying it will be tried again.
+2. **After the last attempt** — or straight away when there is no saved card, or Yatra can't create the Stripe charge — marks it **Failed** and sends the **Scheduled Payment Failed** email to the customer and the **Admin: Scheduled Payment Failed** email to you.
+3. A **Failed** payment isn't tried again. Collect the balance another way — send a [payment link](/booking-workspace#send-a-payment-link) or use **Send balance payment link** on the Outstanding tab — or record the payment when the customer pays.
 
 ## Installment example
 
@@ -177,7 +176,7 @@ Yatra divides the remaining balance evenly across installments; the final instal
 
 Scheduled charges show in <span class="screen-path">Yatra → Payments</span> with:
 
-- **Status** = `pending` (scheduled) / `completed` (charged) / `failed` (not retried) / `cancelled`
+- **Status** = `pending` (scheduled, or waiting for a retry) / `completed` (charged) / `failed` (out of attempts) / `cancelled`
 - **Charge date** = when the attempt will run
 - **Amount** = the scheduled amount
 - **Linked booking** = clickable link to the booking detail
