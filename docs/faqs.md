@@ -77,12 +77,12 @@ See [Payments](/payment-settings) for the full guide.
 
 ### What payment gateways does the free plugin support?
 
-**PayPal** (Simple email-IPN or REST modes), **Pay Later** and — from Yatra 3.2 — **Bank Transfer** are fully working in the free core. Pro adds **Stripe**, **Razorpay**, **Mollie**, **Paystack**, **Square**, **Authorize.Net** and **T-Bank**.
+**PayPal** (Simple email-IPN or REST modes), **Pay Later**, **Bank Transfer** (free from Yatra 3.2; several accounts per currency from 3.3) and — from Yatra 3.3 — **Cheque** are fully working in the free core. Pro adds **Stripe**, **Razorpay**, **Mollie**, **Paystack**, **Square**, **Authorize.Net** and **T-Bank**, plus — from Yatra Pro 3.3 — the regional gateways **Himalayan Bank**, **PayU**, **PayFast**, **Midtrans** and **PayHere**. See [Payments](/payment-settings).
 
 <div class="pro-callout">
   <div class="pro-callout__head">
     <span class="pro-callout__badge">PRO</span>
-    <span class="pro-callout__title">Seven premium gateways — one license</span>
+    <span class="pro-callout__title">Twelve premium gateways — one license</span>
   </div>
   <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">Compare Yatra Pro plans →</a>
 </div>
@@ -97,6 +97,14 @@ See [Payments](/payment-settings) for the full guide.
   <p class="pro-callout__desc">The <strong>Flexible Payments</strong> module lets you collect a deposit at booking time. Combine with <strong>Scheduled Payments</strong> to auto-charge the balance on a future date.</p>
   <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">Unlock deposits →</a>
 </div>
+
+### Why wasn't a cheque booking cancelled for being unpaid?
+
+On purpose. Cheques take days to arrive by post, so bookings paid by **Cheque** (Yatra 3.3+) are never cancelled by the unpaid-booking expiry. They stay pending until you record the payment on the booking (**Record payment** → *Cheque*), or until you cancel them yourself. Developers can change which payment methods are exempt with the `yatra_booking_expiry_exempt_gateways` filter.
+
+### Can I add a booking fee or sell travel insurance?
+
+Yes, free from Yatra 3.3, both under <span class="screen-path">Settings → Payment</span>. **Booking Fee** adds a fixed amount or a percentage of the trip price to every new booking as its own line. **Travel Insurance** offers cover at checkout (per traveller, a percentage of the trip price, or per booking) and records the customer's *Yes* or *No*. See [Payments](/payment-settings).
 
 ### Can I issue refunds?
 
@@ -124,6 +132,18 @@ Yatra takes every booking and payment in a single store currency, and WooCommerc
 ### Do customers need an account?
 
 Configurable. With **Allow Guest Checkout** on (in <span class="screen-path">Settings → Booking</span>), customers can book without registering. Yatra creates a customer record on first booking.
+
+### Can I send customers to another website to book?
+
+Yes (Yatra 3.3+). In the trip editor, open **Availability & Booking → Custom Booking Link** and enter a link starting with `http://` or `https://`. The trip page's booking card and mobile bar show a button to that link (your own button text, opening in a new tab by default) and Yatra's checkout is closed for that trip. If the trip is set to enquiry-only, it stays enquiry-only and the link isn't used. See [Create a trip](/trip-creation).
+
+### Why does checkout say a traveller's age doesn't fit the trip?
+
+From Yatra 3.3, a trip's **Minimum Age** and **Maximum Age** are checked against each traveller's date of birth, using their age **on the travel date**. The message names the traveller, e.g. *"Traveller 2 will be 11 on the travel date, and this trip is for age 12 and over. Please check the date of birth."* Travellers without a date of birth aren't checked. To turn the check off, a developer can add `add_filter('yatra_enforce_trip_age_limits', '__return_false');`.
+
+### Can I add my own questions to the enquiry form?
+
+Yes (Yatra 3.3+). In <span class="screen-path">Settings → Booking → Enquiry Form</span>, add up to 10 questions — short answer, paragraph, dropdown or checkbox, optional or required. The answers are added to the enquiry message, so you see them on the Enquiries screen and in the enquiry email. See [Bookings & customers](/booking-settings).
 
 ### Can I collect emergency contact / passport details?
 
@@ -194,6 +214,10 @@ Yes (free) — set adult / child / infant / senior prices in the trip's Pricing 
   <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">Unlock dynamic pricing →</a>
 </div>
 
+### Can I charge less per person for bigger groups?
+
+Yes, free from Yatra 3.3, for trips priced per person: in the trip's **Pricing** section, fill in **Price by group size** (for example 1 person 1,500 · 2–3 people 1,300 · 4 or more 1,100). When the number of travellers matches a row, that row's price is the price per person. Dynamic pricing, discounts, coupons and tax still apply on top. See [Create a trip](/trip-creation).
+
 ## Privacy, GDPR, data ownership
 
 ### Is my data shared with wpyatra.com?
@@ -249,6 +273,14 @@ No. Yatra outputs normal WordPress pages and URLs, and from 3.2 trip pages tell 
 ### Where's the REST API documentation?
 
 [REST API](/api-reference). Routes live under `/wp-json/yatra/v1/`.
+
+### How do I give an app access to the REST API?
+
+From Yatra 3.3, create an API key in <span class="screen-path">Settings → API Access</span>. A key is a WordPress **application password** for the user you choose, sent with HTTP Basic auth. It can do what that user can, so create keys for a dedicated user with a Yatra staff role rather than an administrator. Your site needs **HTTPS** — WordPress turns application passwords off on plain-http sites. See [REST API](/api-reference).
+
+### Can I show my trips on another website?
+
+Yes (Yatra 3.3+). Switch on **Embed trips on other websites** in <span class="screen-path">Settings → API Access</span>, choose the trips (or show your newest), how many and how many columns, and paste the snippet into the other site. It shows trip cards that open the trip on your site in a new tab.
 
 ### Where are the hooks and filters?
 

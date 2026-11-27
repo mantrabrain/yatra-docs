@@ -194,7 +194,7 @@ Three exports are available. Each downloads a `.csv` file you can open in Excel,
 
 The manifest is the list you hand to your guide or driver. It has one row per traveller on the departure, from its confirmed, pending and completed bookings (cancelled bookings are left out).
 
-Columns: Reference, Traveller, First name, Last name, Date of birth, Gender, Nationality, Lead contact, Email, Phone, Emergency contact, Emergency phone, Booking status, Payment status, Due, Special requests.
+Columns: Reference, Traveller, First name, Last name, Date of birth, Gender, Nationality, Lead contact, Email, Phone, Emergency contact, Emergency phone, Booking status, Payment status, Due, Special requests, and — from Yatra 3.3 — Pickup point, Accommodation, Travel insurance (*Added*, *Declined*, or empty when the booking wasn't asked).
 
 Choice fields print their label, as the checkout shows them ("Male", not the stored value). If a booking has no traveller details yet, the lead contact's name is used.
 

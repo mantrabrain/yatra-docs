@@ -13,7 +13,7 @@ next:
 
 ![Yatra Settings landing page — left tab list and General section open](/screenshots/settings/general.webp)
 
-The Settings screen at <span class="screen-path">Yatra → Settings</span> is one screen with **17 tabs** in a left-hand sidebar (Pricing only appears when its Pro modules are active). This page tells you what each tab is for, lists every control inside it, and points at the deeper docs ([Bookings](/booking-settings), [Payments](/payment-settings), [Email](/email-settings)) when there's a dedicated guide.
+The Settings screen at <span class="screen-path">Yatra → Settings</span> is one screen with **18 tabs** in a left-hand sidebar (Pricing only appears when its Pro modules are active). This page tells you what each tab is for, lists every control inside it, and points at the deeper docs ([Bookings](/booking-settings), [Payments](/payment-settings), [Email](/email-settings)) when there's a dedicated guide.
 
 ::: tip Where Yatra stores settings
 Each control writes to its own row in the WordPress `wp_options` table — for example, the **Default currency** dropdown writes to the `yatra_currency` option. Developers can read or override these programmatically — see the [Reading settings programmatically](#reading-settings-programmatically) section at the bottom of this page.
@@ -23,11 +23,11 @@ Each control writes to its own row in the WordPress `wp_options` table — for e
 
 | # | Tab | What it controls | Pro-only fields? |
 | --- | --- | --- | --- |
-| 1 | [General](#_1-general) | Company identity, address, regional formatting | No |
+| 1 | [General](#_1-general) | Company identity, address, regional formatting, recently viewed trips, weather forecast (3.3) | No |
 | 2 | [Design](#_2-design) | Front-end brand colour and container width | No |
-| 3 | [Booking](#_3-booking) | Checkout behaviour, expiry, cancellation, waitlist | No |
+| 3 | [Booking](#_3-booking) | Checkout behaviour, expiry, cancellation, waitlist, enquiry form questions (3.3) | Countdown & Social Proof = Pro |
 | 4 | [Booking Form](#_4-booking-form) | Drag-and-drop builder for the checkout form | No (Pro extends per-trip) |
-| 5 | [Payment](#_5-payment) | Test mode, deposits, partial / scheduled payments | Some (deposit / scheduled = Pro) |
+| 5 | [Payment](#_5-payment) | Test mode, deposits, partial / scheduled payments, booking fee and travel insurance (3.3), gateways | Some (deposit / scheduled = Pro) |
 | 6 | [Pricing](#_6-pricing-pro) | Discount stacking — how Advanced Discount and Dynamic Pricing combine | Pro-conditional (visible when both modules are on) |
 | 7 | [Customer](#_7-customer) | Account behaviour, registration, wishlist | Wishlist = Pro |
 | 8 | [Review](#_8-review) | Review system toggles & moderation | No |
@@ -39,7 +39,8 @@ Each control writes to its own row in the WordPress `wp_options` table — for e
 | 14 | [Advanced](#_13-advanced) | Logging, cache, legal pages, telemetry | No |
 | 15 | [Search & Listing](#search-listing) | Which trip search-bar fields show; collapse listing filters on mobile (sits between Booking Form and Payment in the admin) | No |
 | 16 | [Labels](#labels) | Rename texts customers see ("Book Now" → "Reserve") — Yatra 3.2+ (sits between Review and Tax in the admin) | No (also renames Pro texts) |
-| 17 | Uninstall | **Delete all data on uninstall** — when on, removing the plugin deletes Yatra's data. This cannot be undone. | No |
+| 17 | [API Access](#api-access) | API keys for apps that use the REST API; embed trips on other websites — Yatra 3.3+ (sits between Integration and Permalink in the admin) | No |
+| 18 | Uninstall | **Delete all data on uninstall** — when on, removing the plugin deletes Yatra's data. This cannot be undone. | No |
 
 ## How to use this page
 
@@ -50,6 +51,10 @@ Each control writes to its own row in the WordPress `wp_options` table — for e
 ## Permissions
 
 Saving settings requires the WordPress `manage_options` capability. The REST endpoint behind the page (`POST /yatra/v1/settings`) checks this on every write. See [REST API → Settings](/api-reference#settings-modules-license) for the full surface.
+
+::: tip Email settings aren't on this screen
+Email delivery, templates and — from Yatra 3.3 — your **email logo and brand colour** are set in <span class="screen-path">Yatra → Email → Delivery</span>. See [Email → Email branding](/email-settings#email-branding-logo-and-brand-colour).
+:::
 
 ---
 
@@ -64,6 +69,7 @@ Company identity, full address, website, and regional formatting.
 | Control            | Setting key       | Default | Notes                                                                            |
 | ---                | ---               | ---     | ---                                                                              |
 | Company Name       | `company_name`    | (empty) | Required-flagged in UI. Used in invoices, vouchers, and email "From" name.       |
+| Company Logo       | `company_logo`    | (empty) | 3.3+. Media-library image shown at the top of Yatra's emails when **Logo in emails** is on. Falls back to your site logo. |
 | Company Email      | `company_email`   | (empty) | Required-flagged in UI. Falls back to the WordPress admin email when blank.     |
 | Company Phone      | `company_phone`   | (empty) | Surfaced on PDFs.                                                                |
 | Company Address    | `company_address` | (empty) | Street address line.                                                             |
@@ -80,6 +86,28 @@ Company identity, full address, website, and regional formatting.
 | Timezone     | `timezone`    | `UTC`   | Searchable dropdown of all WP-supported time zones. Affects how booking and travel dates are stored / displayed. |
 | Date Format  | `date_format` | `Y-m-d` | Dropdown with many PHP date-format presets. Affects all admin and customer views. |
 | Time Format  | `time_format` | `H:i`   | Two options: `H:i` (24-hour) or `h:i A` (12-hour).                    |
+
+### Recently Viewed Trips
+
+Yatra 3.3+. Shows each visitor the trips they looked at before, under every trip page.
+
+| Control | Setting key | Default | Notes |
+| --- | --- | --- | --- |
+| Show the visitor's recently viewed trips under each trip page | `recently_viewed_enabled` | `false` | The list is kept in the visitor's own browser (local storage) and never sent to your server. Mention it in your cookie policy if your law requires it. |
+
+You can also place the list anywhere with the [`[yatra_recently_viewed]`](/shortcodes#yatra-recently-viewed-recently-viewed-trips) shortcode. Trips are only remembered while this setting is on.
+
+### Weather Forecast
+
+Yatra 3.3+. A 7-day forecast in the trip page's booking sidebar, for the trip's **starting point** — the start location on the trip's map (<span class="screen-path">Trip → Location & Route → Starting Point</span>). Trips without start coordinates show no forecast. Data comes from [Open-Meteo](https://open-meteo.com/); only the trip's coordinates are sent, never anything about your visitors, and each place is cached for 3 hours.
+
+| Control | Setting key | Default | Notes |
+| --- | --- | --- | --- |
+| Show a 7-day forecast on trip pages | `weather_enabled` | `false` | Master switch. The two fields below appear when it's on. |
+| Open-Meteo API key | `weather_api_key` | (empty) | Open-Meteo's free service is for **non-commercial use**. A business website should get an API key from open-meteo.com and enter it here. |
+| Temperature | `weather_units` | `metric` | *Celsius (°C)* or *Fahrenheit (°F)*. |
+
+If the forecast doesn't appear, see [Troubleshooting → weather](/troubleshooting#the-weather-forecast-doesn-t-show-on-trip-pages).
 
 ## 2. Design
 
@@ -145,6 +173,30 @@ The **Auto-Confirm Bookings** control (`auto_confirm_mode`) decides when a booki
 :::
 
 Offline methods are governed separately: **bank transfer** always waits for manual verification, and **pay-later** confirmation is controlled by *Settings → Payment → Auto-confirm Pay Later bookings* (on by default), which is honoured under both `none` and `online` from Yatra 3.2 — before 3.2 it was ignored under `online`. Pay Later bookings are never cancelled for being unpaid. Developers can override the decision per booking with the [`yatra_confirm_booking_on_payment`](/hooks-filters) filter.
+
+### Enquiry Form
+
+Yatra 3.3+. Add your own questions to the trip **enquiry** form (not the checkout form — that is the [Booking Form](#_4-booking-form) tab). They appear after the travellers field.
+
+- Click **Add a question**, type the **Question**, pick an **Answer type** — *Short answer*, *Paragraph*, *Dropdown* or *Checkbox* — and tick **Required** if it must be answered. A dropdown needs its **Choices**, one per line.
+- Up to 10 questions. Setting key: `enquiry_custom_fields`.
+- Answers are added to the enquiry message, so you see them on the Enquiries screen and in the enquiry email.
+
+Full walkthrough: [Bookings & customers → enquiry questions](/booking-settings#add-your-own-questions-to-the-enquiry-form-3-3).
+
+### Countdown & Social Proof <span class="pro-pill">PRO</span>
+
+Shown only while the Pro **Countdown & Social Proof** module is on (Yatra Pro 3.3+, any plan). Built only from real bookings — confirmed and completed bookings of published trips. The countdown itself is set per trip in the trip editor (Availability & Booking).
+
+| Control | Setting key | Default | Notes |
+| --- | --- | --- | --- |
+| Recent-booking popup on trip pages | `social_proof_popup` | `false` | *"Someone from Germany booked Everest Base Camp Trek · 3 hours ago"*. No surname, email or other details are shown. |
+| Show the traveller's first name | `social_proof_popup_names` | `false` | Shown when the popup is on. Make sure your privacy policy allows it. |
+| "Booked N times" badge on trip pages | `social_proof_booked_badge` | `false` | |
+| Look back (days) | `social_proof_days` | `30` | The window for both the popup and the badge (1–365). |
+| Show the badge from (bookings) | `social_proof_badge_min` | `3` | The badge appears once a trip has at least this many bookings in the window. |
+
+See [Countdown & Social Proof](/modules/social-proof).
 
 ## 4. Booking Form
 
@@ -245,9 +297,37 @@ Test-mode, payment-flow toggles, and deposit / scheduled-payment behaviour. **Fo
 | Days between installments          | `scheduled_payment_interval`         | `30`          | Shown only when *type = installments*.                     |
 | Payment reminder (days before)     | `scheduled_payment_reminder_days`    | `3`           | Reminder email this many days before the charge attempt.    |
 
+### Booking Fee
+
+Yatra 3.3+. A fee added to every new booking as its own line (for example *Service fee*). Coupons, tax and deposits include it; a booking keeps the fee it was made with.
+
+| Control | Setting key | Default | Notes |
+| --- | --- | --- | --- |
+| Booking fee | `booking_fee_type` | `none` | *No booking fee*, *Fixed amount per booking*, or *Percentage of the trip price*. |
+| Fee amount / Fee (%) | `booking_fee_amount` | `0` | The label changes with the type. |
+| Label | `booking_fee_label` | (empty) | The line name customers see. Empty = *Booking fee*. |
+
+Details: [Payments → Booking fee](/payment-settings#booking-fee).
+
+### Travel Insurance
+
+Yatra 3.3+. Offer travel insurance at checkout; customers choose yes or no. When they add it, it is its own line in the booking and part of the total. A trip can turn it off under its **Availability & Booking** section.
+
+| Control | Setting key | Default | Notes |
+| --- | --- | --- | --- |
+| Offer travel insurance at checkout | `travel_insurance_enabled` | `false` | Master switch; the fields below appear when it's on. |
+| Name | `travel_insurance_title` | (empty) | Heading at checkout. Empty = *Travel insurance*. |
+| Price | `travel_insurance_price_type` | `per_person` | *Per traveller*, *Percentage of the trip price*, or *Per booking*. |
+| Amount / Percentage (%) | `travel_insurance_amount` | `0` | |
+| Description | `travel_insurance_description` | (empty) | What the cover includes. |
+| Link to the policy (optional) | `travel_insurance_terms_url` | (empty) | |
+| Customers must say yes or no | `travel_insurance_require_choice` | `false` | Customers can't continue without choosing. |
+
+Details: [Payments → Travel insurance](/payment-settings#travel-insurance).
+
 ### Gateways
 
-The list of available gateways (PayPal, Pay Later and — from Yatra 3.2 — Bank Transfer are free; Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net and T-Bank are Pro) is rendered as a row of cards lower on the tab. Each card has an **Enable** toggle and a **Settings** button that expands the gateway's credentials form. Full per-gateway details: [Payments](/payment-settings).
+The list of available gateways (PayPal, Pay Later, Bank Transfer (from Yatra 3.2) and Cheque (from 3.3) are free; Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net, T-Bank and — from Pro 3.3 — Himalayan Bank, PayU, PayFast, Midtrans and PayHere are Pro) is rendered as a row of cards lower on the tab. Each card has an **Enable** toggle and a **Settings** button that expands the gateway's credentials form. Full per-gateway details: [Payments](/payment-settings).
 
 ::: warning Server-authoritative amounts (3.0.4+)
 The `POST /payment/create-intent` endpoint **ignores** any client-supplied `amount` and recomputes from the booking row when a `booking_id` is provided. See [Payments → security model](/payment-settings#payment-flow-security-model-3-0-4).
@@ -428,6 +508,35 @@ Renders conditionally when the Google Calendar module is enabled. Exposes OAuth 
 | Secret Key         | `recaptcha_secret_key` | Password-style input.                                       |
 
 For a full list of integrations and their setup guides, see [Pro modules overview](/third-party-integrations).
+
+## API Access
+
+Yatra 3.3+. Two things live on this tab: **API keys** for apps that use Yatra's [REST API](/api-reference), and **Embed trips on other websites**. Only administrators (`manage_options`) can use it.
+
+### API keys
+
+A key is a WordPress **application password** for the user you choose, and it can do what that user can.
+
+1. Enter a **Name** (e.g. *Booking channel sync*) and choose **Acts as user** (default **Me**).
+2. Click **Create key**. The key is shown **once** — copy it right away.
+3. The **Keys** table lists each key with its user, when it was created and when it was last used. **Revoke** stops it at once.
+
+::: warning Use a dedicated user
+If the chosen user is an administrator, the screen warns that the key could change anything on the site. Create keys for a dedicated user with a Yatra staff role instead.
+:::
+
+Apps send the key with HTTP Basic auth (user name + key). Application passwords need **HTTPS** — WordPress turns them off on plain-http sites, and the tab then says *"WordPress application passwords are off on this site."* See [REST API → API keys](/api-reference#api-keys).
+
+### Embed trips on other websites
+
+| Control | Setting key | Notes |
+| --- | --- | --- |
+| Allow other websites to show your trips | `embed_enabled` | Off by default. When off, the embed page returns *not found*. |
+| Trips (none chosen = your newest) | — | Tick the trips to show (up to 12). |
+| How many / Columns | — | 1–12 trips (default 6) and 1–4 columns (default 3). |
+| Paste this into the other website | — | The snippet (an iframe plus a small script that resizes it). Trips, count and columns are part of the snippet's link, not saved settings — change them and copy the snippet again. |
+
+The embed shows trip cards (photo, name, days, price) that open the trip on your site in a new tab; only published trips are shown. Details: [REST API → Embed trips](/api-reference#embed-trips-on-other-websites).
 
 ## 11. Permalink
 

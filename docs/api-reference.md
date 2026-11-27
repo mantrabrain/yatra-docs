@@ -33,16 +33,37 @@ Yatra registers **300+** REST routes across free + Pro. The catalog below covers
 Yatra uses WordPress's standard REST authentication:
 
 - **Cookie + nonce** — for logged-in WP users (the admin app uses this).
-- **Application Passwords** — recommended for server-to-server scripts. Generate per-user under **Users → Profile → Application Passwords**.
-- **Basic Auth over HTTPS** — supported by some plugins but not enabled by default in WordPress core.
+- **API keys / Application Passwords** — recommended for server-to-server scripts and other apps. Create them in Yatra (see [API keys](#api-keys) below) or per user under **Users → Profile → Application Passwords**. Sent with HTTP Basic auth.
 
 Most write endpoints require `manage_options` (admin) or a Yatra-specific capability such as `yatra_edit_trips`, `yatra_manage_settings`, `manage_yatra`. Some read endpoints and the booking session endpoints are public — see the per-endpoint notes.
 
 ```bash
-# List bookings as an admin (Application Password)
-curl -u "umesh:xxxx xxxx xxxx xxxx xxxx xxxx" \
+# List bookings with an API key (user name + key)
+curl -u "USER:xxxx xxxx xxxx xxxx xxxx xxxx" \
      https://example.com/wp-json/yatra/v1/bookings
 ```
+
+### API keys
+
+New in Yatra 3.3. <span class="screen-path">Settings → API Access</span>.
+
+1. Under **Name**, describe the app that will use the key (e.g. *Booking channel sync*).
+2. Under **Acts as user**, choose the WordPress user the key belongs to (**Me** by default). The list shows users with a Yatra role or administrators that you are allowed to edit.
+3. Click **Create key**. The key is shown **once** — copy it then; WordPress stores only a hash.
+4. The **Keys** table lists each key's name, user, when it was created and when it was last used. **Revoke** turns a key off straight away.
+
+How it works:
+
+- A Yatra API key **is a WordPress application password** for the chosen user (Yatra names it `Yatra: <your name>`). It can do exactly what that user can do. Choosing an administrator shows a warning — the key could change anything on the site. Make a dedicated user with a Yatra staff role and create the key for that user.
+- Requests send the user's login name and the key with **HTTP Basic auth** (`curl -u "USER:KEY"`), as in the example above.
+- WordPress turns application passwords **off on sites that don't use HTTPS** (and some security plugins turn them off). The screen then says *WordPress application passwords are off on this site*, and no key can be created. Serve the site over HTTPS, or check the security plugin.
+- Only keys created here (names starting with `Yatra: `) are listed and can be revoked from this screen. Other application passwords stay under **Users → Profile**.
+
+| Method | Path | Permission | Purpose |
+| --- | --- | --- | --- |
+| `GET` | `/api-keys` | `manage_options` | The Yatra keys, the users a key can be made for, whether application passwords are available (`available`) and whether the site uses HTTPS (`https`) |
+| `POST` | `/api-keys` | `manage_options` + may edit that user | Create a key. Body: `name` (required), `user_id` (default: you). Returns `key.password` once (201) |
+| `DELETE` | `/api-keys/{user}/{uuid}` | `manage_options` + may edit that user | Revoke a key |
 
 ## Permission patterns
 
@@ -108,6 +129,7 @@ The list below groups the routes by area. Each row shows the path (relative to `
 | `/trips/{id}/available-dates`                     | Public. List computed bookable dates (fixed + recurring). `from_date` defaults to today; `to_date` defaults to today + the **Booking horizon** setting (12 months unless changed) — pass both to control the window |
 | `/trips/{id}/availability-template`               | Rendered month-list / date-card HTML the trip page loads (`month_filter`, `page`, `per_page`); range = today + the Booking horizon |
 | `/trips/{id}/downloads`                           | List trip-attached downloads                         |
+| `/trips/{id}/weather`                             | Public, `GET` (3.3). 7-day forecast for a published trip's start location — see [Weather forecast](#weather-forecast) |
 | `/trips/search`                                   | Search trips by title / slug                         |
 | `/trips/public`                                   | Public listing endpoint used by `[yatra_trip]`       |
 | `/trips/stats`                                    | Trip-level statistics                                |
@@ -171,6 +193,20 @@ These power the React booking form. Public for guests, but some operations requi
 | `/payment/{gateway}/complete`                     | Per-gateway return URL handler                       |
 | `/payment/webhook/{gateway}`                      | Per-gateway webhook receiver                         |
 
+#### Checkout choices (3.3)
+
+The checkout's own choices travel with the booking session and the create request:
+
+| Field | Sent to | Value |
+| --- | --- | --- |
+| `accommodation` | `POST /booking/session` (update of an existing session), `POST /booking/summary`, `POST /booking/create` | The id of one of the trip's [accommodation options](/trip-creation). Empty or missing = the trip's **first** option. An id the trip no longer has is refused on create (`400`, `code: accommodation`). |
+| `travel_insurance` | same | `yes` / `no` (also `1`/`0`, `true`/`false`, `on`/`off`). Empty = not answered. When the trip offers insurance and **Customers must say yes or no** is on, an unanswered create is refused (`400`, `code: travel_insurance`). |
+| `pickup_point` | `POST /booking/create` | The id of one of the trip's pickup points. Refused (`400`, `code: pickup_point`) when the id isn't one of the trip's pickup points, or when none is sent and the trip requires one. |
+
+Sending `accommodation` or `travel_insurance` on its own to `POST /booking/session` updates the current session (like `travelers`), so the next summary prices it. The price lines appear in the summary as *Accommodation: …* and your insurance name. The answers are saved on the booking as the meta keys `_accommodation`, `_travel_insurance` and `_pickup_point`.
+
+With Yatra Pro's [Private Trips](/modules/private-trips) module on, `POST /private-trip/session` (body `private: true|false`) marks the current booking session as private. It must come from your own site (cross-site requests get `403`).
+
 ### Bookings (admin)
 
 | Path                                              | Purpose                                              |
@@ -232,6 +268,8 @@ These power the React booking form. Public for guests, but some operations requi
 | `/modules/{slug}/settings`                        | Read / write module settings                         |
 | `/license`                                        | (Pro) Read / write license info                      |
 | `/license/activate`, `/deactivate`, `/check`, `/save` | (Pro) License lifecycle                          |
+| `/api-keys`, `/api-keys/{user}/{uuid}`            | (3.3) Admin only — list / create / revoke [API keys](#api-keys) |
+| `/embed/snippet`                                  | (3.3) Admin only, `GET` — the embed code for [trips on other websites](#embed-trips-on-other-websites) (`trips`, `limit`, `columns`) and whether embedding is on (`enabled`) |
 
 ### Reports, tools, sample data, cache, migration
 
@@ -275,6 +313,62 @@ These power the React booking form. Public for guests, but some operations requi
 | `/abandoned-bookings/track`                       | Public tracking endpoint                             |
 | `/abandoned-bookings/recover/{token}`             | Public recovery URL handler                          |
 | `/additional-services`, `/additional-services/{id}` | Service CRUD                                       |
+| `/social-proof/recent`                            | (3.3) Public, `GET` — the recent-booking popup feed. See [below](#pro-routes-added-in-3-3) |
+| `/resources`, `/resources/{id}`                   | (3.3) Guides & resources CRUD                        |
+| `/resource-assignments`, `/resource-assignments/{id}` | (3.3) Assign guides / resources to departures    |
+| `/itinerary-download`                             | (3.3) Public, `POST` — email a trip's itinerary PDF  |
+| `/private-trip/session`                           | (3.3) Public, `POST` — make the booking session private |
+
+#### Pro routes added in 3.3
+
+| Method | Path | Permission | Notes |
+| --- | --- | --- | --- |
+| `GET` | `/social-proof/recent` | Public | `{ "items": [ … ] }` — recent **confirmed / completed** bookings of published trips: `trip`, `url`, `place`, `name` (first name, only when names are shown), `ago`. Empty when the popup is off. Module: [Countdown & Social Proof](/modules/social-proof). |
+| `GET` | `/resources` | `yatra_view_trips` or admin | All guides and resources. Optional `type` (`guide`, `vehicle`, `room`, `equipment`, `other`) and `active`. |
+| `POST` | `/resources` | `yatra_edit_trips` or admin | Create. Body: `name` (required), `type`, `photo_id`, `bio`, `languages`, `experience_years`, `quantity`, `capacity`, `phone`, `email`, `notes`, `show_on_site`, `status` (`active` / `inactive`). |
+| `PUT`, `PATCH`, `POST` | `/resources/{id}` | `yatra_edit_trips` or admin | Update (same fields). |
+| `DELETE` | `/resources/{id}` | `yatra_edit_trips` or admin | Delete the resource and its assignments. |
+| `GET` | `/resource-assignments` | `yatra_view_trips` or admin | The schedule. `from` / `to` (`YYYY-MM-DD`; default today to today + 60 days), optional `trip_id`. |
+| `POST` | `/resource-assignments` | `yatra_edit_trips` or admin | Assign. Body: `resource_id`, `trip_id`, `start_date` (required), `end_date` (default: from the trip's length), `quantity`, `departure_time` (`HH:MM`), `note`. A clash answers **409** with `conflicts`; send `force: true` to assign anyway. |
+| `DELETE` | `/resource-assignments/{id}` | `yatra_edit_trips` or admin | Remove an assignment. |
+| `POST` | `/itinerary-download` | Public, same-site only | Body: `trip_id`, `name`, `email` (required), `consent`, `recaptcha_token`. Emails the itinerary PDF and saves an enquiry. Limited to 10 requests per IP and 3 per email address per hour, and 60 per hour for the whole site (filter `yatra_itinerary_download_hourly_limit`). Module: [Itinerary Downloader](/modules/itinerary-downloader). |
+| `POST` | `/private-trip/session` | Public, same-site only | Body: `private` (`true` / `false`). Module: [Private Trips](/modules/private-trips). |
+
+The Guides & Resources tables are `wp_yatra_resources` and `wp_yatra_resource_assignments`. Module: [Guides & Resources](/modules/guides-resources).
+
+### Weather forecast
+
+New in Yatra 3.3. `GET /trips/{id}/weather` — public, no authentication. Used by the trip page's forecast card (<span class="screen-path">Settings → General → Weather Forecast</span>).
+
+```json
+{
+  "success": true,
+  "units": "metric",
+  "days": [
+    { "date": "2026-11-28", "code": 1, "label": "Partly cloudy", "max": 14, "min": 2, "rain": 10 }
+  ]
+}
+```
+
+- Up to 7 days, for the coordinates of the trip's **start location**. Only those coordinates are sent to [Open-Meteo](https://open-meteo.com/); each place is cached for 3 hours, and the response carries `Cache-Control: public, max-age=1800`.
+- `404` with `code: disabled` when the setting is off, `404` with `code: no_location` when the trip isn't published or has no start coordinates, `503` with `code: unavailable` when the weather service can't be reached.
+- Open-Meteo's free service is for non-commercial use. With an Open-Meteo API key in the setting, Yatra calls Open-Meteo's customer API instead. The `yatra_weather_api_url` filter can point it at another Open-Meteo-compatible host.
+
+### Embed trips on other websites
+
+New in Yatra 3.3. Not a REST route — a plain page meant to be shown in an `<iframe>` on another site. Turn it on in <span class="screen-path">Settings → API Access → Embed trips on other websites</span>; the settings there build the snippet for you (`GET /embed/snippet`).
+
+```text
+https://your-site.com/?yatra_embed=trips&trips=12,15,18&limit=6&columns=3
+```
+
+| Parameter | Default | Meaning |
+| --- | --- | --- |
+| `trips` | — | Comma-separated trip IDs, in the order to show them (up to 12). Empty = your newest trips. |
+| `limit` | `6` | How many trips (1–12). |
+| `columns` | `3` | Cards per row (1–4). |
+
+The page shows **published** trips only, as cards (photo, name, days, price) that open the trip on your site in a new tab. It can be framed by any site. The snippet includes a small script that resizes the frame to fit the cards. When embedding is off it answers `404` (*Embedding is turned off on this site*).
 
 ## Pagination, sorting, filtering
 

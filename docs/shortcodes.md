@@ -11,7 +11,7 @@ next:
 
 # Shortcodes
 
-Yatra ships eight core (free) shortcodes for placing trip catalogs, search, login and account UIs onto any page or post. The attribute lists below are taken directly from each shortcode class — defaults match what Yatra resolves to when you omit an attribute. Yatra Pro adds a few module-specific shortcodes too — see [Pro shortcodes](#pro-shortcodes) at the end.
+Yatra ships nine core (free) shortcodes for placing trip catalogs, search, login and account UIs onto any page or post. The attribute lists below are taken directly from each shortcode class — defaults match what Yatra resolves to when you omit an attribute. Yatra Pro adds a few module-specific shortcodes too — see [Pro shortcodes](#pro-shortcodes) at the end.
 
 ::: warning No checkout shortcode
 Older 2.x docs sometimes mention `[yatra_checkout]` or `[yatra_mini_cart]`. **These do not exist in Yatra 3.x.** The booking flow uses Yatra's virtual `/{booking_base}/{trip-slug}/` route (default `/book/...`), not a shortcode-driven page. See [Bookings & customers → Booking flow on the front end](/booking-settings#booking-flow-on-the-front-end). `[yatra_cart]` exists again from Yatra Pro 3.2, for the [Multi-Trip Cart](/modules/multi-trip-cart) module only — see [Pro shortcodes](#pro-shortcodes).
@@ -29,6 +29,7 @@ Older 2.x docs sometimes mention `[yatra_checkout]` or `[yatra_mini_cart]`. **Th
 | `[yatra_login]`                 | Customer login form                                      |
 | `[yatra_my_account]`            | Account dashboard for logged-in customers                |
 | `[yatra_discount_and_deals]`    | Trips with active discounts                              |
+| `[yatra_recently_viewed]`       | Trips the visitor looked at before (Yatra 3.3+)          |
 
 All numeric ID attributes (e.g. `destination="3,7"`) are validated as digits — non-numeric values cause the attribute to be ignored.
 
@@ -333,6 +334,34 @@ Unlike `[yatra_trip]`, this shortcode's `category` and `destination` attributes 
 [yatra_discount_and_deals discount_type="percentage" min_discount="20"]
 [yatra_discount_and_deals destination="nepal,patagonia" per_page="6"]
 ```
+
+---
+
+## `[yatra_recently_viewed]` (Recently viewed trips)
+
+Yatra 3.3+. Class: `app/Services/RecentlyViewedService.php`.
+
+Shows the visitor the trips they looked at before — photo, trip name and starting price — as a row of cards. Each card links to the trip.
+
+### Attributes
+
+| Attribute | Default            | Notes                                                    |
+| ---       | ---                | ---                                                      |
+| `title`   | `Recently viewed`  | Heading above the cards.                                 |
+| `limit`   | `4`                | How many trips to show, 1–8 (values outside are clamped). |
+
+```html
+[yatra_recently_viewed]
+[yatra_recently_viewed title="Pick up where you left off" limit="6"]
+```
+
+### How it works
+
+- Turn on <span class="screen-path">Settings → General → Recently Viewed Trips</span> first. Trip pages only **remember** a visit while that setting is on, so with it off the shortcode has nothing to show.
+- The list lives in the **visitor's own browser** (local storage, up to 8 trips). Nothing is stored on your server and no cookie is set, so it is per browser and per device.
+- When the visitor hasn't viewed any trip yet, the shortcode prints nothing — no empty heading.
+- With the setting on, the same row also appears under each trip page (excluding the trip being viewed).
+- Developers can stop a trip being remembered with the `yatra_recently_viewed_remember` filter (`$remember, $trip`).
 
 ---
 

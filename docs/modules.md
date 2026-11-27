@@ -7,7 +7,7 @@ description: A flat, scannable catalog of every Yatra Pro module — premium gat
 
 ![Modules admin — every Pro module as a card with on/off toggle](/screenshots/dashboard/dashboard-modules.webp)
 
-This is the **flat catalog** — every Yatra Pro module on a single page, plus the seven premium payment gateways unlocked by the same license. Use the [Pro modules overview](/third-party-integrations) for grouped, narrative explanations.
+This is the **flat catalog** — every Yatra Pro module on a single page, plus the twelve premium payment gateways unlocked by the same license. Use the [Pro modules overview](/third-party-integrations) for grouped, narrative explanations.
 
 > **About the wording:** Yatra calls these **modules** in the admin (<span class="screen-path">Yatra → Modules</span>). The page is a card grid: each card shows the module name, a short description, the category badge, and an on/off toggle. Toggling is instant — no page reload required.
 
@@ -33,7 +33,7 @@ Disabling a module hides its UI but **keeps your data** so re-enabling later res
 
 ## Premium payment gateways
 
-One Yatra Pro license unlocks **seven** premium gateways. (**Bank Transfer** moved to the free plugin in Yatra 3.2 — see [Payments → Bank Transfer](/payment-settings#bank-transfer).) These don't appear on the Modules screen — they're enabled under <span class="screen-path">Yatra → Settings → Payment</span> (one toggle per gateway, plus the credentials form).
+One Yatra Pro license unlocks **twelve** premium gateways — the five regional ones (Himalayan Bank, PayU, PayFast, Midtrans, PayHere) are new in Pro 3.3. (**Bank Transfer** moved to the free plugin in Yatra 3.2 and **Cheque** is free from Yatra 3.3 — see [Payments → Bank Transfer](/payment-settings#bank-transfer) and [Cheque](/payment-settings#cheque).) These don't appear on the Modules screen — they're enabled under <span class="screen-path">Yatra → Settings → Payment</span> (one toggle per gateway, plus the credentials form).
 
 <div class="doc-addon-grid">
 
@@ -79,6 +79,36 @@ One Yatra Pro license unlocks **seven** premium gateways. (**Bank Transfer** mov
     <a class="doc-addon-card__cta" href="/payment-settings">Setup guide →</a>
   </div>
 
+  <div class="doc-addon-card" id="himalayan-bank">
+    <h3 class="doc-addon-card__title">Himalayan Bank <span class="doc-pro-pill">Pro</span></h3>
+    <p class="doc-addon-card__copy">New in Pro 3.3. Nepal: Visa / Mastercard / UnionPay cards, NPR or USD.</p>
+    <a class="doc-addon-card__cta" href="/payment-settings#himalayan-bank-nepal">Setup guide →</a>
+  </div>
+
+  <div class="doc-addon-card" id="payu">
+    <h3 class="doc-addon-card__title">PayU <span class="doc-pro-pill">Pro</span></h3>
+    <p class="doc-addon-card__copy">New in Pro 3.3. India: UPI, cards, net banking, wallets (INR).</p>
+    <a class="doc-addon-card__cta" href="/payment-settings#payu-india">Setup guide →</a>
+  </div>
+
+  <div class="doc-addon-card" id="payfast">
+    <h3 class="doc-addon-card__title">PayFast <span class="doc-pro-pill">Pro</span></h3>
+    <p class="doc-addon-card__copy">New in Pro 3.3. South Africa: cards, Instant EFT, SnapScan (ZAR).</p>
+    <a class="doc-addon-card__cta" href="/payment-settings#payfast-south-africa">Setup guide →</a>
+  </div>
+
+  <div class="doc-addon-card" id="midtrans">
+    <h3 class="doc-addon-card__title">Midtrans <span class="doc-pro-pill">Pro</span></h3>
+    <p class="doc-addon-card__copy">New in Pro 3.3. Indonesia: cards, VA bank transfer, GoPay, QRIS (IDR).</p>
+    <a class="doc-addon-card__cta" href="/payment-settings#midtrans-indonesia">Setup guide →</a>
+  </div>
+
+  <div class="doc-addon-card" id="payhere">
+    <h3 class="doc-addon-card__title">PayHere <span class="doc-pro-pill">Pro</span></h3>
+    <p class="doc-addon-card__copy">New in Pro 3.3. Sri Lanka: cards, eZ Cash, mCash, Genie (LKR, USD, GBP, EUR, AUD).</p>
+    <a class="doc-addon-card__cta" href="/payment-settings#payhere-sri-lanka">Setup guide →</a>
+  </div>
+
 </div>
 
 ---
@@ -99,6 +129,13 @@ One Yatra Pro license unlocks **seven** premium gateways. (**Bank Transfer** mov
     <p class="doc-addon-card__copy">Offer optional add-ons like airport transfers, travel insurance, and equipment rental — per trip or globally. Quantity controls + line items on bookings.</p>
     <p class="doc-addon-card__meta">Adds menu: <span class="screen-path">Yatra → Additional Services</span></p>
     <a class="doc-addon-card__cta" href="/modules/additional-services">Details →</a>
+  </div>
+
+  <div class="doc-addon-card" id="private-trips">
+    <h3 class="doc-addon-card__title">Private Trips <span class="doc-pro-pill">Pro</span></h3>
+    <p class="doc-addon-card__copy">New in Pro 3.3. A group can book a departure for themselves at checkout, for a fee you set per trip; nobody else can then book it. Every Pro plan; needs Yatra 3.3+.</p>
+    <p class="doc-addon-card__meta">Adds: a <strong>Private Trips</strong> card in the trip editor, a <strong>Make this a private trip</strong> option at checkout</p>
+    <a class="doc-addon-card__cta" href="/modules/private-trips">Details →</a>
   </div>
 
 </div>
@@ -180,6 +217,20 @@ One Yatra Pro license unlocks **seven** premium gateways. (**Bank Transfer** mov
     <a class="doc-addon-card__cta" href="/modules/custom-landing-pages">Details →</a>
   </div>
 
+  <div class="doc-addon-card" id="itinerary-downloader">
+    <h3 class="doc-addon-card__title">Itinerary Downloader <span class="doc-pro-pill">Pro</span></h3>
+    <p class="doc-addon-card__copy">New in Pro 3.3. A "Download itinerary (PDF)" button on trip pages: visitors get the itinerary by email and are saved as a lead with their marketing consent. Every Pro plan; needs Yatra 3.3+.</p>
+    <p class="doc-addon-card__meta">Adds: a button in the trip page's itinerary section; leads in <span class="screen-path">Yatra → Enquiries</span></p>
+    <a class="doc-addon-card__cta" href="/modules/itinerary-downloader">Details →</a>
+  </div>
+
+  <div class="doc-addon-card" id="social-proof">
+    <h3 class="doc-addon-card__title">Countdown &amp; Social Proof <span class="doc-pro-pill">Pro</span></h3>
+    <p class="doc-addon-card__copy">New in Pro 3.3. A countdown on the trip page (to an offer end or the next departure), a "booked N times" badge and a recent-booking popup — built only from real bookings. Every Pro plan; needs Yatra 3.3+.</p>
+    <p class="doc-addon-card__meta">Adds: a <strong>Countdown</strong> card in the trip editor; <span class="screen-path">Settings → Booking → Countdown &amp; Social Proof</span></p>
+    <a class="doc-addon-card__cta" href="/modules/social-proof">Details →</a>
+  </div>
+
 </div>
 
 ---
@@ -209,6 +260,13 @@ One Yatra Pro license unlocks **seven** premium gateways. (**Bank Transfer** mov
     <a class="doc-addon-card__cta" href="/modules/google-calendar">Details →</a>
   </div>
 
+  <div class="doc-addon-card" id="guides-resources">
+    <h3 class="doc-addon-card__title">Guides &amp; Resources <span class="doc-pro-pill">Pro</span></h3>
+    <p class="doc-addon-card__copy">New in Pro 3.3. Guide profiles on trip pages, and a schedule for guides, vehicles, rooms and equipment that warns before double-booking. Every Pro plan; needs Yatra 3.3+.</p>
+    <p class="doc-addon-card__meta">Adds: <span class="screen-path">Yatra → Guides &amp; Resources</span>; a guides picker in the trip editor; <code>{{departure_guides}}</code></p>
+    <a class="doc-addon-card__cta" href="/modules/guides-resources">Details →</a>
+  </div>
+
 </div>
 
 ---
@@ -231,6 +289,13 @@ Modules unlocked by the **Growth** and **Scale** plans. AI Assistant and WhatsAp
     <p class="doc-addon-card__copy">New in Pro 3.2. Customers add several trips and dates to a cart and book them in one checkout with one payment. Each trip becomes its own booking. Needs Yatra 3.2+.</p>
     <p class="doc-addon-card__meta">Adds: <strong>Add to cart</strong> on departures, a <strong>Cart</strong> page (<code>[yatra_cart]</code>)</p>
     <a class="doc-addon-card__cta" href="/modules/multi-trip-cart">Details →</a>
+  </div>
+
+  <div class="doc-addon-card" id="travel-agency">
+    <h3 class="doc-addon-card__title">Travel Agencies <span class="doc-pro-pill">Pro</span></h3>
+    <p class="doc-addon-card__copy">New in Pro 3.2. Take bookings from travel agencies for their clients: agency codes at checkout, tour emails to the guest and booking and payment emails to the agency, pay by invoice, and one monthly statement settled with a single payment. Needs Yatra 3.2+.</p>
+    <p class="doc-addon-card__meta">Adds menu: <span class="screen-path">Yatra → Travel Agencies</span></p>
+    <a class="doc-addon-card__cta" href="/modules/travel-agency">Details →</a>
   </div>
 
   <div class="doc-addon-card" id="currency-switcher">
@@ -303,7 +368,7 @@ Modules gated to the **Scale** tier (Yearly or Lifetime). Built for resellers an
 
 ## The full module list at a glance
 
-22 modules: 14 on every Pro plan (Starter, Growth, Scale), 4 on Growth and Scale, 4 on Scale only.
+27 modules: 18 on every Pro plan (Starter, Growth, Scale), 5 on Growth and Scale, 4 on Scale only.
 
 | Module | Tier | Category | Settings page after enable |
 | --- | --- | --- | --- |
@@ -321,9 +386,14 @@ Modules gated to the **Scale** tier (Yearly or Lifetime). Built for resellers an
 | Dynamic Pricing | Starter + | Sales | `dynamic-pricing` |
 | Custom Landing Pages | Starter + | Marketing | `yatra-settings` |
 | Abandoned Booking Recovery | Starter + | Marketing | `abandoned-recovery` |
+| Private Trips | Starter + | Sales | (a card in the trip editor) |
+| Itinerary Downloader | Starter + | Marketing | (no settings — a button on trip pages) |
+| Countdown & Social Proof | Starter + | Marketing | Settings → Booking |
+| Guides & Resources | Starter + | Operations | `guides-resources` |
 | **AI Assistant** | **Growth +** | Productivity | `ai-assistant` |
 | **Currency Switcher** | **Growth +** | Sales | Settings → Currency |
 | **Multi-Trip Cart** | **Growth +** | Sales | (no settings — creates a Cart page) |
+| **Travel Agencies** | **Growth +** | Sales | `travel-agencies` |
 | **WhatsApp Notifications** | **Growth +** | Communications | `whatsapp` |
 | **Channel Manager** | **Scale** | Distribution | `channel-manager` |
 | **White Label** | **Scale** | Branding | `white-label` |

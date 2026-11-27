@@ -1,17 +1,17 @@
 ---
 title: Payments & gateways
-description: Beginner-friendly setup guides for every Yatra payment gateway — PayPal, Pay Later, Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net, Bank Transfer. Every field, where to get the key from the gateway dashboard, screenshots, and a test workflow.
+description: Beginner-friendly setup guides for every Yatra payment gateway — PayPal, Pay Later, Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net, Bank Transfer, Cheque, T-Bank, Himalayan Bank, PayU, PayFast, Midtrans, PayHere. Every field, where to get the key from the gateway dashboard, screenshots, and a test workflow.
 ---
 
 # Payments & gateways
 
 <div class="doc-pro-callout">
   <span class="doc-pro-pill">Pro</span>
-  <span><strong>Stripe and six other gateways are Yatra Pro.</strong> The free plugin ships with PayPal, Pay Later and Bank Transfer. Activate a license under <em>Yatra → License</em> to unlock the rest.</span>
+  <span><strong>Stripe and eleven other gateways are Yatra Pro.</strong> The free plugin ships with PayPal, Pay Later, Bank Transfer and (from Yatra 3.3) Cheque. Activate a license under <em>Yatra → License</em> to unlock the rest.</span>
   <a class="doc-pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs" target="_blank" rel="noopener">View pricing →</a>
 </div>
 
-Yatra's free plugin includes **PayPal**, **Pay Later** and (from Yatra 3.2) **Bank Transfer** as fully-working gateways. The other seven — Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net, T-Bank — are part of **Yatra Pro**. (Before Yatra 3.2, Bank Transfer was a Pro gateway.)
+Yatra's free plugin includes **PayPal**, **Pay Later**, (from Yatra 3.2) **Bank Transfer** and (from Yatra 3.3) **Cheque** as fully-working gateways. The others — Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net, T-Bank and, from Yatra Pro 3.3, Himalayan Bank, PayU, PayFast, Midtrans and PayHere — are part of **Yatra Pro**. (Before Yatra 3.2, Bank Transfer was a Pro gateway.)
 
 ::: tip New to payment gateways?
 Each gateway below has a **Before you start → Get your keys → Paste in Yatra → Test it** flow. Follow the steps in order, paste the values into the matching field in <span class="screen-path">Yatra → Settings → Payment</span>, and you'll have a working checkout in under 10 minutes per gateway.
@@ -29,8 +29,14 @@ Each gateway below has a **Before you start → Get your keys → Paste in Yatra
 | **Paystack**         | —    | ✅  | `paystack`       | Africa-first; cards, transfers, mobile money.  |
 | **Square**           | —    | ✅  | `square`         | NA / UK / AU / JP cards.                       |
 | **Authorize.Net**    | —    | ✅  | `authorize_net`  | US-centric merchant accounts.                  |
-| **Bank Transfer**    | ✅ (3.2+) | ✅  | `bank_transfer`  | Manual settlement; bank details on confirmation. |
+| **Bank Transfer**    | ✅ (3.2+) | ✅  | `bank_transfer`  | Manual settlement; bank details on confirmation. Several accounts per currency from 3.3. |
+| **Cheque**           | ✅ (3.3+) | ✅  | `cheque`         | Payment by post; bookings are not expired while you wait. |
 | **T-Bank**           | —    | ✅  | `tbank`          | Russia: bank cards, SBP, T-Pay.                |
+| **Himalayan Bank**   | —    | ✅ (3.3+) | `himalayan_bank` | Nepal: Visa / Mastercard / UnionPay cards, NPR or USD. |
+| **PayU**             | —    | ✅ (3.3+) | `payu`     | India: UPI, cards, net banking, wallets (INR). |
+| **PayFast**          | —    | ✅ (3.3+) | `payfast`  | South Africa: cards, Instant EFT, SnapScan (ZAR). |
+| **Midtrans**         | —    | ✅ (3.3+) | `midtrans` | Indonesia: cards, VA bank transfer, GoPay, QRIS (IDR). |
+| **PayHere**          | —    | ✅ (3.3+) | `payhere`  | Sri Lanka: cards, eZ Cash, mCash, Genie (LKR, USD, GBP, EUR, AUD). |
 
 ## Where to configure
 
@@ -42,11 +48,58 @@ The screen has these sections:
 
 1. **Global** — master *Test mode* switch and *Auto-confirm Pay Later bookings*.
 2. **Partial / Deposit / Scheduled payments** — Pro-only flows (see [Settings → Payment](/settings#_5-payment) for every field).
-3. **Gateways** — every gateway as a card with an **Enable** toggle and a **Settings** disclosure. Pro-only gateways display a **PRO** badge until you have an active license.
+3. **Booking Fee** (3.3) — see [Booking fee](#booking-fee).
+4. **Travel Insurance** (3.3) — see [Travel insurance](#travel-insurance).
+5. **Gateways** — every gateway as a card with an **Enable** toggle and a **Settings** disclosure. Pro-only gateways display a **PRO** badge until you have an active license.
 
 ::: warning One Test Mode switch for all gateways
 A single setting — `yatra_payment_test_mode` (default `true`) — drives test mode for **every** gateway. Each gateway stores both `live_*` and `test_*` key pairs and Yatra picks the active pair from this flag. There's no per-gateway test toggle in the current UI.
 :::
+
+## Booking fee
+
+<span class="screen-path">Yatra → Settings → Payment → Booking Fee</span> (Yatra 3.3+). A fee added to **every new booking** as its own line — for example a *Service fee* or *Card handling fee*.
+
+| Field | Setting ID | What to put |
+| --- | --- | --- |
+| **Booking fee** | `booking_fee_type` | *No booking fee* (default), *Fixed amount per booking*, or *Percentage of the trip price*. |
+| **Fee amount** / **Fee (%)** | `booking_fee_amount` | The amount in your store currency, or the percentage (0–100). |
+| **Label** | `booking_fee_label` | The name of the line the customer sees. Empty = *Booking fee*. |
+
+What happens:
+
+- The fee is shown as its own line (with your label) in the checkout summary, on the booking confirmation page and on the admin booking screen.
+- A percentage fee is worked out on the **trip price before discounts**.
+- The fee is part of the booking's subtotal, so **coupons, tax and deposits include it** — a 20% deposit is 20% of the price including the fee.
+- A booking keeps the fee it was made with (stored on the booking). Changing or switching off the setting never changes existing bookings.
+
+Developers can change the fee per booking with the `yatra_booking_fee` filter (`$fee, $baseAmount, $tripId`) — see [Hooks & filters](/hooks-filters).
+
+## Travel insurance
+
+<span class="screen-path">Yatra → Settings → Payment → Travel Insurance</span> (Yatra 3.3+). Offer an insurance add-on at checkout. Yatra doesn't sell or arrange the insurance itself — you set the name, price and description of the cover you offer (for example from your insurance partner).
+
+1. Tick **Offer travel insurance at checkout**.
+2. Fill in the fields:
+
+| Field | Setting ID | What to put |
+| --- | --- | --- |
+| **Name** | `travel_insurance_title` | The heading at checkout. Empty = *Travel insurance*. |
+| **Price** | `travel_insurance_price_type` | *Per traveller* (default), *Percentage of the trip price*, or *Per booking*. |
+| **Amount** / **Percentage (%)** | `travel_insurance_amount` | The price, or the percentage (0–100) of the trip price before discounts. |
+| **Description** | `travel_insurance_description` | One or two lines about the cover, shown under the heading. |
+| **Link to the policy (optional)** | `travel_insurance_terms_url` | Shown as *What the insurance covers* (opens in a new tab). |
+| **Customers must say yes or no** | `travel_insurance_require_choice` | Off: *No* is preselected. On: nothing is preselected and the customer can't book until they choose. |
+
+3. Save.
+
+**What the customer sees.** On the checkout page, above the contact details, a section with your name and description and two choices: **Yes, add it** (with the price, e.g. *+25.00 per person*) and **No, I have my own cover or will travel without it**. Choosing *Yes* adds the insurance as its own line in the summary; it is part of the subtotal, so coupons, tax and deposits include it.
+
+**What you see.** The answer is saved on the booking either way — a *No* is recorded too, so you can see who declined. It shows in the booking screen's **Stay & insurance** card (*Added* or *Declined by the customer*), in the **Travel insurance** column of the departure manifest CSV, and in emails as `{{travel_insurance}}` (*Added* / *Declined*). A booking keeps the price it was made with.
+
+**Turn it off for one trip.** In the trip editor → **Availability & Booking**, tick **Don't offer travel insurance on this trip**.
+
+Not offered on a balance (remaining-payment) checkout. Developers can change the price with the `yatra_travel_insurance_amount` filter (`$amount, $tripId, $baseAmount, $travellers`).
 
 ## Currency
 
@@ -80,7 +133,7 @@ Easiest to set up. You only need your PayPal business email. Good for low-volume
 
 **Step 3: Save**, then enable PayPal at the top of the panel and click **Save Settings**.
 
-PayPal will POST IPN notifications to `https://yoursite.com/wp-json/yatra/v1/payment/webhook/paypal-ipn` after each transaction — no manual webhook setup needed in Simple mode.
+PayPal will POST IPN notifications to `https://yoursite.com/wp-json/yatra/v1/payment/webhook/paypal` after each transaction — no manual webhook setup needed in Simple mode.
 
 ### Mode B — Advanced (REST)
 
@@ -360,7 +413,7 @@ Unlike Stripe, Mollie has **one key per mode**, and Mollie itself reads the `tes
 | Yatra field           | Setting ID         | Notes                                                                                                |
 | ---                   | ---                | ---                                                                                                  |
 | **API key**           | `api_key`          | The `test_…` or `live_…` key from step 1. Mollie auto-detects the mode from the prefix.            |
-| **Webhook URL**       | `webhook_url`      | Auto-populated to `https://yoursite.com/wp-json/yatra/v1/payment/mollie/webhook`. Only change this if your site sits behind a proxy / reverse-host. |
+| **Webhook URL**       | `webhook_url`      | Shown for reference: `https://yoursite.com/wp-json/yatra/v1/payment/webhook/mollie`. You don't paste it anywhere — Yatra sends it to Mollie with every payment. |
 | **Payment methods**   | `payment_methods`  | Multi-select. Leave empty to offer everything you've enabled in step 2.                              |
 
 ::: warning Mollie needs a publicly-reachable URL
@@ -403,7 +456,7 @@ Africa-first — cards, bank transfer, USSD, mobile money. Primary in Nigeria, G
 Paystack lets you set one webhook URL per environment.
 
 1. On the same **Settings → API Keys & Webhooks** page, scroll to **Webhook URL**.
-2. Paste `https://yoursite.com/wp-json/yatra/v1/payment/paystack/webhook` for live.
+2. Paste `https://yoursite.com/wp-json/yatra/v1/payment/webhook/paystack` for live (copy it from the Paystack panel in Yatra). Yatra Pro before 3.3 showed `…/payment/paystack/webhook` here, which doesn't exist — if you pasted that one, replace it.
 3. Add the test webhook URL after toggling to test mode (or use the same — Paystack signs every event with the secret key).
 
 ### Step 3 — Paste in Yatra
@@ -526,6 +579,93 @@ Sandbox URL: `https://sandbox.authorize.net`. The global *Test mode* flag flips 
 
 ---
 
+## Regional gateways <span class="pro-pill">PRO 3.3</span>
+
+Yatra Pro 3.3 adds five gateways for markets where Stripe and PayPal are not an option. They all work the same way:
+
+1. At checkout the customer picks the gateway and clicks **Pay Now**.
+2. They are sent to the gateway's own secure payment page and pay there.
+3. They come back to the booking confirmation page.
+4. Yatra asks the gateway whether the payment went through — both when the customer comes back and when the gateway's notification arrives — and records it once, for the amount the gateway says was paid.
+
+A payment is only recorded if the gateway confirms it, for that booking, in the booking's currency. Each gateway accepts only its own currencies; if the booking is in another currency the customer sees a clear message and can choose a different payment method. They need **Yatra 3.2 or later** (with an older Yatra they are not offered). The global **Test mode** switch decides whether Yatra talks to the gateway's sandbox or live system, so use sandbox credentials while it is on.
+
+::: warning Local and staging sites
+Gateways send their notifications from the internet. A site on `localhost` or behind a password can't receive them. Payments still confirm when the customer comes back to the site (PayU, Midtrans and Himalayan Bank always; PayHere when the App ID/Secret is set), but test on a public URL before going live.
+:::
+
+### Himalayan Bank (Nepal)
+
+Card payments through Himalayan Bank's 2C2P "PACO" payment page. NPR or USD.
+
+**What Himalayan Bank gives you** when your merchant account is approved: an **Office ID**, an **API key**, and two **PACO public keys** (one for signing, one for encryption).
+
+**What you make yourself:** two RSA key pairs (4096-bit). Send Himalayan Bank the two *public* keys and keep the private ones. For example:
+
+```bash
+openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out signing-private.pem
+openssl pkey -in signing-private.pem -pubout -out signing-public.pem
+openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out encryption-private.pem
+openssl pkey -in encryption-private.pem -pubout -out encryption-public.pem
+```
+
+| Yatra field | Setting ID | Notes |
+| --- | --- | --- |
+| **Office ID (Merchant ID)** | `office_id` | From Himalayan Bank. |
+| **API Key** | `api_key` | From Himalayan Bank. |
+| **Your signing private key** | `merchant_signing_private_key` | Contents of `signing-private.pem`. |
+| **Your encryption private key** | `merchant_decryption_private_key` | Contents of `encryption-private.pem`. |
+| **PACO signing public key** | `paco_signing_public_key` | From Himalayan Bank. |
+| **PACO encryption public key** | `paco_encryption_public_key` | From Himalayan Bank. |
+| **Encryption key ID** | `encryption_key_id` | Leave empty — Yatra uses 2C2P's published key ID for test or live. Fill it only if the bank gave you a different one. |
+| **Ask for 3-D Secure** | `request_3ds` | Keep on. |
+| **API version** | `api_version` | 1.0 unless the bank says otherwise. |
+| **Backend notification URL** | — | Read-only. Give it to the bank if they ask for your *backend URL*. |
+
+Paste each key with its `-----BEGIN …-----` and `-----END …-----` lines. Test mode uses the PACO UAT system (`core.demo-paco.2c2p.com`); live uses `core.paco.2c2p.com`. Production accounts may also need your server's IP address whitelisted by the bank.
+
+### PayU (India)
+
+UPI, cards, net banking and wallets through PayU Hosted Checkout. INR only.
+
+1. In the PayU Dashboard switch to **Test Mode** and open **Developers → API Keys** to get a test **Merchant Key** and **Salt** (live keys are on the same page in live mode).
+2. Paste them into **Merchant Key** (`merchant_key`) and **Merchant Salt** (`merchant_salt`). Use the 32-bit (v1) salt.
+3. Optional: in **Developers → Webhooks**, add the **Webhook URL** shown in Yatra for *Payments* (Successful and Failed). Payments also confirm without it when the customer comes back.
+
+PayU sends the customer back to a short address on your site (`/?ypayu=…`) because PayU allows only 50 characters for it; Yatra then forwards them to the booking confirmation page. Refunds can be sent back through PayU from the booking screen.
+
+### PayFast (South Africa)
+
+Cards, Instant EFT, SnapScan, Zapper and more. ZAR only.
+
+1. For testing, create a free sandbox account at <https://sandbox.payfast.co.za>. For live, use your PayFast account.
+2. In **Settings → Integration**, copy the **Merchant ID** and **Merchant Key** into Yatra.
+3. If a **Salt passphrase** is set there, enter exactly the same one in Yatra (`passphrase`). If it doesn't match, PayFast shows "Generated signature does not match submitted signature".
+
+There's nothing else to set up: Yatra tells PayFast where to send its payment notification (ITN) with every payment. Yatra accepts a notification only if its signature matches **and** PayFast confirms it is genuine.
+
+### Midtrans (Indonesia)
+
+Cards, virtual-account bank transfer, GoPay, ShopeePay, QRIS and more through Midtrans Snap. IDR only, whole rupiah.
+
+1. In the Midtrans Dashboard open **Settings → Access Keys** and copy the **Server Key** (sandbox keys start with `SB-Mid-server-`).
+2. Paste it into **Server Key** (`server_key`).
+3. In **Settings → Configuration**, set **Payment Notification URL** to the URL shown in Yatra.
+
+Refunds of card, GoPay, ShopeePay, DANA, OVO and QRIS payments can be sent back through Midtrans from the booking screen. Bank transfer (VA) and convenience-store payments must be refunded outside Midtrans.
+
+### PayHere (Sri Lanka)
+
+Cards, eZ Cash, mCash, Genie and bank apps. LKR, USD, GBP, EUR or AUD (as enabled on your PayHere account).
+
+1. In PayHere go to **Settings → Domains & Credentials**, add your website's domain and wait for approval (up to a day). Copy the **Merchant ID** and the **Merchant Secret** for that domain. Each domain has its own secret — a staging site needs its own.
+2. Paste them into **Merchant ID** (`merchant_id`) and **Merchant Secret** (`merchant_secret`).
+3. Optional but recommended: in **Settings → API Keys**, create an API key (allowed domain: your site) and paste its **App ID** and **App Secret**. With these, Yatra can look a payment up itself when PayHere's notification doesn't reach your site.
+
+Sandbox: sign up at <https://sandbox.payhere.lk>. Test cards: Visa `4916217501611292`, Mastercard `5307732125531191` (any name, CVV and future expiry).
+
+---
+
 <a id="bank-transfer"></a>
 
 ## Bank Transfer
@@ -548,16 +688,55 @@ To set it up, open <span class="screen-path">Yatra → Settings → Payment</spa
 | **Account Name**            | `account_name`      | The account holder.                                                |
 | **Account Number**          | `account_number`    | Or IBAN.                                                           |
 | **Routing/SWIFT Code**      | `routing_code`      | IBAN, SWIFT, ABA — whichever your bank requires. Free text.        |
+| **Account currency (optional)** | `account_currency` | 3.3+. Show this account only for bookings in this currency, e.g. `EUR`. Leave empty for every booking. |
+| **More bank accounts**      | `extra_accounts`    | 3.3+. Up to 10 more accounts — see below.                          |
 | **Additional Instructions** | `instructions`      | Free text shown to the customer with the bank details.             |
 
+### Several bank accounts, per currency (3.3+)
+
+If you take payments into more than one account — for example a EUR account and a USD account, or one account per country — add them under **More bank accounts**:
+
+1. Click **Add another bank account** (up to 10).
+2. Fill in **Label (e.g. Euro account)**, **Currency (e.g. EUR)**, **Bank Name**, **Account Name**, **Account Number / IBAN** and **Routing/SWIFT Code**. An account needs at least a bank name or an account number to be shown.
+3. Optionally set **Account currency** on the main account too.
+4. Save.
+
+Which accounts a customer sees depends on the **booking's currency**: every account whose currency matches, plus every account with no currency set. If no account matches, the main account is shown. When more than one account is shown, each gets a heading — its label (or *Account 1*, *Account 2* …) followed by the currency. The same list appears on the confirmation page, the invoice and the booking email. Sites with one account don't need to change anything.
+
+Developers can change the list with the `yatra_bank_transfer_accounts` filter (`$accounts, $currency, $gateway`).
+
 A Bank Transfer booking stays **Pending** until you confirm the money arrived. When it does, open the booking and click **Record payment** (choose *Bank transfer*) — see [Manage a booking → Record a payment](/booking-workspace#record-a-payment). The gateway's title, description and instructions can be translated with WPML or Polylang — see [Multilingual sites](/multilingual).
+
+<a id="cheque"></a>
+
+## Cheque
+
+**Free from Yatra 3.3.** For customers who pay by posting a cheque. No external account and no credentials.
+
+Open <span class="screen-path">Yatra → Settings → Payment</span>, enable **Cheque** and fill in its settings:
+
+| Yatra field | Setting ID | Notes |
+| --- | --- | --- |
+| **Make cheques payable to** | `payee` | The name on your account, as it must appear on the cheque. **Required.** |
+| **Send cheques to** | `address` | The postal address customers send the cheque to (several lines). **Required.** |
+| **Additional Instructions** | `instructions` | Shown to the customer with the details. Empty = *Please write the payment reference on the back of the cheque.* |
+
+The gateway is only offered at checkout once both **Make cheques payable to** and **Send cheques to** are filled in.
+
+At checkout the customer sees **Cheque** — *Pay by cheque. Where to send it is shown after you book and sent by email.* After booking, a **Paying by cheque** box shows who to pay, where to send it, the booking reference to use as the **Payment Reference** and the amount — on the confirmation page and the invoice.
+
+A cheque booking stays **Pending** until you record the payment: when the cheque clears, open the booking and click **Record payment** — see [Manage a booking → Record a payment](/booking-workspace#record-a-payment).
+
+::: tip Cheque bookings don't expire
+Cheques take days to arrive by post, so unpaid cheque bookings are **never cancelled by the unpaid-booking expiry** (*Settings → Booking → Booking Expiry*), just like Pay Later bookings. Developers can add other payment methods to this exemption with the `yatra_booking_expiry_exempt_gateways` filter (default `['cheque']`).
+:::
 
 <div class="pro-callout">
   <div class="pro-callout__head">
     <span class="pro-callout__badge">PRO</span>
-    <span class="pro-callout__title">Seven premium gateways — one license</span>
+    <span class="pro-callout__title">Twelve premium gateways — one license</span>
   </div>
-  <p class="pro-callout__desc">Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net and T-Bank all unlock with a single Yatra Pro license.</p>
+  <p class="pro-callout__desc">Stripe, Razorpay, Mollie, Paystack, Square, Authorize.Net, T-Bank and (from Pro 3.3) Himalayan Bank, PayU, PayFast, Midtrans and PayHere all unlock with a single Yatra Pro license.</p>
   <a class="pro-callout__cta" href="https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs">Compare Yatra Pro plans →</a>
 </div>
 
@@ -677,7 +856,8 @@ From Yatra 3.2, refund a payment from the **booking** screen: open the booking, 
 | --- | --- |
 | **PayPal** (Advanced / API mode) | Can send the money back through PayPal and record it in one step (tick *Send the money back through PayPal*), or just record a refund you made yourself. If PayPal refuses, its reason is shown and nothing is recorded. |
 | **Stripe** <span class="pro-pill">PRO</span> | Same, through Stripe — with Yatra Pro 3.2 or later. Refunds in the payment's own currency. |
-| **PayPal** (Simple mode), **Razorpay / Mollie / Paystack / Square / Authorize.Net / T-Bank**, **Pay Later / Bank Transfer** | Records the refund only. Send the money from the provider's dashboard or your bank first. |
+| **PayU**, **Midtrans** <span class="pro-pill">PRO 3.3</span> | Can send the money back through the gateway, as above. Midtrans can't refund bank-transfer (VA) or convenience-store payments; PayU refunds settle a day or two later. |
+| **PayPal** (Simple mode), **Razorpay / Mollie / Paystack / Square / Authorize.Net / T-Bank / Himalayan Bank / PayFast / PayHere**, **Pay Later / Bank Transfer** | Records the refund only. Send the money from the provider's dashboard or your bank first. |
 
 Full steps: [Manage a booking → Refund a payment](/booking-workspace#refund-a-payment).
 
@@ -716,25 +896,24 @@ If you write a custom gateway, follow the same pattern by either calling `\Yatra
 
 ## Webhook URLs (cheat sheet)
 
-Most gateways — including **Stripe** and PayPal — use a single **unified** webhook route: `/payment/webhook/{gateway}` (the gateway slug comes **after** `webhook`). Mollie and Paystack use their own gateway-specific routes. Tip: every gateway's settings panel shows its exact **Webhook Endpoint URL** with a Copy button, pre-filled for your site — that is always the authoritative value.
+Every gateway uses the same webhook route: `/payment/webhook/{gateway}` (the gateway slug comes **after** `webhook`). Every gateway's settings panel shows its exact URL, pre-filled for your site.
 
 ```
-# Unified route — /payment/webhook/{gateway}
 https://yoursite.com/wp-json/yatra/v1/payment/webhook/paypal
-https://yoursite.com/wp-json/yatra/v1/payment/webhook/paypal-ipn
 https://yoursite.com/wp-json/yatra/v1/payment/webhook/stripe
 https://yoursite.com/wp-json/yatra/v1/payment/webhook/razorpay
+https://yoursite.com/wp-json/yatra/v1/payment/webhook/mollie
+https://yoursite.com/wp-json/yatra/v1/payment/webhook/paystack
 https://yoursite.com/wp-json/yatra/v1/payment/webhook/square
 https://yoursite.com/wp-json/yatra/v1/payment/webhook/authorize_net
-
-# Gateway-specific routes
-https://yoursite.com/wp-json/yatra/v1/payment/mollie/webhook
-https://yoursite.com/wp-json/yatra/v1/payment/paystack/webhook
+https://yoursite.com/wp-json/yatra/v1/payment/webhook/himalayan_bank
+https://yoursite.com/wp-json/yatra/v1/payment/webhook/payu
+https://yoursite.com/wp-json/yatra/v1/payment/webhook/payfast
+https://yoursite.com/wp-json/yatra/v1/payment/webhook/midtrans
+https://yoursite.com/wp-json/yatra/v1/payment/webhook/payhere
 ```
 
-::: tip Where the routes are registered
-The unified pattern is in `app/Controllers/PaymentGatewayController.php` (line 89): `register_rest_route( …, '/payment/webhook/(?P<gateway>[a-z_]+)', … )`. Gateway-specific routes (Mollie, Paystack, Stripe) are registered in their own classes — search the Pro plugin for `register_rest_route` to confirm.
-:::
+T-Bank is the exception: it uses `admin-ajax.php?action=yatra_tbank_notification`, shown in its panel. On sites without pretty permalinks the REST form is `https://yoursite.com/?rest_route=/yatra/v1/payment/webhook/{gateway}`.
 
 ## What's next
 

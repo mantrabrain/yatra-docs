@@ -21,6 +21,44 @@ This is the operator-facing release log for Yatra Free and Yatra Pro. The canoni
 
 ## Yatra Free
 
+### 3.3.0 — 27 November 2026
+
+Feature release. Safe to update from 3.1.x and 3.2.x; no database changes for existing data. **New features are off until you set them up.** Three things change on their own: the checkout shows a progress bar, a trip's minimum and maximum age are checked against travellers' dates of birth, and trips migrated from Yatra 2.x with an external booking URL send customers to it again. Update Yatra and Yatra Pro in either order — the four new Pro modules need both on 3.3. Summary with screen paths: [New in Yatra 3.3](/whats-new-3-3).
+
+**New — trip pages**
+
+- **Pickup points** — places a customer can be picked up from (name, time, directions), optionally required; chosen at checkout and kept on the booking as booked. See [Create a trip → Pickup points](/trip-creation#pickup-points).
+- **Accommodation options** — hotel categories or room types with an extra price per person or per booking; the first is preselected. See [Accommodation options](/trip-creation#accommodation-options).
+- **Price by group size** — a per-person price for group-size ranges on trips priced per person. See [Price by group size](/trip-creation#price-by-group-size).
+- **Custom booking link** (book on another site) and a **trip code** (`{{trip_code}}`). Trips migrated from Yatra 2.x with an external booking URL use it again. See [Custom booking link](/trip-creation#custom-booking-link).
+- **Altitude profile** — a highest altitude per itinerary day; with two or more, an altitude chart above the itinerary and in the itinerary PDF.
+- **Weather forecast** (7 days, trip start location, Open-Meteo) and **recently viewed trips** (`[yatra_recently_viewed]`, kept in the visitor's browser) — both off by default. See [Settings → General](/settings#weather-forecast).
+
+**New — checkout**
+
+- **Travel insurance** (Settings → Payment → Travel Insurance): per traveller, a percentage or per booking; the customer says yes or no, a "no" is recorded too, a trip can opt out. See [Payments → Travel insurance](/payment-settings#travel-insurance).
+- **Booking fee** (Settings → Payment → Booking Fee): fixed or a percentage, its own line; coupons, tax and deposits include it. See [Payments → Booking fee](/payment-settings#booking-fee).
+- **Age limits checked** against travellers' dates of birth (`yatra_enforce_trip_age_limits` turns it off). See [Age limits](/trip-creation#age-limits).
+- **Checkout progress bar** (Trip & date → Your details → Payment → Confirmation).
+- **Enquiry form questions** (Settings → Booking → Enquiry Form): your own questions, answers added to the enquiry message. See [Bookings → enquiry questions](/booking-settings#add-your-own-questions-to-the-enquiry-form-3-3).
+
+**New — payments**
+
+- **Cheque** at checkout, with payee and postal address on the confirmation page, invoice and booking email. Unpaid cheque bookings are not cancelled by the booking expiry. See [Payments → Cheque](/payment-settings#cheque).
+- **Bank Transfer: several accounts, each for a currency**; a booking shows the accounts for its currency.
+- Settings → Payment lists Yatra Pro 3.3's regional gateways.
+
+**New — emails**: your **logo and brand colour** in Yatra's emails (Yatra → Email → Delivery), and the merge tags `{{pickup_point}}`, `{{pickup_time}}`, `{{pickup_point_details}}`, `{{accommodation}}`, `{{travel_insurance}}`, `{{trip_code}}` (plus `{{departure_guides}}` with Pro's Guides & Resources). See [Email → Email branding](/email-settings#email-branding-logo-and-brand-colour).
+
+**New — integrations**
+
+- **Settings → API Access**: API keys (WordPress application passwords for a user you choose, shown once, revocable; need HTTPS) and an embed snippet to show your trips on other websites. See [REST API → API keys](/api-reference#api-keys).
+- **SliceWP affiliates**: a pending commission for bookings an affiliate referred, approved when paid, rejected when cancelled or refunded. See [SliceWP affiliates](/slicewp).
+
+**Fixes** — the checkout summary dropped the booking fee and other added lines when it refreshed (the total was right); gateway settings lost line breaks in multi-line fields; `{{booking_custom_fields_html}}` printed Yatra's internal availability snapshot as JSON.
+
+**Developers** — new hooks listed in [Hooks & filters → Yatra 3.3 additions](/hooks-filters#yatra-3-3-additions).
+
 ### 3.2.0 — 23 November 2026
 
 Feature release. Safe to update. If you use Yatra Pro, update it to 3.2 as well — several Pro 3.2 features need Yatra 3.2 and switch on once both plugins are on 3.2. Three behaviour changes to know about: coupon limits are now enforced, Pay Later bookings are no longer auto-cancelled, and Yatra's CSS/JS no longer load on every page.
@@ -457,6 +495,22 @@ Documentation-only release for the plugin directory listing; no code changes req
 For 2.x changelog entries, see the plugin's [GitHub releases](https://github.com/MantraBrain/yatra/releases).
 
 ## Yatra Pro
+
+### 3.3.0 — 27 November 2026
+
+Feature release. The four new modules are on **every Pro plan**, need **Yatra 3.3.0** and stay off until you turn them on. Update Yatra and Yatra Pro in either order.
+
+**New — five regional payment gateways** (needs Yatra 3.2+): Himalayan Bank (Nepal), PayU (India), PayFast (South Africa), Midtrans (Indonesia) and PayHere (Sri Lanka). The customer pays on the gateway's page; a payment is recorded only when the gateway confirms it. Refunds go back through PayU and Midtrans from the booking screen. All five can pay a Multi-Trip Cart. See [Payments → Regional gateways](/payment-settings#regional-gateways-pro-3-3).
+
+**New — [Private Trips](/modules/private-trips)**: the customer can make a departure private at checkout for your per-trip fee; nobody else can then book it.
+
+**New — [Itinerary Downloader](/modules/itinerary-downloader)**: a *Download itinerary (PDF)* button; the PDF goes by email and the visitor is saved in Enquiries with their marketing consent. Rate-limited (3 an hour per email, 10 per IP) with a bot trap.
+
+**New — [Countdown & Social Proof](/modules/social-proof)**: a countdown on the booking card, a "booked N times" badge and a recent-booking popup, from confirmed bookings only.
+
+**New — [Guides & Resources](/modules/guides-resources)**: guide profiles on trip pages; vehicles, rooms and equipment; a schedule that warns before double-booking; `{{departure_guides}}`.
+
+**Fixed — Paystack webhook URL.** Settings → Payments → Paystack showed a URL that doesn't exist; it now shows `/wp-json/yatra/v1/payment/webhook/paystack`. If you pasted the old one into Paystack, replace it.
 
 ### 3.2.0 — 23 November 2026
 

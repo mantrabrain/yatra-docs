@@ -149,6 +149,7 @@ export default defineConfig({
               },
               { text: 'Multilingual (WPML / Polylang)', link: '/multilingual' },
               { text: 'Import from WP Travel Engine', link: '/import-wp-travel-engine' },
+              { text: 'SliceWP affiliates', link: '/slicewp' },
               {
                 text: 'WooCommerce co-existence',
                 link: '/woocommerce-integration'
@@ -217,7 +218,8 @@ export default defineConfig({
           { text: 'Bookings & customers', link: '/booking-settings' },
           { text: 'Manage a booking (payments, refunds, links, exports)', link: '/booking-workspace' },
           { text: 'Payments', link: '/payment-settings' },
-          { text: 'Email & notifications', link: '/email-settings' }
+          { text: 'Email & notifications', link: '/email-settings' },
+          { text: 'New in Yatra 3.3', link: '/whats-new-3-3' }
         ]
       },
       {
@@ -233,6 +235,7 @@ export default defineConfig({
           },
           { text: 'Multilingual (WPML / Polylang)', link: '/multilingual' },
           { text: 'Import from WP Travel Engine', link: '/import-wp-travel-engine' },
+          { text: 'SliceWP affiliates', link: '/slicewp' },
           {
             text: 'WooCommerce & co-existence',
             link: '/woocommerce-integration'
@@ -261,6 +264,11 @@ export default defineConfig({
           { text: 'AI Assistant', link: '/modules/ai-assistant' },
           { text: 'Currency Switcher', link: '/modules/currency-switcher' },
           { text: 'Multi-Trip Cart', link: '/modules/multi-trip-cart' },
+          { text: 'Travel Agencies', link: '/modules/travel-agency' },
+          { text: 'Private Trips', link: '/modules/private-trips' },
+          { text: 'Itinerary Downloader', link: '/modules/itinerary-downloader' },
+          { text: 'Countdown & Social Proof', link: '/modules/social-proof' },
+          { text: 'Guides & Resources', link: '/modules/guides-resources' },
           { text: 'WhatsApp Notifications', link: '/modules/whatsapp' },
           { text: 'Channel Manager', link: '/modules/channel-manager' },
           { text: 'Webhooks', link: '/modules/webhooks' },

@@ -22,7 +22,7 @@ If a module page mentions a UI surface ("open <span class="screen-path">Yatra â†
 
 ## All Pro modules
 
-22 modules. **Starter +** = every Pro plan (Starter, Growth, Scale); **Growth +** = Growth and Scale; **Scale** = Scale only.
+27 modules: 18 on every Pro plan, 5 on Growth and Scale, 4 on Scale only. **Starter +** = every Pro plan (Starter, Growth, Scale); **Growth +** = Growth and Scale; **Scale** = Scale only.
 
 | Module                                                       | Plan         | What it does                                                          |
 | ---                                                          | ---          | ---                                                                   |
@@ -40,9 +40,14 @@ If a module page mentions a UI surface ("open <span class="screen-path">Yatra â†
 | [Dynamic Pricing](/modules/dynamic-pricing)                  | Starter +   | Demand-, season-, last-minute-based price adjustments.                |
 | [Abandoned Booking Recovery](/modules/abandoned-booking-recovery) | Starter + | Recover lost checkouts with up to 3 reminder emails (1 h / 24 h / 48 h).                |
 | [Custom Landing Pages](/modules/custom-landing-pages)        | Starter +   | Use any WordPress page as a destination / activity / category page.   |
+| [Private Trips](/modules/private-trips)                      | Starter +   | A group books a departure for themselves at checkout, for a fee per trip; nobody else can book it (Pro 3.3, needs Yatra 3.3). |
+| [Itinerary Downloader](/modules/itinerary-downloader)        | Starter +   | "Download itinerary (PDF)" on trip pages: the PDF by email, the visitor saved as a lead (Pro 3.3, needs Yatra 3.3). |
+| [Countdown & Social Proof](/modules/social-proof)            | Starter +   | Countdown to an offer end or the next departure, "booked N times" badge, recent-booking popup â€” from real bookings (Pro 3.3, needs Yatra 3.3). |
+| [Guides & Resources](/modules/guides-resources)              | Starter +   | Guide profiles on trip pages; schedule guides, vehicles, rooms and equipment with double-booking and seat checks (Pro 3.3, needs Yatra 3.3). |
 | [AI Assistant](/modules/ai-assistant)                        | **Growth +** | Bring-your-own-key AI generation across trip editor, SEO, enquiries; MCP server for Claude, Cursor and other AI assistants (Pro 3.2). |
 | [Currency Switcher](/modules/currency-switcher)              | **Growth +** | Visitors see trip prices in their chosen currency; checkout stays in your store currency (Pro 3.2, needs Yatra 3.2). |
 | [Multi-Trip Cart](/modules/multi-trip-cart)                  | **Growth +** | Several trips and dates in one checkout and one payment; one booking per trip (Pro 3.2, needs Yatra 3.2). |
+| [Travel Agencies](/modules/travel-agency)                    | **Growth +** | Agency records, agency codes at checkout, tour emails to the guest and money emails to the agency, pay by invoice, monthly statements paid with one payment (Pro 3.2, needs Yatra 3.2). |
 | [WhatsApp Notifications](/modules/whatsapp)                  | **Growth +** | Transactional WhatsApp Cloud API messages + inbound replies + widget. |
 | [Channel Manager](/modules/channel-manager)                  | **Scale**   | Sell on GetYourGuide through its Supplier API, sharing one inventory with direct bookings (GetYourGuide must certify the connection). Viator in development. |
 | [Webhooks](/modules/webhooks)                                | **Scale**   | Signed outbound HTTPS webhooks to any CRM / Zapier / custom receiver. |

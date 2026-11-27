@@ -13,7 +13,7 @@ next:
 
 Yatra is built around a wide hook surface: every meaningful state change fires an action, and most rendered values pass through a filter so you can override them. This page lists the most useful actions and filters grouped by area, plus general guidance on using them.
 
-> Yatra exposes hundreds of hooks. The list below covers the ones you'll reach for most often. New in 3.2: see [Yatra 3.2 additions](#yatra-3-2-additions).
+> Yatra exposes hundreds of hooks. The list below covers the ones you'll reach for most often. New in 3.2: see [Yatra 3.2 additions](#yatra-3-2-additions). New in 3.3: see [Yatra 3.3 additions](#yatra-3-3-additions).
 
 ::: warning Verify hook names against your version
 Hook names can be added, renamed, or retired between plugin versions. Before you build something that depends on a specific hook, **confirm it exists in your version** by searching the plugin source:
@@ -476,6 +476,75 @@ See [AI Assistant → Connect AI assistants](/modules/ai-assistant#connect-ai-as
 | `yatra_gyg_redeem_url` | filter | `(string $url, object $channel)` — the GetYourGuide redemption URL. |
 
 See [Channel Manager → GetYourGuide](/modules/channel-manager#getyourguide-supplier-api).
+
+## Yatra 3.3 additions
+
+Hooks added in Yatra 3.3 / Yatra Pro 3.3. Without code using them, nothing changes. See [New in Yatra 3.3](/whats-new-3-3) for the features behind them.
+
+### Trip page
+
+| Hook | Type | Purpose |
+| --- | --- | --- |
+| `yatra_trip_sidebar_after_price` | action | `(Trip $trip)` — print below the price on the trip page's booking card. Yatra Pro's countdown and "booked N times" badge use it. |
+| `yatra_trip_sidebar_after_card` | action | `(Trip $trip)` — print after the booking card (the weather forecast uses it). |
+| `yatra_single_trip_after_tabs` | action | `(Trip $trip)` — print after the trip page's content sections. Yatra Pro's guide profiles use it. |
+| `yatra_trip_itinerary_actions` | action | `(object $trip)` — print extra buttons beside **Expand All** in the itinerary section. Yatra Pro's Itinerary Downloader adds its button here. |
+| `yatra_show_altitude_chart` | filter | `(bool $show, array $points)` — whether to show the altitude chart. `$show` is `true` when two or more days have a highest altitude; `$points` is day number => metres. The chart never shows with fewer than two points. `add_filter('yatra_show_altitude_chart', '__return_false');` hides it. |
+| `yatra_trip_external_booking_url` | filter | `(string $url, Trip $trip)` — the trip's [custom booking link](/trip-creation). Only called for a valid `http(s)://` link; return `''` to use Yatra's own booking again. |
+| `yatra_weather_api_url` | filter | `(string $url, float $lat, float $lng)` — the forecast request URL (another Open-Meteo-compatible host). Coordinates are rounded to 2 decimals. |
+| `yatra_recently_viewed_remember` | filter | `(bool $remember, Trip $trip)` — whether this trip page adds the trip to the visitor's recently viewed list (browser storage). Default: the **Recently Viewed Trips** setting. |
+
+### Checkout and pricing
+
+| Hook | Type | Purpose |
+| --- | --- | --- |
+| `yatra_checkout_show_progress` | filter | `(bool true)` — show the four-step progress bar above the checkout form. Not shown when paying a remaining balance. `add_filter('yatra_checkout_show_progress', '__return_false');` hides it. |
+| `yatra_checkout_pre_create_error` | filter | `(null $error, array $data, array $session, array $context)` — return a `WP_Error` to refuse a checkout booking just before it is created; its message is shown to the customer. `$context`: `trip_id`, `travel_date`, `departure_time`, `travelers_count`, `is_waitlist`. Add-ons can check `BookingSessionController::SUPPORTS_PRE_CREATE_CHECK` before relying on it. Used by Pro [Private Trips](/modules/private-trips). |
+| `yatra_enforce_trip_age_limits` | filter | `(bool true, object $trip)` — whether checkout refuses travellers whose age on the travel date is outside the trip's minimum / maximum age. `add_filter('yatra_enforce_trip_age_limits', '__return_false');` turns the check off. |
+| `yatra_calculation_base_unit_price` | filter | `(float $unitPrice, int $tripId, array $params)` — the per-person base price before dynamic pricing. Runs before the pre-dynamic-pricing snapshot, so discounts treat the result as the base price. Price by group size uses it. |
+| `yatra_group_tier_price` | filter | `(float $tierPrice, float $price, int $tripId, int $travellers)` — the per-person price from a matching **Price by group size** row; `$price` is the price without the row. |
+| `yatra_booking_fee` | filter | `(float $fee, float $baseAmount, int $tripId)` — the booking fee from **Settings → Payment → Booking Fee**. `$baseAmount` is the trip price before discounts. Negative results become 0. |
+| `yatra_travel_insurance_amount` | filter | `(float $amount, int $tripId, float $baseAmount, int $travellers)` — the travel insurance price. Negative results become 0. |
+
+### Enquiries
+
+| Hook | Type | Purpose |
+| --- | --- | --- |
+| `yatra_enquiry_custom_fields` | filter | `(array $fields)` — the questions added to the enquiry form (from **Settings → Booking → Enquiry Form**). Each field: `id`, `label`, `type` (`text`, `textarea`, `select`, `checkbox`), `required`, `options` (dropdowns). The result is cleaned again: at most 10 fields, and a dropdown without options is dropped. Answers are posted as `ecf_{id}`. |
+
+### Payments
+
+| Hook | Type | Purpose |
+| --- | --- | --- |
+| `yatra_bank_transfer_accounts` | filter | `(array $accounts, string $currency, BankTransferGateway $gateway)` — the bank accounts shown for a booking in this currency (default: accounts in that currency plus those with no currency set; the main account when none match). |
+| `yatra_booking_expiry_exempt_gateways` | filter | `(string[] $ids)` — payment methods whose unpaid bookings are never cancelled by the unpaid-booking expiry. Default `['cheque']`. |
+
+### Emails
+
+| Hook | Type | Purpose |
+| --- | --- | --- |
+| `yatra_email_branded_html` | filter | `(string $html)` — the email HTML after Yatra applied your logo and brand colour (**Settings → Email → Delivery**). |
+
+### SliceWP
+
+| Hook | Type | Purpose |
+| --- | --- | --- |
+| `yatra_slicewp_commission_amount` | filter | `(float $amount, object $booking, int $affiliateId)` — the affiliate's commission for a booking. A result of 0 or less creates no commission unless SliceWP allows zero-amount commissions. |
+| `slicewp_referrer_affiliate_id_yatra` | filter | `(int $affiliateId, int $bookingId)` — the referring affiliate, following SliceWP's naming for integrations. |
+| `slicewp_integration_supports_yatra` | filter | `(array $supports)` — what the Yatra integration supports in SliceWP. Default: `commission_types` = `['sale']`. |
+
+### Pro: Itinerary Downloader
+
+| Hook | Type | Purpose |
+| --- | --- | --- |
+| `yatra_itinerary_download_lead` | action | `(int $enquiryId, array $lead)` — a visitor asked for a trip's itinerary PDF by email. `$enquiryId` is `0` when the enquiry could not be stored. `$lead`: `trip_id`, `name`, `email`, `consent` (bool). Use it to pass the lead to a CRM or newsletter. |
+| `yatra_itinerary_download_hourly_limit` | filter | `(int 60)` — most itinerary emails the whole site sends in an hour. The per-visitor limits (10 per IP, 3 per email address, per hour) are fixed. |
+
+See [Itinerary Downloader](/modules/itinerary-downloader).
+
+### Booking meta keys
+
+New 3.3 features save their data on the booking as meta keys starting with `_`, so they never appear in `{{booking_custom_fields_html}}`: `_accommodation`, `_travel_insurance`, `_booking_fee`, `_pickup_point`, `_private_trip` (Pro).
 
 ## Practical recipes
 

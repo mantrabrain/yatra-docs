@@ -29,7 +29,7 @@ The toolbar has search, a category filter, sort (Name A–Z / Z–A / Enabled fi
 
 > Disabling a module hides its UI but **keeps your data**. Re-enable later to bring it back.
 
-For a one-page flat list of every module + the seven premium gateways, see [All modules](/modules).
+For a one-page flat list of every module + the twelve premium gateways, see [All modules](/modules).
 
 ---
 
@@ -54,6 +54,12 @@ Best for: upsell revenue, capturing genuine optional extras without polluting th
 Beyond free promo codes — auto-applying group-size discounts ("6+ travelers, 10% off") and combined promo-code + group rules with category-based tiered ranges.
 
 Best for: family-rate logic, agent-bulk discounts, larger group incentives.
+
+### [Private Trips](/modules/private-trips) <span class="pro-pill">PRO</span>
+
+New in Pro 3.3 (needs Yatra 3.3), every Pro plan. At checkout the customer ticks **Make this a private trip**; your per-trip fee is added (once per booking or per traveller), and nobody else can book that departure. A departure that already has bookings can't be made private.
+
+Best for: families, friend groups and companies who want a departure to themselves.
 
 ---
 
@@ -115,6 +121,18 @@ Replace the default destination / activity / category archive pages with any Wor
 
 Best for: SEO-optimised content pages, paid-traffic landing pages, partner co-brands.
 
+### [Itinerary Downloader](/modules/itinerary-downloader) <span class="pro-pill">PRO</span>
+
+New in Pro 3.3 (needs Yatra 3.3), every Pro plan. A **Download itinerary (PDF)** button in the trip page's itinerary section. The visitor enters a name and email and gets the day-by-day itinerary by email; each request is saved in Enquiries with their marketing consent. No settings.
+
+Best for: turning browsers into leads you can follow up.
+
+### [Countdown & Social Proof](/modules/social-proof) <span class="pro-pill">PRO</span>
+
+New in Pro 3.3 (needs Yatra 3.3), every Pro plan. A countdown on the booking card (to a date you set or the next departure), a "booked N times" badge and a recent-booking popup — all from real, confirmed bookings. Popup and badge are set in <span class="screen-path">Settings → Booking → Countdown & Social Proof</span>; the countdown per trip.
+
+Best for: early-bird offers and busy trips where real demand helps visitors decide.
+
 ---
 
 ## Booking experience
@@ -145,6 +163,12 @@ Digital waivers and consent forms — liability, health, image release, COVID sc
 
 Best for: adventure operators with insurance / liability requirements.
 
+### [Guides & Resources](/modules/guides-resources) <span class="pro-pill">PRO</span>
+
+New in Pro 3.3 (needs Yatra 3.3), every Pro plan. Guide profiles (photo, languages, experience, bio) shown on trip pages as **Meet your guides**, and a schedule for guides, vehicles, rooms and equipment that warns before double-booking and flags dates with more travellers than seats or beds. Adds `{{departure_guides}}` to booking emails.
+
+Best for: operators juggling guides and vehicles across overlapping departures.
+
 ---
 
 ## Sales, AI & messaging — Growth tier
@@ -162,6 +186,12 @@ Best for: operators who sell add-on day tours or multi-leg itineraries.
 New in Pro 3.2 (needs Yatra 3.2). Visitors choose a currency and see trip prices converted while browsing, with your own rates or optional daily rates. Checkout, payments, emails, invoices, My Account and the admin stay in your store currency, and checkout tells the customer so.
 
 Best for: operators with international visitors who want to show familiar prices.
+
+### [Travel Agencies](/modules/travel-agency) <span class="pro-pill">PRO</span>
+
+New in Pro 3.2 (needs Yatra 3.2). Take bookings from travel agencies for their clients: agency records and codes at checkout, tour emails to the guest and booking and payment emails to the agency, **Pay by invoice**, and one monthly statement settled with a single payment.
+
+Best for: operators who sell through agents as well as direct.
 
 ### [AI Assistant](/modules/ai-assistant) <span class="pro-pill">PRO</span>
 
@@ -197,7 +227,7 @@ Best for: agencies delivering Yatra as if it were custom software they built.
 
 ## Premium payment gateways
 
-A single Yatra Pro license also unlocks **seven** premium payment gateways. These aren't on the Modules screen — they're toggled under <span class="screen-path">Yatra → Settings → Payment</span> directly. The detailed step-by-step setup (with dashboard URLs, key locations, and verification flow) is on [Payments & gateways](/payment-settings).
+A single Yatra Pro license also unlocks **twelve** premium payment gateways. These aren't on the Modules screen — they're toggled under <span class="screen-path">Yatra → Settings → Payment</span> directly. The detailed step-by-step setup (with dashboard URLs, key locations, and verification flow) is on [Payments & gateways](/payment-settings).
 
 - [Stripe](/payment-settings#stripe-pro) — cards, Apple Pay, Google Pay, scheduled balance payments
 - [Razorpay](/payment-settings#razorpay-pro) — India: cards, UPI, netbanking, wallets
@@ -206,8 +236,13 @@ A single Yatra Pro license also unlocks **seven** premium payment gateways. Thes
 - [Square](/payment-settings#square-pro) — NA / UK / AU / JP cards
 - [Authorize.Net](/payment-settings#authorize-net-pro) — US-centric merchant accounts
 - T-Bank — Russia: bank cards, SBP, T-Pay
+- [Regional gateways](/payment-settings#regional-gateways-pro-3-3) (Pro 3.3) — Himalayan Bank (Nepal), PayU (India), PayFast (South Africa), Midtrans (Indonesia), PayHere (Sri Lanka)
 
-**Bank Transfer** is free from Yatra 3.2 — see [Payments → Bank Transfer](/payment-settings#bank-transfer).
+**Bank Transfer** is free from Yatra 3.2 and **Cheque** from Yatra 3.3 — see [Payments → Bank Transfer](/payment-settings#bank-transfer) and [Cheque](/payment-settings#cheque).
+
+::: tip Free integration: SliceWP affiliates
+From Yatra 3.3 the **free** plugin pays affiliate commissions on trip bookings through [SliceWP](https://wordpress.org/plugins/slicewp/). See [SliceWP affiliates](/slicewp).
+:::
 
 ---
 
@@ -215,5 +250,6 @@ A single Yatra Pro license also unlocks **seven** premium payment gateways. Thes
 
 - [All modules](/modules) — flat catalog with one card per module + premium gateway.
 - [Per-module reference](/modules/) — every module's deep-dive setup page.
+- [SliceWP affiliates](/slicewp) — affiliate commissions on bookings (free, Yatra 3.3+).
 - [Settings → Integration](/settings#_11-integration) — every field for the integration modules in one place.
 - [Pricing](https://wpyatra.com/pricing/?utm_source=docs&utm_medium=referral&utm_campaign=yatra-docs) — pick the Yatra Pro plan that includes the modules you need.

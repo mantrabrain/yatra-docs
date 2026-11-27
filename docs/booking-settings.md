@@ -146,6 +146,15 @@ Renders **per-traveler** with the fields you've configured in [Settings → Book
 
 Renders the fields you've configured in *Settings → Booking Form → Emergency Contact form*. Hidden when no data was collected.
 
+### Pickup point and Stay & insurance (3.3)
+
+Two small cards appear after the emergency contact when the booking has the information:
+
+- **Pickup point** — the pickup point the customer chose at checkout, with its time and details. See [Create a trip → Pickup points](/trip-creation).
+- **Stay & insurance** — **Accommodation:** the option the customer chose (see [Accommodation and travel insurance at checkout](#accommodation-and-travel-insurance-at-checkout)), and the travel insurance answer: *Added* or *Declined by the customer*. A *No* is saved too, so you can see who declined.
+
+Both show the choice as it was when booked — renaming or removing an option later doesn't change existing bookings. Their prices are part of the booking's price breakdown.
+
 ### 5. Special Requests
 
 The free-text *notes* field the customer filled in at checkout (`booking.notes`, exposed as `special_requests` in the API).
@@ -425,6 +434,22 @@ Per-row action **Respond** opens a modal containing:
 Yatra doesn't currently expose a one-click *Convert to Booking* action from an Enquiry. To convert manually: open <span class="screen-path">Yatra → Bookings → + Add New Booking</span> and recreate the booking with the enquiry's details, then mark the enquiry **Converted**.
 :::
 
+### Add your own questions to the enquiry form (3.3)
+
+<span class="screen-path">Yatra → Settings → Booking → Enquiry Form</span>. Ask your own questions on the trip enquiry form — for example *Preferred hotel category* or *Do you need airport pickup?*
+
+1. Click **Add a question** (up to 10).
+2. Type the **Question** (up to 80 characters).
+3. Choose the **Answer type**: *Short answer*, *Paragraph*, *Dropdown* or *Checkbox*. For a dropdown, enter the **Choices**, one per line (up to 30; a dropdown without choices is left out).
+4. Tick **Required** if the customer must answer. For a checkbox, *Required* means it must be ticked.
+5. Save.
+
+**What the customer sees.** The questions appear on the trip's enquiry form after the travellers field. A required question left empty stops the enquiry with a message such as *Please answer "Preferred hotel category".*
+
+**Where you see the answers.** They are added to the end of the enquiry **message** as `Question: answer` lines (a checkbox reads *Yes* or *No*; empty optional answers are left out). So they show wherever the message already shows — the **Message** column and detail on the Enquiries screen, and the enquiry email — with no change to how enquiries are stored.
+
+Developers can change the questions with the `yatra_enquiry_custom_fields` filter. Form inputs are named `ecf_{id}`.
+
 ---
 
 ## Reviews
@@ -558,6 +583,12 @@ The Group and Promo+Group modes need the **Advanced Discount** Pro module to be 
 
 ---
 
+## Departure manifest
+
+<span class="screen-path">Yatra → Departures</span> → open a departure → **Download manifest** gives a CSV with one row per traveller — see [Manage a booking → The departure manifest](/booking-workspace#the-departure-manifest). From Yatra 3.3 it ends with three more columns: **Pickup point** (name and time), **Accommodation** (the option chosen) and **Travel insurance** (*Added*, *Declined*, or empty when the booking wasn't asked).
+
+---
+
 ## Booking flow on the front end
 
 A quick reminder of the order events fire so the admin behaviour above makes sense:
@@ -571,6 +602,32 @@ A quick reminder of the order events fire so the admin behaviour above makes sen
 7. (Pro) If **Scheduled Payments** is on, the balance charge is queued.
 8. Travel date passes → cron flips the booking to **Completed**.
 9. (Free) After *Review Reminder Days* (default 3), an email asks for a review.
+
+### Checkout progress bar (3.3)
+
+A four-step bar sits above the checkout form: **Trip & date → Your details → Payment → Confirmation**. *Trip & date* is ticked, *Your details* is highlighted, and *Payment* lights up as the customer scrolls to the payment methods. It isn't shown on a balance (remaining-payment) checkout. Hide it with:
+
+```php
+add_filter('yatra_checkout_show_progress', '__return_false');
+```
+
+### Accommodation and travel insurance at checkout
+
+Both appear on the checkout page **above the contact details**, only when they apply to the trip.
+
+**Accommodation** — when the trip has accommodation options (trip editor → **Availability & Booking** → **Accommodation Options**; see [Create a trip](/trip-creation)). The customer sees *Accommodation — Choose where you stay. The price updates in your summary.* and one choice per option, with its description and price (*Included*, *+120.00 per person* or *+500.00 per booking*). The **first option is preselected** and is also used for bookings made without a choice (a cart or the API), so list your standard option first. The chosen option is a line in the summary (*Accommodation: Deluxe hotel*).
+
+**Travel insurance** — when it is switched on in <span class="screen-path">Settings → Payment → Travel Insurance</span> and the trip hasn't opted out. The customer chooses **Yes, add it** or **No, I have my own cover or will travel without it**. See [Payments → Travel insurance](/payment-settings#travel-insurance).
+
+Both are part of the subtotal, so coupons, tax and deposits include them, and both are kept on the booking as they were when booked. They appear on the confirmation page, in My Account, on the admin booking screen (**Stay & insurance**), in the departure manifest and in emails as `{{accommodation}}` and `{{travel_insurance}}`. Neither is offered on a balance (remaining-payment) checkout.
+
+### Traveller age limits are checked (3.3)
+
+If a trip has a **minimum or maximum age**, checkout now checks each traveller's **date of birth** against it, using their age **on the travel date**. A traveller outside the limits stops the booking with a message like *Traveller 2 will be 15 on the travel date, and this trip is for age 18 and over. Please check the date of birth.* Travellers without a date of birth (for example when your traveller form doesn't ask for it) aren't checked. Turn the check off with:
+
+```php
+add_filter('yatra_enforce_trip_age_limits', '__return_false');
+```
 
 ---
 

@@ -40,6 +40,25 @@ The Delivery tab covers the **basics that decide whether your emails land in inb
 - **From name** — usually your tour-operator name.
 - **Reply-to** — where replies go (default: site admin).
 - **Admin email** — where admin-targeted notices go (new booking, new enquiry, etc.).
+- **Always BCC** — blind-copy one or more addresses (comma-separated) on every email Yatra sends, for archiving. Leave empty to send no copies.
+
+### Email branding (logo and brand colour)
+
+Yatra 3.3+. On the same <span class="screen-path">Yatra → Email → Delivery</span> tab:
+
+1. **Email brand colour** — pick a colour (or type a hex code such as `#1d4ed8`). It replaces Yatra's teal (`#0d9488`) in the email's **header band and buttons**. The text on the band and buttons switches automatically to white or near-black, whichever reads better on your colour. Leave the field empty to keep Yatra's teal.
+2. **Logo in emails** — tick **Show the logo** to put your company logo at the top of the header band (shown up to 56 px high and 220 px wide, with your company name as its alt text).
+3. Click **Save**.
+
+::: tip Where the logo comes from
+Set it in <span class="screen-path">Yatra → Settings → General → Company Logo</span> (choose an image from the media library). If you haven't set one, Yatra uses your site's logo (Appearance → Customize → Site Identity, or the Site Logo block on block themes). With neither, **Show the logo** has nothing to show; the brand colour works either way.
+:::
+
+What to know:
+
+- Branding is applied **when each email is sent**, so it also works for templates you customised before updating — you don't need to edit them.
+- It only changes emails that use Yatra's standard email layout. A template whose HTML you replaced with your own design (no teal header) is sent unchanged.
+- Developers can change the final HTML with the `yatra_email_branded_html` filter.
 
 <div class="ui-tip"><strong>Important:</strong> WordPress's built-in <code>wp_mail()</code> is unreliable on most hosts. Connect a real ESP (SendGrid, Postmark, Mailgun, Amazon SES) using a transport plugin like <strong>WP Mail SMTP</strong>, <strong>FluentSMTP</strong>, or <strong>Post SMTP</strong>. Then configure SPF, DKIM, and DMARC for the From domain.</div>
 
@@ -266,6 +285,7 @@ Available on every booking-context event (`booking.*`, `payment.*`, `reminder.tr
     <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
     <tr><td><code>{{booking_status}}</code></td><td><code>pending</code> / <code>confirmed</code> / <code>cancelled</code> / <code>completed</code>.</td></tr>
     <tr><td><code>{{payment_status}}</code></td><td><code>unpaid</code> / <code>partial</code> / <code>paid</code> / <code>refunded</code>.</td></tr>
+    <tr><td><code>{{trip_code}}</code></td><td>The trip's own reference code from <strong>Trip Basics → Trip code</strong> (Yatra 3.3+; empty when none).</td></tr>
     <tr><td><code>{{trip_name}}</code></td><td>Title of the trip.</td></tr>
     <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip page.</td></tr>
     <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -276,6 +296,12 @@ Available on every booking-context event (`booking.*`, `payment.*`, `reminder.tr
     <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
     <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special-requests text.</td></tr>
     <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+    <tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+    <tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+    <tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+    <tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout, e.g. <em>Deluxe hotel, twin share</em> (Yatra 3.3+; empty when the trip has no accommodation options).</td></tr>
+    <tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — the customer's travel-insurance answer (Yatra 3.3+; empty when insurance was not offered).</td></tr>
+    <tr><td><code>{{departure_guides}}</code> <span class="pro-pill">PRO</span></td><td>Guides assigned to the booking's trip date, comma-separated, e.g. <em>Pemba Sherpa, Maya Gurung</em> (needs the <a href="/modules/guides-resources">Guides &amp; Resources</a> module; empty otherwise).</td></tr>
     <tr><td><code>{{cancellation_reason}}</code></td><td>Reason recorded when the booking was cancelled. <em>(<code>booking.cancelled</code> only)</em></td></tr>
     <tr><td><code>{{completion_date}}</code></td><td>Date the trip was marked completed. <em>(<code>booking.completed</code>, <code>marketing.review_request</code>)</em></td></tr>
     <tr><td><code>{{expiry_policy_note}}</code></td><td>Message shown when a pending booking auto-expires. <em>(<code>booking.expired</code> only)</em></td></tr>
@@ -442,7 +468,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 - `new_booking` — New Booking Confirmation (Customer) — dormant, never sent
 - `admin_new_booking` — Admin: New Booking (Admin)
 
-**Variables available** (33 across 4 groups):
+**Variables available** (37 across 4 groups):
 
 <details><summary><strong>Universal</strong> (6)</summary>
 
@@ -469,7 +495,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 
 </details>
 
-<details><summary><strong>Booking</strong> (15)</summary>
+<details><summary><strong>Booking</strong> (19)</summary>
 
 <table><thead><tr><th>Tag</th><th>Explanation</th></tr></thead><tbody>
 <tr><td><code>{{booking_reference}}</code></td><td>Customer-visible booking code (e.g. YTR-12345).</td></tr>
@@ -477,6 +503,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -487,6 +514,12 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 </tbody></table>
 
 </details>
@@ -517,7 +550,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 
 - `booking_confirmed` — Booking Confirmed (Customer) — the stage-2 "you're confirmed" email
 
-**Variables available** (33 across 4 groups):
+**Variables available** (40 across 4 groups):
 
 <details><summary><strong>Universal</strong> (6)</summary>
 
@@ -544,7 +577,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 
 </details>
 
-<details><summary><strong>Booking</strong> (15)</summary>
+<details><summary><strong>Booking</strong> (22)</summary>
 
 <table><thead><tr><th>Tag</th><th>Explanation</th></tr></thead><tbody>
 <tr><td><code>{{booking_reference}}</code></td><td>Customer-visible booking code (e.g. YTR-12345).</td></tr>
@@ -552,6 +585,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -562,6 +596,12 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 </tbody></table>
 
 </details>
@@ -593,7 +633,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 - `booking_cancelled` — Booking Cancelled (Customer)
 - `admin_booking_cancelled` — Admin: Booking Cancelled (Admin)
 
-**Variables available** (34 across 4 groups):
+**Variables available** (41 across 4 groups):
 
 <details><summary><strong>Universal</strong> (6)</summary>
 
@@ -620,7 +660,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 
 </details>
 
-<details><summary><strong>Booking</strong> (16)</summary>
+<details><summary><strong>Booking</strong> (23)</summary>
 
 <table><thead><tr><th>Tag</th><th>Explanation</th></tr></thead><tbody>
 <tr><td><code>{{booking_reference}}</code></td><td>Customer-visible booking code (e.g. YTR-12345).</td></tr>
@@ -628,6 +668,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -638,6 +679,12 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 <tr><td><code>{{cancellation_reason}}</code></td><td>Reason recorded when the booking was cancelled.</td></tr>
 </tbody></table>
 
@@ -669,7 +716,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 
 - `booking_completed` — Booking Completed (Customer)
 
-**Variables available** (34 across 4 groups):
+**Variables available** (41 across 4 groups):
 
 <details><summary><strong>Universal</strong> (6)</summary>
 
@@ -696,7 +743,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 
 </details>
 
-<details><summary><strong>Booking</strong> (16)</summary>
+<details><summary><strong>Booking</strong> (23)</summary>
 
 <table><thead><tr><th>Tag</th><th>Explanation</th></tr></thead><tbody>
 <tr><td><code>{{booking_reference}}</code></td><td>Customer-visible booking code (e.g. YTR-12345).</td></tr>
@@ -704,6 +751,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -714,6 +762,12 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 <tr><td><code>{{completion_date}}</code></td><td>Date the trip / booking was marked completed.</td></tr>
 </tbody></table>
 
@@ -746,7 +800,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 - `booking_expired_customer` — Booking Expired (Customer)
 - `admin_booking_expired` — Admin: Booking Expired (Admin)
 
-**Variables available** (34 across 4 groups):
+**Variables available** (41 across 4 groups):
 
 <details><summary><strong>Universal</strong> (6)</summary>
 
@@ -773,7 +827,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 
 </details>
 
-<details><summary><strong>Booking</strong> (16)</summary>
+<details><summary><strong>Booking</strong> (23)</summary>
 
 <table><thead><tr><th>Tag</th><th>Explanation</th></tr></thead><tbody>
 <tr><td><code>{{booking_reference}}</code></td><td>Customer-visible booking code (e.g. YTR-12345).</td></tr>
@@ -781,6 +835,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -791,6 +846,12 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 <tr><td><code>{{expiry_policy_note}}</code></td><td>Message shown when a booking auto-expires for non-payment.</td></tr>
 </tbody></table>
 
@@ -824,7 +885,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 - `admin_payment_received` — Admin: Payment Received (Admin)
 - `payment_received` — Payment Received (customer) (Customer)
 
-**Variables available** (36 across 4 groups):
+**Variables available** (43 across 4 groups):
 
 <details><summary><strong>Universal</strong> (6)</summary>
 
@@ -851,7 +912,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 
 </details>
 
-<details><summary><strong>Booking</strong> (15)</summary>
+<details><summary><strong>Booking</strong> (22)</summary>
 
 <table><thead><tr><th>Tag</th><th>Explanation</th></tr></thead><tbody>
 <tr><td><code>{{booking_reference}}</code></td><td>Customer-visible booking code (e.g. YTR-12345).</td></tr>
@@ -859,6 +920,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -869,6 +931,12 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 </tbody></table>
 
 </details>
@@ -902,7 +970,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 
 - `payment_reminder` — Payment Reminder (Customer)
 
-**Variables available** (36 across 4 groups):
+**Variables available** (43 across 4 groups):
 
 <details><summary><strong>Universal</strong> (6)</summary>
 
@@ -929,7 +997,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 
 </details>
 
-<details><summary><strong>Booking</strong> (15)</summary>
+<details><summary><strong>Booking</strong> (22)</summary>
 
 <table><thead><tr><th>Tag</th><th>Explanation</th></tr></thead><tbody>
 <tr><td><code>{{booking_reference}}</code></td><td>Customer-visible booking code (e.g. YTR-12345).</td></tr>
@@ -937,6 +1005,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -947,6 +1016,12 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 </tbody></table>
 
 </details>
@@ -980,7 +1055,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 
 - `trip_reminder` — Trip Reminder (Customer)
 
-**Variables available** (36 across 5 groups):
+**Variables available** (43 across 5 groups):
 
 <details><summary><strong>Universal</strong> (6)</summary>
 
@@ -1007,7 +1082,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 
 </details>
 
-<details><summary><strong>Booking</strong> (15)</summary>
+<details><summary><strong>Booking</strong> (22)</summary>
 
 <table><thead><tr><th>Tag</th><th>Explanation</th></tr></thead><tbody>
 <tr><td><code>{{booking_reference}}</code></td><td>Customer-visible booking code (e.g. YTR-12345).</td></tr>
@@ -1015,6 +1090,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -1025,6 +1101,12 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 </tbody></table>
 
 </details>
@@ -1065,7 +1147,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 
 - `review_request` — Review Request (Customer)
 
-**Variables available** (35 across 5 groups):
+**Variables available** (42 across 5 groups):
 
 <details><summary><strong>Universal</strong> (6)</summary>
 
@@ -1092,7 +1174,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 
 </details>
 
-<details><summary><strong>Booking</strong> (16)</summary>
+<details><summary><strong>Booking</strong> (23)</summary>
 
 <table><thead><tr><th>Tag</th><th>Explanation</th></tr></thead><tbody>
 <tr><td><code>{{booking_reference}}</code></td><td>Customer-visible booking code (e.g. YTR-12345).</td></tr>
@@ -1100,6 +1182,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -1110,6 +1193,12 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 <tr><td><code>{{completion_date}}</code></td><td>Date the trip / booking was marked completed.</td></tr>
 </tbody></table>
 
@@ -1468,7 +1557,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 
 - `scheduled_payment_reminder` — Scheduled Payment Reminder (Customer)
 
-**Variables available** (36 across 5 groups):
+**Variables available** (43 across 5 groups):
 
 <details><summary><strong>Universal</strong> (6)</summary>
 
@@ -1495,7 +1584,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 
 </details>
 
-<details><summary><strong>Booking</strong> (15)</summary>
+<details><summary><strong>Booking</strong> (22)</summary>
 
 <table><thead><tr><th>Tag</th><th>Explanation</th></tr></thead><tbody>
 <tr><td><code>{{booking_reference}}</code></td><td>Customer-visible booking code (e.g. YTR-12345).</td></tr>
@@ -1503,6 +1592,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -1513,6 +1603,12 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 </tbody></table>
 
 </details>
@@ -1553,7 +1649,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 
 - `scheduled_payment_succeeded` — Scheduled Payment Received (Customer)
 
-**Variables available** (37 across 5 groups):
+**Variables available** (44 across 5 groups):
 
 <details><summary><strong>Universal</strong> (6)</summary>
 
@@ -1580,7 +1676,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 
 </details>
 
-<details><summary><strong>Booking</strong> (15)</summary>
+<details><summary><strong>Booking</strong> (22)</summary>
 
 <table><thead><tr><th>Tag</th><th>Explanation</th></tr></thead><tbody>
 <tr><td><code>{{booking_reference}}</code></td><td>Customer-visible booking code (e.g. YTR-12345).</td></tr>
@@ -1588,6 +1684,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -1598,6 +1695,12 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 </tbody></table>
 
 </details>
@@ -1640,7 +1743,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 - `scheduled_payment_failed` — Scheduled Payment Failed (Customer)
 - `admin_scheduled_payment_failed` — Admin: Scheduled Payment Failed (Admin)
 
-**Variables available** (39 across 5 groups):
+**Variables available** (46 across 5 groups):
 
 <details><summary><strong>Universal</strong> (6)</summary>
 
@@ -1667,7 +1770,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 
 </details>
 
-<details><summary><strong>Booking</strong> (15)</summary>
+<details><summary><strong>Booking</strong> (22)</summary>
 
 <table><thead><tr><th>Tag</th><th>Explanation</th></tr></thead><tbody>
 <tr><td><code>{{booking_reference}}</code></td><td>Customer-visible booking code (e.g. YTR-12345).</td></tr>
@@ -1675,6 +1778,7 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -1685,6 +1789,12 @@ Every email Yatra sends is fired from one of 17 events. Each entry below explain
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 </tbody></table>
 
 </details>
@@ -1790,7 +1900,7 @@ This section enumerates every template and the exact tags that resolve when it s
 - **Trigger event** — `booking.created`
 - **Audience** — Customer
 
-<details><summary><strong>Available merge tags</strong> (33 tags across 4 groups)</summary>
+<details><summary><strong>Available merge tags</strong> (40 tags across 4 groups)</summary>
 
 **Universal**
 
@@ -1821,6 +1931,7 @@ This section enumerates every template and the exact tags that resolve when it s
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -1831,6 +1942,12 @@ This section enumerates every template and the exact tags that resolve when it s
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 </tbody></table>
 
 **Payment**
@@ -1858,7 +1975,7 @@ A leftover row from an older schema. The `booking.created` dispatcher skips it e
 - **Trigger event** — `booking.created`
 - **Audience** — Customer
 
-<details><summary><strong>Available merge tags</strong> (33 tags across 4 groups)</summary>
+<details><summary><strong>Available merge tags</strong> (40 tags across 4 groups)</summary>
 
 **Universal**
 
@@ -1889,6 +2006,7 @@ A leftover row from an older schema. The `booking.created` dispatcher skips it e
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -1899,6 +2017,12 @@ A leftover row from an older schema. The `booking.created` dispatcher skips it e
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 </tbody></table>
 
 **Payment**
@@ -1922,7 +2046,7 @@ A leftover row from an older schema. The `booking.created` dispatcher skips it e
 - **Trigger event** — `booking.confirmed`
 - **Audience** — Customer
 
-<details><summary><strong>Available merge tags</strong> (33 tags across 4 groups)</summary>
+<details><summary><strong>Available merge tags</strong> (40 tags across 4 groups)</summary>
 
 **Universal**
 
@@ -1953,6 +2077,7 @@ A leftover row from an older schema. The `booking.created` dispatcher skips it e
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -1963,6 +2088,12 @@ A leftover row from an older schema. The `booking.created` dispatcher skips it e
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 </tbody></table>
 
 **Payment**
@@ -1986,7 +2117,7 @@ A leftover row from an older schema. The `booking.created` dispatcher skips it e
 - **Trigger event** — `booking.cancelled`
 - **Audience** — Customer
 
-<details><summary><strong>Available merge tags</strong> (34 tags across 4 groups)</summary>
+<details><summary><strong>Available merge tags</strong> (41 tags across 4 groups)</summary>
 
 **Universal**
 
@@ -2017,6 +2148,7 @@ A leftover row from an older schema. The `booking.created` dispatcher skips it e
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -2027,6 +2159,12 @@ A leftover row from an older schema. The `booking.created` dispatcher skips it e
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 <tr><td><code>{{cancellation_reason}}</code></td><td>Reason recorded when the booking was cancelled.</td></tr>
 </tbody></table>
 
@@ -2051,7 +2189,7 @@ A leftover row from an older schema. The `booking.created` dispatcher skips it e
 - **Trigger event** — `booking.completed`
 - **Audience** — Customer
 
-<details><summary><strong>Available merge tags</strong> (34 tags across 4 groups)</summary>
+<details><summary><strong>Available merge tags</strong> (41 tags across 4 groups)</summary>
 
 **Universal**
 
@@ -2082,6 +2220,7 @@ A leftover row from an older schema. The `booking.created` dispatcher skips it e
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -2092,6 +2231,12 @@ A leftover row from an older schema. The `booking.created` dispatcher skips it e
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 <tr><td><code>{{completion_date}}</code></td><td>Date the trip / booking was marked completed.</td></tr>
 </tbody></table>
 
@@ -2116,7 +2261,7 @@ A leftover row from an older schema. The `booking.created` dispatcher skips it e
 - **Trigger event** — `booking.expired`
 - **Audience** — Customer
 
-<details><summary><strong>Available merge tags</strong> (34 tags across 4 groups)</summary>
+<details><summary><strong>Available merge tags</strong> (41 tags across 4 groups)</summary>
 
 **Universal**
 
@@ -2147,6 +2292,7 @@ A leftover row from an older schema. The `booking.created` dispatcher skips it e
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -2157,6 +2303,12 @@ A leftover row from an older schema. The `booking.created` dispatcher skips it e
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 <tr><td><code>{{expiry_policy_note}}</code></td><td>Message shown when a booking auto-expires for non-payment.</td></tr>
 </tbody></table>
 
@@ -2185,7 +2337,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 - **Trigger event** — `payment.received`
 - **Audience** — Customer
 
-<details><summary><strong>Available merge tags</strong> (36 tags across 4 groups)</summary>
+<details><summary><strong>Available merge tags</strong> (43 tags across 4 groups)</summary>
 
 **Universal**
 
@@ -2216,6 +2368,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -2226,6 +2379,12 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 </tbody></table>
 
 **Payment**
@@ -2252,7 +2411,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 - **Trigger event** — `booking.created`
 - **Audience** — Admin
 
-<details><summary><strong>Available merge tags</strong> (33 tags across 4 groups)</summary>
+<details><summary><strong>Available merge tags</strong> (40 tags across 4 groups)</summary>
 
 **Universal**
 
@@ -2283,6 +2442,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -2293,6 +2453,12 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 </tbody></table>
 
 **Payment**
@@ -2316,7 +2482,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 - **Trigger event** — `payment.received`
 - **Audience** — Admin
 
-<details><summary><strong>Available merge tags</strong> (36 tags across 4 groups)</summary>
+<details><summary><strong>Available merge tags</strong> (43 tags across 4 groups)</summary>
 
 **Universal**
 
@@ -2347,6 +2513,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -2357,6 +2524,12 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 </tbody></table>
 
 **Payment**
@@ -2383,7 +2556,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 - **Trigger event** — `booking.cancelled`
 - **Audience** — Admin
 
-<details><summary><strong>Available merge tags</strong> (34 tags across 4 groups)</summary>
+<details><summary><strong>Available merge tags</strong> (41 tags across 4 groups)</summary>
 
 **Universal**
 
@@ -2414,6 +2587,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -2424,6 +2598,12 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 <tr><td><code>{{cancellation_reason}}</code></td><td>Reason recorded when the booking was cancelled.</td></tr>
 </tbody></table>
 
@@ -2448,7 +2628,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 - **Trigger event** — `booking.expired`
 - **Audience** — Admin
 
-<details><summary><strong>Available merge tags</strong> (34 tags across 4 groups)</summary>
+<details><summary><strong>Available merge tags</strong> (41 tags across 4 groups)</summary>
 
 **Universal**
 
@@ -2479,6 +2659,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -2489,6 +2670,12 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 <tr><td><code>{{expiry_policy_note}}</code></td><td>Message shown when a booking auto-expires for non-payment.</td></tr>
 </tbody></table>
 
@@ -2513,7 +2700,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 - **Trigger event** — `payment.received`
 - **Audience** — Customer
 
-<details><summary><strong>Available merge tags</strong> (36 tags across 4 groups)</summary>
+<details><summary><strong>Available merge tags</strong> (43 tags across 4 groups)</summary>
 
 **Universal**
 
@@ -2544,6 +2731,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -2554,6 +2742,12 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 </tbody></table>
 
 **Payment**
@@ -2580,7 +2774,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 - **Trigger event** — `payment.reminder`
 - **Audience** — Customer
 
-<details><summary><strong>Available merge tags</strong> (36 tags across 4 groups)</summary>
+<details><summary><strong>Available merge tags</strong> (43 tags across 4 groups)</summary>
 
 **Universal**
 
@@ -2611,6 +2805,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -2621,6 +2816,12 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 </tbody></table>
 
 **Payment**
@@ -2648,7 +2849,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 - **Audience** — Customer
 - **Module gate** — Scheduled Payments (Pro)
 
-<details><summary><strong>Available merge tags</strong> (36 tags across 5 groups)</summary>
+<details><summary><strong>Available merge tags</strong> (43 tags across 5 groups)</summary>
 
 **Universal**
 
@@ -2679,6 +2880,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -2689,6 +2891,12 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 </tbody></table>
 
 **Payment**
@@ -2721,7 +2929,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 - **Audience** — Customer
 - **Module gate** — Scheduled Payments (Pro)
 
-<details><summary><strong>Available merge tags</strong> (37 tags across 5 groups)</summary>
+<details><summary><strong>Available merge tags</strong> (44 tags across 5 groups)</summary>
 
 **Universal**
 
@@ -2752,6 +2960,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -2762,6 +2971,12 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 </tbody></table>
 
 **Payment**
@@ -2795,7 +3010,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 - **Audience** — Customer
 - **Module gate** — Scheduled Payments (Pro)
 
-<details><summary><strong>Available merge tags</strong> (39 tags across 5 groups)</summary>
+<details><summary><strong>Available merge tags</strong> (46 tags across 5 groups)</summary>
 
 **Universal**
 
@@ -2826,6 +3041,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -2836,6 +3052,12 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 </tbody></table>
 
 **Payment**
@@ -2871,7 +3093,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 - **Audience** — Admin
 - **Module gate** — Scheduled Payments (Pro)
 
-<details><summary><strong>Available merge tags</strong> (39 tags across 5 groups)</summary>
+<details><summary><strong>Available merge tags</strong> (46 tags across 5 groups)</summary>
 
 **Universal**
 
@@ -2902,6 +3124,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -2912,6 +3135,12 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 </tbody></table>
 
 **Payment**
@@ -2946,7 +3175,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 - **Trigger event** — `reminder.trip`
 - **Audience** — Customer
 
-<details><summary><strong>Available merge tags</strong> (36 tags across 5 groups)</summary>
+<details><summary><strong>Available merge tags</strong> (43 tags across 5 groups)</summary>
 
 **Universal**
 
@@ -2977,6 +3206,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -2987,6 +3217,12 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 </tbody></table>
 
 **Payment**
@@ -3018,7 +3254,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 - **Trigger event** — `marketing.review_request`
 - **Audience** — Customer
 
-<details><summary><strong>Available merge tags</strong> (35 tags across 5 groups)</summary>
+<details><summary><strong>Available merge tags</strong> (42 tags across 5 groups)</summary>
 
 **Universal**
 
@@ -3049,6 +3285,7 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 <tr><td><code>{{booking_url}}</code></td><td>Link to view the booking in My Account.</td></tr>
 <tr><td><code>{{booking_status}}</code></td><td>pending / confirmed / cancelled / completed.</td></tr>
 <tr><td><code>{{payment_status}}</code></td><td>unpaid / partial / paid / refunded.</td></tr>
+<tr><td><code>{{trip_code}}</code></td><td>The trip&#039;s own reference code (Trip editor → Trip Basics), empty when none. <em>(Yatra 3.3+)</em></td></tr>
 <tr><td><code>{{trip_name}}</code></td><td>Title of the trip the booking / enquiry is for.</td></tr>
 <tr><td><code>{{trip_url}}</code></td><td>Public link to the trip detail page.</td></tr>
 <tr><td><code>{{travel_date}}</code></td><td>Departure date formatted per site settings.</td></tr>
@@ -3059,6 +3296,12 @@ A leftover row from an older schema; payment emails use `payment_received` and `
 <tr><td><code>{{booking_custom_fields_html}}</code></td><td>Booking-level Dynamic Form Field answers as HTML.</td></tr>
 <tr><td><code>{{special_requests}}</code></td><td>Customer-entered special requests text.</td></tr>
 <tr><td><code>{{special_requests_html}}</code></td><td>Special requests with line breaks preserved.</td></tr>
+<tr><td><code>{{pickup_point}}</code></td><td>Pickup point the customer chose at checkout (Yatra 3.3+; empty when none).</td></tr>
+<tr><td><code>{{pickup_time}}</code></td><td>Its pickup time.</td></tr>
+<tr><td><code>{{pickup_point_details}}</code></td><td>Its directions or notes.</td></tr>
+<tr><td><code>{{accommodation}}</code></td><td>The accommodation option the customer chose at checkout (Yatra 3.3+; empty when the trip has none).</td></tr>
+<tr><td><code>{{departure_guides}}</code></td><td>Guides assigned to the booking&#039;s trip date (Yatra Pro Guides &amp; Resources, 3.3+; empty otherwise).</td></tr>
+<tr><td><code>{{travel_insurance}}</code></td><td><em>Added</em> or <em>Declined</em> — whether the customer took travel insurance (Yatra 3.3+; empty when it was not offered).</td></tr>
 <tr><td><code>{{completion_date}}</code></td><td>Date the trip / booking was marked completed.</td></tr>
 </tbody></table>
 

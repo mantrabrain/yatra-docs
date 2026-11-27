@@ -224,6 +224,65 @@ See [Dynamic Pricing](/modules/dynamic-pricing) for the full module reference.
 
 **Fix:** This was fixed in a recent release — update Yatra Pro to the latest. The fix uses `Promise.allSettled` so any failed row doesn't block the rest.
 
+## "API Access says application passwords are off"
+
+**Symptom:** <span class="screen-path">Settings → API Access</span> shows *"WordPress application passwords are off on this site. They need HTTPS (or a plugin may have turned them off)."*, or creating a key fails with *"WordPress application passwords are turned off on this site (they need HTTPS)."*
+
+**Cause:** Yatra's API keys (Yatra 3.3+) are WordPress **application passwords**. WordPress only offers them on sites served over **HTTPS**, and security plugins can switch them off.
+
+**Fix:**
+
+<ol class="step-list">
+  <li>Serve the site over HTTPS and make sure <strong>Settings → General → WordPress Address</strong> and <strong>Site Address</strong> in WordPress both start with <code>https://</code>.</li>
+  <li>If it's already HTTPS, check your security plugin for an "application passwords" or "disable REST authentication" option and allow them.</li>
+  <li>If the message is <em>"Application passwords are turned off for that user."</em>, the block is on that one user — choose another user under <strong>Acts as user</strong>, or lift the restriction for them.</li>
+</ol>
+
+Requests then use HTTP Basic auth with the user name and the key — see [REST API](/api-reference).
+
+## "The weather forecast doesn't show on trip pages"
+
+**Symptom:** You switched on the forecast, but no weather box appears in the trip page's booking sidebar.
+
+**Check, in order:**
+
+<ol class="step-list">
+  <li><strong>The setting is on</strong> — <span class="screen-path">Settings → General → Weather Forecast</span> → <em>Show a 7-day forecast on trip pages</em>, then Save.</li>
+  <li><strong>The trip has start coordinates</strong> — the forecast is for the trip's <em>starting point</em>, taken from its latitude and longitude (trip editor → <strong>Location &amp; Route</strong> → <strong>Starting Point</strong>). A place name alone isn't enough, and 0, 0 counts as "not set". Without coordinates the box isn't shown.</li>
+  <li><strong>Your server can reach Open-Meteo</strong> — the forecast is fetched by your server from <code>api.open-meteo.com</code> (or <code>customer-api.open-meteo.com</code> with an API key). If the request fails, the box stays hidden and Yatra tries again after 15 minutes. A working forecast is cached for 3 hours per place.</li>
+  <li><strong>The API key is right</strong> — a wrong <em>Open-Meteo API key</em> makes every request fail. Clear the field to test with the free service.</li>
+</ol>
+
+::: warning Commercial sites need an Open-Meteo API key
+Open-Meteo's free service is for **non-commercial use** only. A business website should get an API key from [Open-Meteo](https://open-meteo.com/) and enter it in <strong>Open-Meteo API key</strong> under <span class="screen-path">Settings → General → Weather Forecast</span>.
+:::
+
+## "Recently viewed trips don't appear"
+
+**Symptom:** The *Recently viewed* row (or `[yatra_recently_viewed]`) shows nothing.
+
+**Cause and fix:**
+
+- Trip pages only remember visits while <span class="screen-path">Settings → General → Recently Viewed Trips</span> is on. Turn it on, then view a couple of trips.
+- The list is kept in the visitor's own browser. A private window, another browser or device, or cleared site data starts with an empty list, and the row stays hidden until there is something to show.
+- Under a trip page, the trip you're looking at is left out — so after viewing only one trip, that page shows nothing.
+
+## "My logo or brand colour isn't in the emails"
+
+**Symptom:** You set the **Email brand colour** or ticked **Logo in emails** (<span class="screen-path">Yatra → Email → Delivery</span>, Yatra 3.3+), but emails still look the same.
+
+**Cause:** Branding replaces the teal header band and buttons of **Yatra's standard email layout**. A template whose HTML you replaced with your own design doesn't use that layout and is sent unchanged. The logo needs a company logo in <span class="screen-path">Yatra → Settings → General → Company Logo</span>, or a site logo set in your theme.
+
+**Fix:** Base the template's HTML on Yatra's standard layout again (Yatra recognises it by its teal header colour, `#0d9488`), then send a test email. Also check that your brand colour is a full six-digit hex code such as `#1d4ed8` — other values are ignored.
+
+## "Customers can't book a trip on this site any more"
+
+**Symptom:** The trip page shows a button that leaves your site, and Yatra's checkout for the trip doesn't open.
+
+**Cause:** The trip has a **Custom Booking Link** (trip editor → <strong>Availability &amp; Booking</strong>, Yatra 3.3+). With a link set, bookings happen on that other site and Yatra's own checkout is closed for the trip. Trips imported from Yatra 2.x with an external booking URL use it automatically.
+
+**Fix:** Clear the **Custom Booking Link** field and save the trip to sell it through Yatra again.
+
 ## Diagnostics tools
 
 - <span class="screen-path">Yatra → Tools → System Status</span> — PHP, WP, server, plugin versions.

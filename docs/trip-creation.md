@@ -114,10 +114,15 @@ You only need this phase to publish a working trip. Everything later is optional
 | ---                  | ---                   | ---          | ---                                                                                                |
 | **Trip Title**       | text                  | ✅ Yes       | Char counter shows 0–60 recommended (max 100). Auto-feeds slug while not manually edited.          |
 | **Trip URL**         | text (monospace)      | ✅ Yes       | Auto-generated. Click **Edit** to override. Includes a Copy button and live URL preview.           |
+| **Trip code (optional)** (Yatra 3.3+) | text, max 40 chars | Optional | Your own reference for the trip, e.g. *ABC-12*. Shown in the trip's quick facts on the trip page and available in emails as `{{trip_code}}`. See [Trip code](#trip-code). |
 | **Short Description** | WYSIWYG               | Recommended  | 100–150-char range works best. Shown in catalogues and trip cards.                                |
 | **Trip Description** | WYSIWYG (min 260 px)  | Recommended  | The main body shown on the public trip page. Supports bold / italic / lists / link / headings.    |
 | **Featured Image**   | WordPress media picker | Recommended | 1200 × 800 px recommended. Preview + Remove button below the picker.                              |
 | **Trip Highlights**  | repeater (text rows)  | Optional     | Add bullet-point highlights ("Sunrise over Mt. Batur", "Private boat to Nusa Lembongan", etc.).   |
+
+#### Trip code
+
+The **Trip code (optional)** field (Yatra 3.3+), just below the Trip URL, is your own short reference for the trip — up to 40 characters, e.g. *ABC-12*. It is shown in the trip's quick facts on the trip page and can be used in email templates as `{{trip_code}}`. Leave it empty if you don't use codes.
 
 **Trip Type & Duration** (same tab, below the highlights)
 
@@ -158,6 +163,27 @@ The pricing section starts with a **Pricing Type** toggle — pick one of two mo
 | **Original Price**   | currency (number, 0.01 step) | ✅ Yes | The undiscounted public price.                                  |
 | **Discounted Price** | currency               | Optional | If set, the public price shows a strike-through over the original. |
 
+#### Price by group size
+
+*Yatra 3.3+ · Regular Pricing only (the trip is priced per person).*
+
+A different price per person for bigger (or smaller) groups — for example *1 person 1,500 · 2–3 people 1,300 · 4 or more 1,100*. The block appears under the Regular Pricing fields as **Price by group size (Optional)**.
+
+1. Click **Add group price**.
+2. Fill **From** (people), **To** (leave it empty for "and more") and the **Price per person**.
+3. Repeat for each range — up to 10 rows. Save the trip.
+
+How it works:
+
+- When the number of travellers in a booking falls in a row, that row's price is the **price per person** for the whole booking. It **replaces** the trip price above and any departure-specific prices.
+- Dynamic pricing, discounts, coupons and tax still apply on top of it.
+- A group size that matches no row keeps the normal price. If rows overlap, the one with the lowest **From** is used.
+- Rows without a price above 0, or with **To** smaller than **From**, are dropped on save.
+- The trip page lists the group prices under the price, so customers see them before booking.
+- Switching the trip to **Traveler-Based Pricing** turns the group prices off (they only apply to per-person regular pricing).
+
+Developers can change the tier price with the `yatra_group_tier_price` filter (`$tierPrice, $price, $tripId, $travellers`).
+
 **Traveler-Based Pricing fields:**
 
 - A repeater of **active traveler categories**. Click **Add Pricing** → pick a category from the dropdown → fill in Original Price and Discounted Price (optional). Repeat for each category.
@@ -197,9 +223,77 @@ This section merges what the source code calls `duration` and `booking`. Field g
 
 **Booking Policies**
 
+Under **Age Restrictions**:
+
 | Field           | Type   | Notes                                                       |
 | ---             | ---    | ---                                                         |
-| **Minimum Age** | number | Hard floor for booking. 0 = no restriction.                |
+| **Minimum Age** | number | Youngest age accepted. Empty or 0 = no restriction.        |
+| **Maximum Age** | number | Oldest age accepted. Empty or 0 = no restriction.          |
+
+#### Age limits
+
+::: info Age limits are checked at checkout (Yatra 3.3+)
+When a trip has a minimum or maximum age, checkout checks each traveller's **date of birth** against it, using their age **on the travel date**. A traveller outside the limits stops the booking with a message such as *Traveller 2 will be 15 on the travel date, and this trip is for age 18 and over. Please check the date of birth.*
+
+- Travellers without a date of birth aren't checked.
+- Bookings you create in the admin aren't checked.
+- Developers can turn the check off with `add_filter('yatra_enforce_trip_age_limits', '__return_false');` (the filter also receives the trip).
+:::
+
+The same card also has **Trip Requirements** (physical, visa and vaccination requirements) and the **Cancellation Policy**.
+
+#### Booking availability (enquiry only) <span class="pro-pill">PRO</span>
+
+**Disable Booking Calendar** turns the trip into enquiry-only: no calendar or checkout, just the enquiry form.
+
+#### Private trips <span class="pro-pill">PRO</span>
+
+With the [Private Trips](/modules/private-trips) module on, this card lets a group book a departure just for themselves:
+
+| Field | Notes |
+| --- | --- |
+| **Allow private bookings** | Shows *Make this a private trip* at checkout. |
+| **Private trip fee** | Added to the price when the customer makes the trip private. 0 = no extra charge. |
+| **Charge the fee** | *Once per booking* or *Per traveller*. |
+
+Once a departure is booked privately, nobody else can book it. See [Private Trips](/modules/private-trips) for the full behaviour.
+
+#### Countdown <span class="pro-pill">PRO</span>
+
+With the [Countdown & Social Proof](/modules/social-proof) module on, show a countdown on the trip page:
+
+| Field | Notes |
+| --- | --- |
+| **Count down to** | *No countdown* (default), *A date and time (e.g. an offer's end)* or *The next departure*. |
+| **Ends at (site time)** | For *A date and time*: when the countdown ends, in your site's time zone. It disappears when the time is up. |
+| **Text** | The words before the timer. Placeholder: *Offer ends in* / *Next departure in*. Max 60 characters. |
+
+The countdown only shows the time left — it **doesn't change the price**. End the offer yourself at the same time (or with a Dynamic Pricing rule). *The next departure* is for trips with set departure dates; sold-out departures are skipped.
+
+#### Guides on the trip page <span class="pro-pill">PRO</span>
+
+With the [Guides & Resources](/modules/guides-resources) module on, tick the guides to show on this trip's page (up to 12). They appear as **Meet your guides** below the trip's content. Add guides first under Guides & Resources; until you do, the card says *No guides yet.*
+
+#### Custom booking link
+
+*Yatra 3.3+.*
+
+For a trip that is booked on another website — a partner, an OTA, your own booking system. Leave it empty to take bookings in Yatra.
+
+| Field | Notes |
+| --- | --- |
+| **Booking link** | The full address, starting with `https://` or `http://`. Anything else is not saved. |
+| **Button text** | The button's label. Empty = *Book Now*. |
+| **Open in a new tab** | On by default. |
+
+What changes when a link is set:
+
+- The trip page's booking card and the mobile booking bar show a button to your link **instead of** Yatra's calendar and checkout.
+- Yatra's own checkout refuses bookings for the trip (for example from an old bookmarked checkout link). Bookings you create in the admin still work.
+- If **Disable Booking Calendar** (enquiry-only) is also on, the trip stays enquiry-only and the link isn't shown.
+- Trips imported from Yatra 2.x that had an *external* booking URL use it as their custom booking link.
+
+Developers can change the link with the `yatra_trip_external_booking_url` filter (`$url, $trip`).
 
 **Accommodation**
 
@@ -222,6 +316,45 @@ A sub-block (Car icon) inside *Availability & Booking* — describes pickup/drop
 | **Dropoff Location**        | text     | Conditional.                                                                                                         |
 | **Transportation Details**  | textarea | Conditional. Free text — describe vehicles, route, schedule.                                                         |
 
+#### Pickup points
+
+*Yatra 3.3+.*
+
+A sub-block (map-pin icon) under *Transportation*: the places a customer can choose to be picked up from **at checkout**.
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| **Add pickup point** | repeater | Each row: a **name** (e.g. *Hotel Yak & Yeti, Durbar Marg*), an optional **time** and optional **directions or notes**. Up to 50. |
+| **Customers must choose a pickup point** | checkbox | Shown once there is a point. On: checkout won't complete without a choice. Off: the customer can pick *No pickup needed*. |
+
+What the customer chooses is kept on the booking as it was when booked (renaming or removing a point later doesn't change existing bookings). It shows on the booking confirmation page, in the customer's account, on the admin booking screen and in the **Pickup point** column of the departure manifest CSV (followed by **Accommodation** and **Travel insurance**). Use the merge tags `{{pickup_point}}`, `{{pickup_time}}` and `{{pickup_point_details}}` in your email templates — for example in the booking confirmation or the pre-departure reminder. The older single **Pickup Location** field above is unchanged.
+
+#### Accommodation options
+
+*Yatra 3.3+.*
+
+Hotel categories or room types the customer **chooses from at checkout**, each with its extra price over the trip price. (The *Accommodation* block above only describes the lodging; this one sells a choice.)
+
+1. Click **Add accommodation option** (up to 20).
+2. Fill the **name** (e.g. *Deluxe hotel, single room*), an optional short **description**, the **extra price** and whether it is **per person** or **per booking**.
+3. Put your standard option **first**, with price 0 if it's included — the first option is preselected at checkout.
+
+For example: *Standard lodge — 0 per person* · *Deluxe hotel — 120 per person* · *Private villa — 500 per booking*.
+
+What the customer sees and what is stored:
+
+- At checkout, the options are listed with their price; the price summary updates as the customer chooses. The extra shows as its own line.
+- The extra is part of the booking's subtotal, so coupons, tax and deposits include it.
+- A booking made without a choice (for example from a cart or the API) gets the **first** option.
+- The choice is kept on the booking as it was when booked. It appears on the admin booking screen (the **Stay & insurance** card), the confirmation page, My Account, in the **Accommodation** column of the departure manifest CSV, and in emails as `{{accommodation}}`.
+- Rows without a name are dropped on save.
+
+#### Travel insurance opt-out
+
+*Yatra 3.3+.* Tick **Don't offer travel insurance on this trip** (under the accommodation options).
+
+When you offer travel insurance at checkout (<span class="screen-path">Settings → Payment → Travel Insurance</span>, see [Payments](/payment-settings)), tick it to leave the insurance question out of this trip's checkout — for example for a short city tour.
+
 ---
 
 ## Phase 2 — Details
@@ -239,9 +372,14 @@ A day-by-day repeater. Each day has:
 - **Day number** + **Day title** ("Day 1 — Arrival in Bali")
 - **Entries** — items that happen on this day. Each entry can have a title, description, location, start / end time, duration, cost, notes, included / excluded items, and images. Items can also reference a global Itinerary Item by ID (managed under [Yatra → Items / Item Types](/tour-booking)).
 - Add / remove days, reorder by entry.
+- **Highest altitude (metres, optional)** (Yatra 3.3+) — in the day editor (<span class="screen-path">Yatra → Itinerary</span> → a day → Edit). When two or more days have one, the trip page shows an **altitude profile** chart above the itinerary (highest point labelled, feet on hover), each day shows its altitude next to its title, and the itinerary PDF lists it per day. Leave it empty for days where it doesn't matter. Developers can hide the chart with the `yatra_show_altitude_chart` filter.
 
 ::: tip
 You can skip the itinerary and still publish — useful for short single-day experiences.
+:::
+
+::: info Itinerary download <span class="pro-pill">PRO</span>
+With the [Itinerary Downloader](/modules/itinerary-downloader) module on, every trip with itinerary days gets a button in its itinerary section that emails the visitor the itinerary PDF in exchange for their name and email. There is nothing to set per trip.
 :::
 
 #### Sub-tab B: Included / Excluded
