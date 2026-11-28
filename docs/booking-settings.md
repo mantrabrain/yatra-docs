@@ -585,7 +585,7 @@ The Group and Promo+Group modes need the **Advanced Discount** Pro module to be 
 
 ## Departure manifest
 
-<span class="screen-path">Yatra → Departures</span> → open a departure → **Download manifest** gives a CSV with one row per traveller — see [Manage a booking → The departure manifest](/booking-workspace#the-departure-manifest). From Yatra 3.3 it ends with three more columns: **Pickup point** (name and time), **Accommodation** (the option chosen) and **Travel insurance** (*Added*, *Declined*, or empty when the booking wasn't asked).
+<span class="screen-path">Yatra → Departures</span> → open a departure → **Download manifest** gives a CSV with one row per traveller — see [Manage a booking → The departure manifest](/booking-workspace#the-departure-manifest). From Yatra 3.3 it has three more columns, after **Special requests**: **Pickup point** (name and time), **Accommodation** (the option chosen) and **Travel insurance** (*Added*, *Declined*, or empty when the booking wasn't asked).
 
 ---
 

@@ -21,7 +21,7 @@ This is the operator-facing release log for Yatra Free and Yatra Pro. The canoni
 
 ## Yatra Free
 
-### 3.3.0 — 27 November 2026
+### 3.3.0 — 28 November 2026
 
 Feature release. Safe to update from 3.1.x and 3.2.x; no database changes for existing data. **New features are off until you set them up.** Three things change on their own: the checkout shows a progress bar, a trip's minimum and maximum age are checked against travellers' dates of birth, and trips migrated from Yatra 2.x with an external booking URL send customers to it again. Update Yatra and Yatra Pro in either order — the four new Pro modules need both on 3.3. Summary with screen paths: [New in Yatra 3.3](/whats-new-3-3).
 
@@ -48,7 +48,7 @@ Feature release. Safe to update from 3.1.x and 3.2.x; no database changes for ex
 - **Bank Transfer: several accounts, each for a currency**; a booking shows the accounts for its currency.
 - Settings → Payment lists Yatra Pro 3.3's regional gateways.
 
-**New — emails**: your **logo and brand colour** in Yatra's emails (Yatra → Email → Delivery), and the merge tags `{{pickup_point}}`, `{{pickup_time}}`, `{{pickup_point_details}}`, `{{accommodation}}`, `{{travel_insurance}}`, `{{trip_code}}` (plus `{{departure_guides}}` with Pro's Guides & Resources). See [Email → Email branding](/email-settings#email-branding-logo-and-brand-colour).
+**New — emails**: your **logo and brand colour** in Yatra's emails (Yatra → Email → Delivery), and the merge tags `{{pickup_point}}`, `{{pickup_time}}`, `{{pickup_point_details}}`, `{{accommodation}}`, `{{travel_insurance}}`, `{{trip_code}}` (plus `{{departure_guides}}` with Pro's Guides & Resources). See [Email → Email branding](/email-settings#email-branding-logo-and-brand-colour). The booking confirmation email also lists the customer's pickup point, accommodation and travel insurance answer when the trip uses them.
 
 **New — integrations**
 
@@ -496,7 +496,7 @@ For 2.x changelog entries, see the plugin's [GitHub releases](https://github.com
 
 ## Yatra Pro
 
-### 3.3.0 — 27 November 2026
+### 3.3.0 — 28 November 2026
 
 Feature release. The four new modules are on **every Pro plan**, need **Yatra 3.3.0** and stay off until you turn them on. Update Yatra and Yatra Pro in either order.
 

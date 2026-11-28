@@ -517,6 +517,7 @@ Hooks added in Yatra 3.3 / Yatra Pro 3.3. Without code using them, nothing chang
 | Hook | Type | Purpose |
 | --- | --- | --- |
 | `yatra_bank_transfer_accounts` | filter | `(array $accounts, string $currency, BankTransferGateway $gateway)` — the bank accounts shown for a booking in this currency (default: accounts in that currency plus those with no currency set; the main account when none match). |
+| `yatra_booking_payment_refunded` | action | `(int $bookingId)` — fires once when a booking's payment status first becomes *refunded* (a full refund, from any gateway or the booking screen). Yatra's SliceWP integration uses it to reject the commission. |
 | `yatra_booking_expiry_exempt_gateways` | filter | `(string[] $ids)` — payment methods whose unpaid bookings are never cancelled by the unpaid-booking expiry. Default `['cheque']`. |
 
 ### Emails
